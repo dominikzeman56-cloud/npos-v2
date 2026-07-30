@@ -1,0 +1,9 @@
+[project]
+name = "npos"
+version = "0.1.0"
+description = "Neurofunk Production System - decision system and data engine"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.pytest.ini_options]
+testpaths = ["tools"]

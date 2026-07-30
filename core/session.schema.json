@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NPOS Session Log",
+  "type": "object",
+  "required": ["date", "track_id", "goal"],
+  "properties": {
+    "date": { "type": "string", "format": "date" },
+    "track_id": { "type": "string" },
+    "goal": { "type": "string" },
+    "done": { "type": "array", "items": { "type": "string" } },
+    "blocked": { "type": "string" },
+    "learned": { "type": "string" },
+    "next": { "type": "string" }
+  }
+}
