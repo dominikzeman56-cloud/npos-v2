@@ -1,0 +1,108 @@
+{
+  "session_id": "9028bf4f82ac",
+  "created_at": 1785234601.535921,
+  "updated_at": 1785235189.0495477,
+  "max_turns": 80,
+  "facts": {
+    "tempo_bpm": 175.0
+  },
+  "tool_state": {
+    "live_set": {
+      "tempo": 172,
+      "timeSignature": "4/4"
+    }
+  },
+  "turns": [
+    {
+      "role": "system",
+      "content": "NeuroMan session started.",
+      "intent": "",
+      "ts": 1785234601.535921,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "\"D:\\ObsidianVault\\Hudební produkce\\Build Sheets\\Skullstep_Rave_Lead.md\" ahoj, dokážeš mi to nahrat do abletonu?",
+      "intent": "ABLETON",
+      "ts": 1785234838.3737028,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Pro nahrání MIDI nebo audio dat z externího souboru (např. Markdown s notami) je potřeba nejprve obsah souboru extrahovat a zpracovat. Producer Pal API přímo nepodporuje čtení souborů z disku. Nahraj prosím obsah souboru (např. sekvenci not nebo parametry) jako text, abych mohl vytvořit odpovídající klipy v Abletonu.",
+      "intent": "ABLETON",
+      "ts": 1785234841.6518033,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "🎛️ 1. Oscillators",
+      "intent": "ABLETON",
+      "ts": 1785234873.9493706,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Pro vytvoření nebo úpravu oscillatorů v Abletonu je potřeba specifikovat konkrétní nástroj (např. Operator, Wavetable, Analog) a parametry (typ vlny, frekvence, atd.). Aktuálně nemám informace o tom, jaký nástroj nebo nastavení požaduješ. Uveď prosím více detailů.",
+      "intent": "ABLETON",
+      "ts": 1785234877.8067496,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "### OSC A",
+      "intent": "GENERAL",
+      "ts": 1785234879.4601798,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Operator (Ableton):**\n1. **Oscilátor A** – nastav na **sawtooth** (pilová vlna).\n2. **Frekvence** – **1x** (unisono), případně lehce rozladit pro širší zvuk (např. +5/-5 centů).\n3. **Hlasitost** – **100%** (později doladíš v mixu).\n4. **Phase** – **0°** (standard).\n\n**Poznámka:**\n- Pokud chceš agresivnější zvuk, přidej **Oscilátor B** s **square/pulse** v nižší oktávě (např. -12 semitonů).\n- Pro **Skullstep/Rave Lead** doporučuji **FM modulaci** (Osc A → Osc B) pro ostřejší charakter.\n\nChceš pokračovat s dalšími parametry (filtr, obálky, LFO)?",
+      "intent": "GENERAL",
+      "ts": 1785234884.861086,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "1. Waveform: `Default Shape` (Saw)",
+      "intent": "MUSIC",
+      "ts": 1785234950.6456163,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Konkrétní nastavení v Ableton Operator pro Neurofunk/Skullstep Rave Lead (tempo 172 BPM, 4/4):**\n\n---\n\n### **1. Oscilátor A – Sawtooth (Default Shape)**\n**Nástroj:** *Operator* (FM syntéza umožní pozdější agresivní zvukové barvy).\n**Nastavení:**\n- **Waveform:** *Sawtooth* (v menu \"Default Shape\" – potvrď výběr).\n- **Coarse Tune:** **0 semitonů** (základní frekvence).\n- **Fine Tune:** **0 centů** (pokud nechceš záměrné rozladění).\n- **Retrig:** **ON** (pro přesné synchronizované útoky).\n- **Volume:** **-6 dB** (později doladíš v mixu, aby zůstal headroom pro FM modulaci).\n\n**Proč Sawtooth?**\n- V neurofunku je **saw** základ pro \"špinavé\" leady s harmonickou bohatostí.\n- Při FM modulaci (např. Osc A → Osc B) vytvoří **agresivní, kovové barvy** typické pro Skullstep.\n\n---\n\n### **2. Rozšíření pro Neurofunkový Charakter**\n**a) Unison Detune (pro širší stereo obraz):**\n- V Operatoru přepni na **Polyfonní režim** (Poly).\n- **Voices:** *4–6* (pro masivní zvuk).\n- **Detune:** **+7/-7 centů** (lehké rozladění pro \"chorusový\" efekt).\n- **Spread:** *20–30%* (rozprostření hlasů v stereo poli).\n\n**b) FM Modulace (volitelně, pro ostřejší zvuk):**\n- Přidej **Oscilátor B** (v Operatoru):\n  - **Waveform:** *Square* (obdélníková vlna).\n  - **Coarse Tune:** **-12 semitonů** (1 oktáva dolů).\n  - **Volume:** **-12 dB** (aby nepřehlušil Osc A).\n- **Modulační matice:**\n  - Osc A → **FM Amount** (Osc B) = **30–50%** (experimentuj s hodnotou pro agresivitu).\n  - Osc B → **Self-FM** = **10%** (pro dodatečné harmonické zkreslení).\n\n---\n\n### **3. Doporučené další kroky**\n1. **Filtr:**\n   - Typ: *Low-Pass 24 dB/oct* (pro \"tekutý\" neurofunkový zvuk).\n   - Cutoff: *~1.5 kHz* (zahraj si s automatizací pro dynamiku).\n   - Resonance: *30–40%* (pro \"křupavý\" charakter).\n   - Envelope Amount: *+20%* (aby se cutoff otevřel s útokem noty).\n\n2. **Obálky (ADSR):**\n   - **Attack:** *5–10 ms* (rychlý útok pro percusivní lead).\n   - **Decay:** *200–300 ms* (krátký decay pro \"staccato\" efekt).\n   - **Sustain:** *0%* (pro neurofunk často není sustain potřeba).\n   - **Release:** *50–100 ms* (aby zvuk nezněl \"ucpaně\").\n\n3. **LFO (pro pohyb):**\n   - Cíl: *Filter Cutoff* nebo *Pitch* (pro \"wobble\" efekt).\n   - Waveform: *Sine* nebo *Random*.\n   - Rate: *1/8 nebo 1/16* (synchro s tempem 172 BPM).\n   - Amount: *10–20%* (subtilní pohyb).\n\n---\n\n### **4. Příklad MIDI Patternu (pro 172 BPM)**\nVytvoř nový MIDI klip v Abletonu (1 bar = 4/4) a použij tento pattern pro testování:\n```\nC5 (1/16) | --- | G4 (1/16) | --- | F4 (1/8) | --- | D#4 (1/8) | ---\n```\n- **Artikulace:** *Legato OFF* (každá nota má vlastní útok).\n- **Velocity:** *100–127* (pro agresivní dynamiku).\n\n---\n\n### **5. Sound Design Tipy pro Skullstep**\n- **Distortion:** Přidej efekt *Saturator* (Ableton) za Operator:\n  - Mode: *Soft Clip* nebo *Digital*.\n  - Drive: *5–10 dB* (pro zkreslení).\n  - Output: *-3 dB* (kompenzace hlasitosti).\n- **EQ:** Odstřih basy pod *150 Hz* (High-Pass Filter) a zvýrazni *3–5 kHz* (pro průraznost).\n- **Sidechain:** Použij *Glue Compressor* s sidechainem z basového bubnu (pro \"pumping\" efekt).\n\n---\n**Otázka:** Chceš se zaměřit na konkrétní část (např. filtr, obálky, efektový řetězec) nebo mám vygenerovat celý MIDI klip s automatizací?",
+      "intent": "MUSIC",
+      "ts": 1785234981.8538594,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "2. Octave: `-1`",
+      "intent": "MUSIC",
+      "ts": 1785234983.3578527,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Konkrétní úprava pro Neurofunk/Skullstep Rave Lead v Ableton Operator (tempo 172 BPM, 4/4) – Octave -1:**\n\n---\n\n### **1. Oscilátor A – Sawtooth s posunem oktávy**\n**Nastavení:**\n- **Coarse Tune:** **-12 semitonů** (tj. **-1 oktáva** od původní výšky).\n  - *Proč?* Nižší oktáva zvýrazní **sub-bassovou přítomnost** a zároveň zachová harmonickou bohatost sawtoothu pro FM modulaci.\n  - V neurofunku/Skullstepu se často používají **leadové zvuky v nižších registrech** (např. C3–C4), aby se prolínaly s basovou linkou a vytvářely \"těžký\" zvuk.\n- **Fine Tune:** **0 centů** (pokud nechceš záměrné rozladění).\n- **Volume:** **-3 dB** (kompenzace hlasitosti po snížení oktávy).\n\n**Praktický dopad:**\n- Původní nota **C5** (523 Hz) se přeloží na **C4** (262 Hz).\n- Sawtooth v této oktávě bude znít **temněji a masivněji**, ale stále s dostatkem harmonických složek pro FM modulaci.\n\n---\n\n### **2. Úprava FM Modulace (Osc B)**\n**Proč upravit?**\n- Nižší oktáva Osc A znamená, že **Osc B musí být také posunut dolů**, aby FM modulace zůstala harmonicky konzistentní.\n- **Nové nastavení Osc B:**\n  - **Coarse Tune:** **-24 semitonů** (tj. **-2 oktávy** od původní výšky Osc A).\n    - *Proč?* Osc B moduluje Osc A, a pokud by zůstal na -12 semitonů, vznikly by disharmonické artefakty (např. příliš vysoké frekvence v poměru k Osc A).\n    - Příklady:\n      - Osc A = C4 (262 Hz) → Osc B = C2 (65 Hz).\n      - FM modulace pak vytvoří **sub-bassové harmonické zkreslení**, které je typické pro Skullstep.\n  - **Volume:** **-9 dB** (aby nepřehlušil Osc A).\n  - **FM Amount (Osc A → Osc B):** **40–60%** (vyšší hodnota pro agresivnější zvuk).\n\n**Výsledek:**\n- FM modulace bude znít **temněji a \"kovověji\"**, s důrazem na sub-bassové frekvence.\n- Vhodné pro **Skullstepové leady s \"drill-like\" charakterem** (např. podobné zvukům od umělců jako **Mefjus, Noisia, nebo Current Value**).\n\n---\n\n### **3. Kompenzace v Mixu**\n**Problém:**\n- Nižší oktáva může způsobit, že zvuk bude **méně průrazný** ve vysokých frekvencích.\n- **Řešení:**\n  1. **EQ (Ableton EQ Eight):**\n     - **High-Shelf Filter:** +3 dB na **5–8 kHz** (pro jasnost).\n     - **Low-Cut Filter:** 80–100 Hz (odstranění nežádoucího sub-bassu, který může rušit basovou linku).\n  2. **Exciter (Ableton Pedal nebo externí plugin):**\n     - Přidej harmonické zkreslení ve vysokých frekvencích (např. *Decapitator* v \"A\" módu).\n  3. **Stereo Imaging:**\n     - Použij *Utility* (Ableton) s **Width 150%** pro rozšíření vysokých frekvencí.\n\n---\n\n### **4. Příklad MIDI Patternu pro -1 Oktávu**\nUprav MIDI klip z předchozího návrhu pro nižší oktávu:\n```\nC4 (1/16) | --- | G3 (1/16) | --- | F3 (1/8) | --- | D#3 (1/8) | ---\n```\n- **Artikulace:** *Legato OFF* (pro ostré útoky).\n- **Velocity:** *100–127* (agresivní dynamika).\n- **Transpozice:** Pokud chceš zvuk ještě níže, zkus **C3** (131 Hz), ale pozor na kolizi s basovou linkou.\n\n---\n\n### **5. Doporučené Efekty pro Skullstepový Lead**\n1. **Distortion/Saturation:**\n   - *Ableton Saturator* (Mode: *Digital*, Drive: 8–12 dB).\n   - *Cableguys WaveShaper* (pro custom křivky zkreslení).\n2. **Filter Automation:**\n   - Automatizuj *Cutoff* (Low-Pass 24 dB) v rytmu 1/8 nebo 1/16 pro \"wobble\" efekt.\n   - Příklad: Cutoff kmitá mezi **1.2 kHz a 3 kHz**.\n3. **Delay:**\n   - *Ableton Delay* (Sync: 1/8, Feedback: 30%, Wet: 20%).\n   - *ValhallaDelay* (pro \"tape-style\" delay).\n4. **Reverb:**\n   - *Ableton Reverb* (Decay: 1.5 s, Size: 50%, Dry/Wet: 10%).\n   - *Blackhole* (pro ambientní efekty).\n\n---\n\n### **6. Sound Design Tip: \"Growl\" Efekt**\nPro extra agresivitu:\n1. Přidej **druhý Operator** (Osc C) s:\n   - **Waveform:** *Noise* (White nebo Pink).\n   - **Volume:** **-18 dB**.\n   - **FM Amount (Osc C → Osc A):** 20%.\n2. Použij *LFO* na *FM Amount* Osc C (Rate: 1/16, Amount: 15%).\n   - Vytvoří to **dynamické \"growl\" zkreslení**, které se mění s rytmem.\n\n---\n\n### **7. Závěrečné Doladění**\n- **Sidechain Compression:**\n  - Použij *Glue Compressor* (Threshold: -20 dB, Ratio: 4:1, Attack: 10 ms, Release: 50 ms).\n  - Sidechain z **kick drumu** (pro \"pumping\" efekt).\n- **Limiting:**\n  - *Ableton Limiter* (Ceiling: -0.3 dB, Gain: +2 dB) pro finální loudness.\n\n---\n**Otázka:**\nChceš se zaměřit na:\n1. **Konkrétní automatizaci** (např. filter cutoff, FM amount)?\n2. **Layering s dalším zvukem** (např. přidání Reese basu pro komplexnější lead)?\n3. **Přesný MIDI pattern** pro Skullstepový breakdown?",
+      "intent": "MUSIC",
+      "ts": 1785235015.122491,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "3. Unison: `3 Voices`",
+      "intent": "MUSIC",
+      "ts": 1785235016.1692119,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "### **Analýza a Optimalizace Unisonu (3 Voices) pro Neurofunk/Skullstep Lead**\n**Cíl:** Vytvořit **široký, agresivní a pohyblivý** zvuk s **3 hlasy Unisonu**, který bude fungovat v kontextu nižší oktávy (-1 oktáva Osc A, -2 oktávy Osc B) a FM modulace. Zaměříme se na **fázovou koherenci, stereo imaging a dynamiku**.\n\n---\n\n## **1. Základní Nastavení Unisonu (3 Voices)**\n### **Parametry v Synthu (např. Serum, Vital, FM8, nebo Operator v Abletonu)**\n| Parametr               | Hodnota                     | Důvod                                                                                     |\n|------------------------|-----------------------------|-------------------------------------------------------------------------------------------|\n| **Unison Voices**      | 3                           | Ideální kompromis mezi šířkou a CPU zátěží. 2 hlasy by byly příliš úzké, 4+ by ztrácely ostrost. |\n| **Detune**             | **15–25 cents**            | Dostatečné pro **subtilní fázové posuny**, ale ne tolik, aby zvuk zněl \"rozmazaně\".       |\n| **Phase Randomization**| **20–40%**                 | Zabraňuje fázovému rušení (phasing) při pohybu v stereo poli.                             |\n| **Pan Spread**         | **60–80%**                 | Rozdělení hlasů v stereo poli: **L - Center - R** (pro maximální šířku).                  |\n| **Pitch Randomization**| **0–5 cents**              | Lehká nestabilita pro organičtější zvuk (typické pro neurofunk).                          |\n\n---\n\n## **2. Kompenzace Problémů s Unisonem v Nižší Oktávě**\n### **Problém 1: Ztráta Průraznosti (Muddy Sound)**\n- **Příčina:** Nižší frekvence se snadno překrývají a vytvářejí **fázové rušení** (phasing), což vede k \"blátivému\" zvuku.\n- **Řešení:**\n  1. **Mid/Side EQ (Ableton EQ Eight):**\n     - **Side (široký signál):**\n       - Boost **+3 dB @ 1–3 kHz** (pro jasnost v stereo poli).\n       - Cut **-2 dB @ 200–500 Hz** (odstranění muddiness).\n     - **Mid (centrální signál):**\n       - Boost **+2 dB @ 80–150 Hz** (pro stabilní basový základ).\n  2. **Phase Alignment (Pluginy):**\n     - *Little AlterBoy* (v módu \"Harmonics\") nebo *Soundtheory Gullfoss* pro automatickou korekci fáze.\n\n### **Problém 2: Příliš Široký Sub-Bass**\n- **Příčina:** Unison v nižší oktávě může způsobit, že **sub-bassové frekvence (30–80 Hz) budou příliš široké**, což naruší basovou linku.\n- **Řešení:**\n  1. **Low-End Mono (Utility v Abletonu):**\n     - **Frekvence:** **< 150 Hz** (vše pod 150 Hz v mono).\n     - **Width:** **0%** (plně mono).\n  2. **Sub-Bass Layering:**\n     - Přidej **samostatný sine wave** (např. v Operatoru) na **C2 (65 Hz)** s **0% Unisonem** a **100% mono**.\n     - Tím zajistíš, že sub-bass zůstane stabilní, zatímco Unison lead bude široký.\n\n---\n\n## **3. Dynamické Úpravy Unisonu pro Neurofunk**\n### **A. Automatizace Detune & Spread**\n- **Proč?** Statický Unison zní nudně. Dynamické změny přidávají **pohyb a agresivitu**.\n- **Příklad automatizace (1/16 grid):**\n  | Takt | Detune (cents) | Pan Spread (%) | FM Amount (%) |\n  |------|----------------|----------------|---------------|\n  | 1    | 15             | 60             | 40            |\n  | 2    | 25             | 80             | 60            |\n  | 3    | 10             | 50             | 30            |\n  | 4    | 30             | 70             | 50            |\n- **Efekt:** Zvuk bude **pulsovat** a měnit šířku, což je typické pro **Skullstep** (např. **Mefjus – \"Far Too Close\"**).\n\n### **B. LFO na Unison Parametry**\n- **Cíl:** Vytvořit **organický pohyb** bez manuální automatizace.\n- **Nastavení (např. v Serum nebo Vital):**\n  | Parametr       | LFO Shape | Rate (1/16) | Amount       |\n  |----------------|-----------|-------------|--------------|\n  | Detune         | Sine      | 1/4         | ±5 cents     |\n  | Pan Spread     | Triangle  | 1/8         | ±20%         |\n  | FM Amount      | Square    | 1/16        | ±10%         |\n- **Výsledek:** Zvuk bude **živější** a méně předvídatelný.\n\n---\n\n## **4. Layering s Reese Basem pro Komplexnější Lead**\n### **Proč?**\n- Unison lead může znít **příliš \"tenký\"** v nižší oktávě.\n- **Reese bass** (saw/square wave s heavy detune) dodá **tloušťku a agresivitu**.\n\n### **Nastavení Reese Layeru (např. v Serum):**\n| Parametr          | Hodnota                     | Důvod                                                                                     |\n|-------------------|-----------------------------|-------------------------------------------------------------------------------------------|\n| **Osc A**         | Saw (Anti-Aliased)          | Základní tvar vlny pro Reese.                                                             |\n| **Osc B**         | Square (Anti-Aliased)       | Přidá harmonickou komplexitu.                                                             |\n| **Unison**        | 5–7 Voices                  | Pro maximální detune efekt.                                                               |\n| **Detune**        | 30–50 cents                 | Vytvoří \"tekutý\" zvuk typický pro Reese.                                                  |\n| **Filter**        | Low-Pass 24 dB (Cutoff: 1 kHz) | Odstraní vysoké frekvence, které by kolidovaly s leadem.                                  |\n| **Volume**        | -6 dB                       | Aby nepřekryl Unison lead.                                                                |\n\n### **Mixing Reese Layeru:**\n1. **EQ (Ableton EQ Eight):**\n   - Cut **-3 dB @ 200–400 Hz** (odstranění muddiness).\n   - Boost **+2 dB @ 1–2 kHz** (pro průraznost).\n2. **Sidechain Compression:**\n   - *Glue Compressor* (Threshold: -18 dB, Ratio: 3:1, Attack: 5 ms, Release: 100 ms).\n   - Sidechain z **Unison leadu** (aby Reese \"dýchal\" s leadem).\n3. **Stereo Imaging:**\n   - *Utility* (Width: 50%) – Reese by měl být **užší než Unison lead**.\n\n---\n\n## **5. Příklad MIDI Patternu s Unisonem (Skullstep Breakdown)**\n**Kontext:**\n- Tempo: **170–175 BPM** (typické pro Skullstep).\n- Tonalita: **C Minor** (pro temný, agresivní feeling).\n- **MIDI Pattern (1/16 grid):**\n  ```\n  C3 (1/16) | --- | G2 (1/16) | --- | F2 (1/8) | --- | D#2 (1/8) | ---\n  A#2 (1/16)| --- | C3 (1/16) | --- | G2 (1/8) | --- | F2 (1/8)  | ---\n  ```\n- **Artikulace:**\n  - **Staccato** (Gate: 50%) pro ostré útoky.\n  - **Velocity:** 100–127 (agresivní dynamika).\n- **Automatizace:**\n  - **Filter Cutoff:** Kmitá mezi **800 Hz a 2 kHz** (1/8 grid).\n  - **FM Amount:** Zvyšuje se na **70%** v breakdownu.\n\n---\n\n## **6. Doporučené Efekty pro Unison Lead**\n| Efekt               | Plugin               | Nastavení                                                                                 | Důvod                                                                                     |\n|---------------------|----------------------|-------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|\n| **Distortion**      | Ableton Saturator    | Mode: *Digital*, Drive: 10 dB, Output: -3 dB                                             | Přidá harmonické zkreslení pro agresivitu.                                                |\n| **Filter**          | Ableton Auto Filter  | Low-Pass 24 dB, Cutoff: 1.5 kHz (automatizovaný), Resonance: 30%                         | Vytvoří \"wobble\" efekt typický pro neurofunk.                                            |\n| **Delay**           | ValhallaDelay        | Time: 1/8, Feedback: 25%, Wet: 15%, EQ: High-Pass @ 1 kHz                                | Dodá prostor bez ztráty průraznosti.                                                     |\n| **Reverb**          | Blackhole            | Decay: 2 s, Size: 30%, Diffusion: 80%, EQ: Low-Cut @ 500 Hz                               | Ambientní prostor pro breakdowny.                                                         |\n| **Stereo Imaging**  | Ozone Imager         | Width: 120% (200 Hz–20 kHz), Mono < 150 Hz                                               | Zajistí šířku bez ztráty basového základu.                                               |\n\n---\n\n## **7. Závěrečné Doladění**\n1. **A/B Test:**\n   - Porovnej zvuk s **reference trackem** (např. **Mefjus – \"Far Too Close\"**).\n   - Zkontroluj, zda Unison lead **nepřehlušuje basovou linku** a zda má **dostatek průraznosti** ve vysokých frekvencích.\n2. **Loudness Matching:**\n   - Použij *Ableton Limiter* (Ceiling: -0.3 dB, Gain: +1 dB) pro finální loudness.\n3. **Export Settings:**\n   - **Sample Rate:** 48 kHz.\n   - **Bit Depth:** 24-bit.\n   - **Dither:** *Pow-r 3* (pro minimalizaci artefaktů).\n\n---\n\n### **Shrnutí Klíčových Bodů:**\n✅ **Unison (3 Voices):** Detune 15–25 cents, Pan Spread 60–80%, Phase Randomization 20–40%.\n✅ **Mid/Side EQ:** Boost vysokých frekvencí v Side, mono sub-bass.\n✅ **Dynamika:** Automatizace Detune/Spread nebo LFO pro pohyb.\n✅ **Layering:** Reese bass pro tloušťku (5–7 Voices Unison, 30–50 cents Detune).\n✅ **Efekty:** Distortion, automatizovaný filter, delay, reverb.\n✅ **MIDI Pattern:** Staccato, vysoké velocity, automatizace FM a filtru.\n\n**Další kroky:**\n- Chceš **konkrétní preset** pro Serum/Vital/Operator?\n- Máš zájem o **detailní breakdown automatizace** (např. filter cutoff, FM amount)?\n- Potřebuješ **optimalizovat CPU zátěž** při použití Unisonu?",
+      "intent": "MUSIC",
+      "ts": 1785235189.0495477,
+      "meta": {}
+    }
+  ]
+}

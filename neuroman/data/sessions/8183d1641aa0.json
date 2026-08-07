@@ -1,0 +1,31 @@
+{
+  "session_id": "8183d1641aa0",
+  "created_at": 1785244283.1493552,
+  "updated_at": 1785244598.115959,
+  "max_turns": 80,
+  "facts": {},
+  "tool_state": {},
+  "turns": [
+    {
+      "role": "system",
+      "content": "NeuroMan session started.",
+      "intent": "",
+      "ts": 1785244283.1493552,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "co se děje,",
+      "intent": "GENERAL",
+      "ts": 1785244596.2635055,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "NeuroMan session aktivní. Stav: bez chyb. Žádná akce nezahájena. Specifikuj požadavek.",
+      "intent": "GENERAL",
+      "ts": 1785244598.115959,
+      "meta": {}
+    }
+  ]
+}
