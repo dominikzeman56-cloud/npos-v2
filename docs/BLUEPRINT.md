@@ -34,10 +34,11 @@ npos-v2/
 │   ├── analyze_track.py
 │   ├── rebuild_track_index.py
 │   └── query_tracks.py
+├── neuroman/                     ← approved 2026-08-02: async LLM orchestrator/session mentor, migrated from networkfunk-production-os
 └── pyproject.toml
 ```
 
-**Blocklist (Absolute Zero Tolerance):** web UI, Streamlit hub, auth, synth engine, second frontend, stems pipeline, new top-level folders without approval.
+**Blocklist (Absolute Zero Tolerance):** web UI, Streamlit hub, auth, synth engine, second frontend, stems pipeline, new top-level folders without approval (exception: `neuroman/`, approved 2026-08-02).
 
 ## 2. Principles (Non-Negotiable)
 

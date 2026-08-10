@@ -1,0 +1,16 @@
+# Downloaded models (faster-whisper etc.) — not source
+models/
+
+# Claude Code session artifacts
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Transcript artifacts (large text dumps)
+transcripts/

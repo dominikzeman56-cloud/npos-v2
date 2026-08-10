@@ -1,0 +1,29 @@
+{
+  "id": "first-contact",
+  "title": "First Contact",
+  "created": "2026-08-02",
+  "status": "groove",
+  "bpm": 174,
+  "key": "Em",
+  "reference": {
+    "track": "In My Head",
+    "artist": "Pythius & REEBZ",
+    "why": "introspective/euphoric release with female-led chorus — the emotional arc target for the second drop. Dark/industrial side modeled on Burr Oak per vault vocal concept."
+  },
+  "bass": {
+    "archetype": "clean-sub-sine",
+    "layers": ["sub", "body", "movement"]
+  },
+  "drums": {
+    "kick_style": "punchy, sub-driven",
+    "snare_style": "tight, layered"
+  },
+  "lead": {
+    "playing_style": "call_and_response",
+    "roles": ["hook", "answer"]
+  },
+  "goal": "First Contact as the EP opener: signal/static theme, male-female vocal trade-off, euphoric female-led chorus, hard-stop 22s-silence breakdown as the dramatic peak.",
+  "problem": "Second chorus must land brighter/more energetic than the first without the arrangement feeling repetitive.",
+  "unique_idea": "22s of true digital silence at the breakdown (not a fade) before the near-a-cappella female line re-enters.",
+  "notes": "Starter build sheet from vault First_Contact_Vocal_Concept.md + sketch structure (Em, ~174 BPM, 232s: intro→drop A→hard-stop breakdown→drop C→outro). Analysis pending analyze_track.py on FIRST CONTACT V4.wav."
+}

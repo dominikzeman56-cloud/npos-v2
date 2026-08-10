@@ -1,0 +1,145 @@
+{
+  "id": "first-contact",
+  "mode": "deep",
+  "analyzed": "2026-08-08",
+  "method": {
+    "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
+    "stems": false,
+    "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [
+      {
+        "name": "build",
+        "start_sec": 0.0,
+        "end_sec": 22.27
+      },
+      {
+        "name": "drop_a",
+        "start_sec": 22.27,
+        "end_sec": 132.39
+      }
+    ],
+    "notes": "Auto-detected from RMS energy curve (First Contact). Section boundaries approximate; verify by ear.",
+    "confidence": "estimated"
+  },
+  "dynamics": {
+    "crest_factor_drop_db": 6.11,
+    "loudness_strategy": "controlled",
+    "notes": "",
+    "confidence": "measured"
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -2.88,
+      "fundament_rel_db": -6.18,
+      "profile": "sub_dominant",
+      "notes": ""
+    },
+    "modulation": {
+      "primary_hz": 5.8,
+      "grid_match": "off_grid",
+      "secondary_hz": [
+        0.73,
+        2.17,
+        2.18,
+        3.62,
+        4.35
+      ],
+      "detection": "bandpass 60-300 -> Hilbert envelope -> FFT"
+    },
+    "timbre": {
+      "spectral_centroid_hz": 4697.5,
+      "notes": ""
+    },
+    "stereo": {
+      "sub_side_db": -38.84,
+      "fundament_side_db": -22.91,
+      "notes": ""
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 6.00 Hz vs 1/8 grid 23.20 Hz -> off-grid (reese/detune path)",
+      "hi_res_fft_350_900": "166 peaks, median spacing 2.0 Hz",
+      "conclusion": "reese (dense peak forest, close spacing)"
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured"
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "measured",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  }
+}

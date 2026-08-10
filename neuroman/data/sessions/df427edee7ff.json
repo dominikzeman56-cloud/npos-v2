@@ -1,0 +1,41 @@
+{
+  "session_id": "df427edee7ff",
+  "created_at": 1785270684.5359547,
+  "updated_at": 1785270859.0211053,
+  "max_turns": 80,
+  "facts": {
+    "tempo_bpm": 120.0
+  },
+  "tool_state": {
+    "live_set": {
+      "tempo": 120,
+      "timeSignature": "4/4",
+      "scale": "C Major"
+    }
+  },
+  "turns": [
+    {
+      "role": "system",
+      "content": "NeuroMan session started.",
+      "intent": "",
+      "ts": 1785270684.5359547,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "dokážeš mi nastavit MIDI bassline ve stylu Audia i se serum 2 presetem na growl bass",
+      "intent": "ABLETON",
+      "ts": 1785270852.2379704,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "HTTP 400: {\"error\":\"Validation failed\",\"details\":[{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"notes\"],\"message\":\"Invalid input\"}]}",
+      "intent": "ABLETON",
+      "ts": 1785270859.0211053,
+      "meta": {
+        "error": true
+      }
+    }
+  ]
+}

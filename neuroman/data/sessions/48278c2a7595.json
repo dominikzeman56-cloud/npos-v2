@@ -1,0 +1,624 @@
+{
+  "session_id": "48278c2a7595",
+  "created_at": 1785272561.7665849,
+  "updated_at": 1785274934.9757993,
+  "max_turns": 80,
+  "facts": {
+    "tempo_bpm": 172.0
+  },
+  "tool_state": {
+    "live_set": {
+      "tempo": 172,
+      "timeSignature": "4/4",
+      "scale": "C Major"
+    }
+  },
+  "turns": [
+    {
+      "role": "system",
+      "content": "NeuroMan session started.",
+      "intent": "",
+      "ts": 1785272561.7665849,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Serum – Oscillator A**\n- **Pitch**: -12 st (octave down)",
+      "intent": "GENERAL",
+      "ts": 1785274143.2414834,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Unison: 3 Voices",
+      "intent": "MUSIC",
+      "ts": 1785274143.7363963,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Serum – Oscillator A**\n- **Unison**: 3 Voices\n- **Detune**: 10% (default, adjust per taste)\n- **Blend**: 50% (default, stereo spread)",
+      "intent": "MUSIC",
+      "ts": 1785274144.9860537,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Detune: -38",
+      "intent": "ABLETON",
+      "ts": 1785274224.414286,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Producer Pal HTTP 504. (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274315.6523845,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Phase / Rand: 0 %",
+      "intent": "GENERAL",
+      "ts": 1785274316.6998043,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Serum – Oscillator A**\n- **Phase**: 0 %\n- **Rand**: 0 %",
+      "intent": "GENERAL",
+      "ts": 1785274317.420366,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Warp Mode: Bend +/-",
+      "intent": "ABLETON",
+      "ts": 1785274317.9118645,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274317.9160476,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "OSC B",
+      "intent": "GENERAL",
+      "ts": 1785274318.4268847,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Serum – Oscillator B**  \n- **Waveform**: Default Shape (Saw)  \n- **Pitch**: 0 st (center)  \n- **Unison**: 1 Voice (default)  \n- **Detune**: 0 %  \n- **Blend**: 0 % (mono)  \n- **Phase**: 0 %  \n- **Rand**: 0 %",
+      "intent": "GENERAL",
+      "ts": 1785274328.1122332,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Waveform: Default Shape (Saw)",
+      "intent": "ABLETON",
+      "ts": 1785274328.6730926,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274328.6781282,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Octave: -1",
+      "intent": "GENERAL",
+      "ts": 1785274329.442368,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Serum – Oscillator B**\n- **Pitch**: -12 st (-1 octave)",
+      "intent": "GENERAL",
+      "ts": 1785274330.2299,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Unison: 3 Voices",
+      "intent": "MUSIC",
+      "ts": 1785274330.936134,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Serum – Oscillator B**\n- **Unison**: 3 Voices\n- **Detune**: 5 % (default for 3 voices)",
+      "intent": "MUSIC",
+      "ts": 1785274392.9900055,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Detune: +38",
+      "intent": "ABLETON",
+      "ts": 1785274393.4778955,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Nelze se spojit s Producer Pal na http://localhost:3350. Over, ze Ableton Live bezi a device je aktivni. (Zkontroluj sit / lokalni sluzbu.)",
+      "intent": "ABLETON",
+      "ts": 1785274401.548469,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Phase / Rand: 0 %",
+      "intent": "GENERAL",
+      "ts": 1785274402.0793614,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Serum – Oscillator B**\n- **Phase**: 0 %\n- **Rand**: 0 %",
+      "intent": "GENERAL",
+      "ts": 1785274402.8510356,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Warp Mode: PWM / Phase Distortion (A Inv / B Inv)",
+      "intent": "ABLETON",
+      "ts": 1785274464.441257,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Nelze se spojit s Producer Pal na http://localhost:3350. Over, ze Ableton Live bezi a device je aktivni. (Zkontroluj sit / lokalni sluzbu.)",
+      "intent": "ABLETON",
+      "ts": 1785274472.5167735,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "OSC C (Serum 2 Extra Osc / Sub)",
+      "intent": "ABLETON",
+      "ts": 1785274473.0497844,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274473.0529358,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Category / Waveform: Digital → Basic OPL",
+      "intent": "CODE",
+      "ts": 1785274473.6242523,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "cline handoff -> D:\\ObsidianVault\\networkfunk-production-os\\context.md",
+      "intent": "CODE",
+      "ts": 1785274473.627931,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Octave: -2",
+      "intent": "GENERAL",
+      "ts": 1785274474.1358776,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Serum – Oscillator B**  \n- **Octave**: -2",
+      "intent": "GENERAL",
+      "ts": 1785274482.9230475,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Role: hutný spodní fundament pro zkreslení",
+      "intent": "ABLETON",
+      "ts": 1785274514.08052,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Nelze se spojit s Producer Pal na http://localhost:3350. Over, ze Ableton Live bezi a device je aktivni. (Zkontroluj sit / lokalni sluzbu.)",
+      "intent": "ABLETON",
+      "ts": 1785274522.193482,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "📉 2. Envelopes & Modulace",
+      "intent": "MUSIC",
+      "ts": 1785274522.7387648,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Serum – Oscillator B (Octave -2, Phase 0%, Rand 0%, Waveform: Basic OPL)**\n**Envelope 1 (Amp):**\n- **Attack**: 5 ms (sub-bass transient punch)\n- **Decay**: 250 ms (tight neurofundamental decay)\n- **Sustain**: -12 dB (controlled sub layer)\n- **Release**: 80 ms (avoid mud, sync with 172 BPM 16th notes)\n\n**Envelope 2 (Filter):**\n- **Target**: Serum Filter (Cutoff = 40 Hz, LP 24 dB)\n- **Attack**: 0 ms (instant sub presence)\n- **Decay**: 120 ms (modulate to 120 Hz)\n- **Sustain**: 0% (no sustain, rhythmic emphasis)\n- **Release**: 50 ms (clean tail)\n\n**LFO 1 (PWM/Phase Distortion):**\n- **Rate**: 1/8T (triplet 16th at 172 BPM = 129 Hz)\n- **Waveform**: Square (hard PWM edge)\n- **Depth**: 30% (subtle but audible phase shift)\n- **Sync**: On (tight to grid)\n- **Target**: Osc B Phase (A Inv / B Inv)\n\n**Mod Matrix:**\n1. **Env2 → Filter Cutoff** | Amount: +70 Hz (modulate to 190 Hz)\n2. **LFO1 → Osc B Phase** | Amount: 25% (PWM/phase distortion)\n3. **Velocity → Amp Env Attack** | Amount: -10 ms (dynamic punch)\n4. **Note → Filter Env Decay** | Amount: -20 ms (higher notes = faster decay)\n\n**Ableton (Degraded Mode):**\n- **Warp Mode**: *Complex* (preserve sub transients)\n- **Utility**: DC Block (20 Hz high-pass, remove DC offset)\n- **Saturator**: *Soft Clip* (drive = 3 dB, output = -1 dB, preserve headroom)\n\n**Code (OPL Waveform):**\n```python\n# D:\\ObsidianVault\\networkfunk-production-os\\context.md\ndef generate_opl_wave(octave=-2, phase=0, rand=0):\n    # Basic OPL sine approximation (2-op FM)\n    carrier = np.sin(2 * np.pi * (440 * 2**octave) * t + phase)\n    modulator = np.sin(2 * np.pi * (440 * 2**(octave+1)) * t * (1 + 0.5 * rand))\n    return carrier * (1 + 0.7 * modulator)\n```\n**Error Handling:**\n- Serum: Disable *Noise Osc* (conflicts with sub fundamentals).\n- Ableton: Bypass *Glue Compressor* on sub bus (phase cancellation risk).",
+      "intent": "MUSIC",
+      "ts": 1785274533.7778661,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "LFO 1 (jako obálka)",
+      "intent": "ABLETON",
+      "ts": 1785274534.7113104,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274534.7113104,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Shape: rychlý exponenciální decay (100 % → 0 %)",
+      "intent": "ABLETON",
+      "ts": 1785274611.9312909,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Nelze se spojit s Producer Pal na http://localhost:3350. Over, ze Ableton Live bezi a device je aktivni. (Zkontroluj sit / lokalni sluzbu.)",
+      "intent": "ABLETON",
+      "ts": 1785274620.0277686,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Mode: Envelope (ne Loop!)",
+      "intent": "ABLETON",
+      "ts": 1785274621.4665487,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274621.4696412,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Routing: namoduluj LFO 1 na Level u OSC A, OSC B i OSC C",
+      "intent": "ABLETON",
+      "ts": 1785274622.0051227,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274622.008267,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Základní Levely oscilátorů stáhni na 0 % - otevírají se plně přes LFO 1",
+      "intent": "ABLETON",
+      "ts": 1785274622.5209794,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274622.524089,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Matrix Modulation (rave pitch skok)",
+      "intent": "ABLETON",
+      "ts": 1785274623.048334,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274623.05146,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Source: LFO 1",
+      "intent": "ABLETON",
+      "ts": 1785274623.5606902,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274623.5639825,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Destination: Global Main Tuning",
+      "intent": "GENERAL",
+      "ts": 1785274670.0563693,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Action:**\nSet *Matrix Modulation*:\n- **Source:** LFO 1\n- **Destination:** Global Main Tuning\n- **Amount:** (Specify value or modulate via macro/automation for \"rave pitch skok\" effect)\n\n**Note:** Degraded mode persists. Verify Ableton Live device connectivity or restart `Producer Pal` service.",
+      "intent": "GENERAL",
+      "ts": 1785274732.9538875,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Amount: +13 %",
+      "intent": "GENERAL",
+      "ts": 1785274733.7444289,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Action:**\nSet *Matrix Modulation* **Amount** to **+13%** for:\n- **Source:** LFO 1\n- **Destination:** Global Main Tuning\n\n**Note:** Effect will create pitch modulation (rave skok) at LFO 1 rate. Adjust LFO 1 shape/speed for desired intensity.",
+      "intent": "GENERAL",
+      "ts": 1785274735.1634064,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Efekt: při úderu noty pitch lehce skočí/sklouzne - instantní 90s rave feeling",
+      "intent": "ABLETON",
+      "ts": 1785274735.6694796,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Nelze se spojit s Producer Pal na http://localhost:3350. Over, ze Ableton Live bezi a device je aktivni. (Zkontroluj sit / lokalni sluzbu.)",
+      "intent": "ABLETON",
+      "ts": 1785274743.7614644,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "🎚️ 3. Filter Section",
+      "intent": "ABLETON",
+      "ts": 1785274744.2637079,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274744.2678921,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Filter 1: zapnutý, LBH 12 (Low-Band-High)",
+      "intent": "ABLETON",
+      "ts": 1785274744.8613217,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274744.8644273,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Cutoff: cca 40 Hz (základní pozice)",
+      "intent": "MUSIC",
+      "ts": 1785274745.3978398,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Action:**\nSet **Filter 1 Cutoff** to **40 Hz** (LBH 12 mode active).\n\n**Note:** At 172 BPM in C Major, this preserves sub-bass energy while allowing modulation headroom for neurofunk \"punch-sweep\" effects.",
+      "intent": "MUSIC",
+      "ts": 1785274746.9716866,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Modulace cutoffu: navázat LFO 1 (otvírá filtr do středů)",
+      "intent": "GENERAL",
+      "ts": 1785274797.233653,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Action:**\nSet *Matrix Modulation*:\n- **Source:** LFO 1\n- **Destination:** Filter 1 Cutoff\n- **Amount:** (Specify value or modulate via macro)\n\n**Current:** Filter 1 Cutoff = 40 Hz (LBH 12). LFO 1 already modulates Global Main Tuning (+13%).",
+      "intent": "GENERAL",
+      "ts": 1785274859.7226105,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Resonance: cca 4 % (stáhnout na minimum)",
+      "intent": "MUSIC",
+      "ts": 1785274860.2147992,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Action:**\nSet **Filter 1 Resonance** to **4%**.",
+      "intent": "MUSIC",
+      "ts": 1785274860.8582692,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Drive: mírně přidat",
+      "intent": "ABLETON",
+      "ts": 1785274861.4468448,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Nelze se spojit s Producer Pal na http://localhost:3350. Over, ze Ableton Live bezi a device je aktivni. (Zkontroluj sit / lokalni sluzbu.)",
+      "intent": "ABLETON",
+      "ts": 1785274869.5711057,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "ENV 1 Release: jemně zvětšit, ať má doznění přesah",
+      "intent": "ABLETON",
+      "ts": 1785274870.0722747,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274870.0748656,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "🚀 4. FX Chain (uvnitř Serum, pořadí důležité)",
+      "intent": "ABLETON",
+      "ts": 1785274870.6468008,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274870.6493773,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Chorus - režim High Pass, jemné rozšíření do stran bez rozbití mona na spodcích",
+      "intent": "MUSIC",
+      "ts": 1785274871.172555,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Action:**\n1. Add **Ableton Chorus** post-Serum.\n2. Set:\n   - **Mode:** *High Pass*\n   - **Rate:** *0.3 Hz* (sync 1/4T at 172 BPM)\n   - **Depth:** *12%*\n   - **Feedback:** *8%*\n   - **Dry/Wet:** *20%*\n   - **Width:** *140%* (preserve sub-50Hz mono)\n\n**Warning:** High-pass chorus may unmask sub-bass. Confirm with spectrum analyzer.",
+      "intent": "MUSIC",
+      "ts": 1785274873.60724,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Hyper / Dimension - jen sekce Dimension zapnutá, Mix/Size cca 4 %",
+      "intent": "MUSIC",
+      "ts": 1785274921.887674,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "**Action:**\n1. Add **Ableton Hybrid Reverb** post-Chorus.\n2. Set:\n   - **Reverb Type:** *Dimension*\n   - **Mix:** *4%*\n   - **Size:** *4%*\n   - **Predelay:** *0 ms* (neurofunk priority: tight tails)\n   - **EQ:** High-pass at *150 Hz* (preserve sub-bass)\n   - **Ducking:** *Off* (conflicts with transient clarity)\n3. **Hyper** section: *Bypass*.",
+      "intent": "MUSIC",
+      "ts": 1785274925.0419474,
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Distortion - režim Overdrive, Stack 3x (trojitý overdrive nad sebou), Drive vytáhnout nahoru",
+      "intent": "ABLETON",
+      "ts": 1785274925.5775695,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Nelze se spojit s Producer Pal na http://localhost:3350. Over, ze Ableton Live bezi a device je aktivni. (Zkontroluj sit / lokalni sluzbu.)",
+      "intent": "ABLETON",
+      "ts": 1785274933.6801953,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Equalizer - ořezat spodní středy, jemný boost na výškách",
+      "intent": "ABLETON",
+      "ts": 1785274934.399963,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274934.4025338,
+      "meta": {
+        "error": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Splitter L/H - split freq cca 800 Hz-1 kHz; větev Highs: Delay (rychlý 1/16 stereo/ping-pong) + Reverb (preset Vintage). Středy a basy zůstávají 100% dry a mono.",
+      "intent": "ABLETON",
+      "ts": 1785274934.9726849,
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Obvod 'ableton' je otevreny (prilis mnoho chyb). (Zavislost je nedostupna — pokracuji v degradovanem rezimu.)",
+      "intent": "ABLETON",
+      "ts": 1785274934.9757993,
+      "meta": {
+        "error": true
+      }
+    }
+  ]
+}
