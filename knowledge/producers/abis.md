@@ -22,6 +22,6 @@ updated: 2026-10-15
 - **Snare resonance** přes convolution impulse po notách stupnice. `[naměřeno]`
 - **Drum bus bez zpracování** (Grains of Sooner) × wave shaper na bus (Start-to-Finish 2026) — dvě různá období. `[naměřeno]`
 **Nekopírovat.** Jeho knihovnu cabinetů a hotové racky — princip je pořadí a pre-making, ne konkrétní preset; layered sub pod reese je u něj výjimka (normálně jeden patch se subem uvnitř).
-**Zdroje.** Abis Reese FM Masterclass · Abis Start to Finish Song · Abis - Grains of Sooner Breakdown. Typ `producer_course` + analýza projektu.
+**Zdroje.** Abis - Basy v Serumu (DNB Academy) · Abis - Start to Finish (DNB Academy) · Abis - Grains of Sooner Breakdown. Typ `producer_course` + analýza projektu.
 
 > Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.
