@@ -49,12 +49,20 @@ export async function loadBuild(repoRoot, id) {
   return null;
 }
 
+// Noise/Sub: absent from the file = default (off); null means "not stored".
+const extra = (list, slot, pick) => {
+  const o = (list || []).find((x) => x.slot === slot);
+  return o ? { enabled: !!o.enabled, ...pick(o) } : { enabled: false };
+};
+
 export function buildView(d) {
   const r = d.reading || {};
   const num = (v) => (typeof v === 'number' ? v : null);
   return {
     id: d.id, name: d.name, synth: d.synth,
-    oscillators: (r.oscillators || []).map((o) => ({
+    // Serum 2 has three wavetable oscillators (A–C, slots 0–2) plus Noise (module NoiseOsc3, slot 3)
+    // and Sub (module SubOsc4, slot 4). Verified from the module names in the .SerumPreset files.
+    oscillators: (r.oscillators || []).filter((o) => o.slot <= 2).map((o) => ({
       slot: o.slot, enabled: !!o.enabled, kind: o.kind || null, table: o.table_name || o.wavetable || null,
       octave: num(o.params?.kParamOctave), pitch: num(o.params?.kParamPitch), fine: num(o.params?.kParamFine),
       level: num(o.params?.kParamVolume), unison: o.unison_voices, detune: num(o.params?.kParamDetune),
@@ -63,6 +71,8 @@ export function buildView(d) {
       warp2: o.kind_params?.kParamWarpMenu2 || null, warp2_amt: num(o.kind_params?.kParamWarp2),
       table_pos: num(o.kind_params?.kParamTablePos), random_phase: num(o.kind_params?.kParamRandomPhase),
     })),
+    noise: extra(r.oscillators, 3, (o) => ({ level: num(o.params?.kParamVolume), pan: num(o.params?.kParamPan), pitch_track: num(o.params?.kParamPitchTrack) })),
+    sub: extra(r.oscillators, 4, (o) => ({ level: num(o.params?.kParamVolume), octave: num(o.params?.kParamOctave), coarse: num(o.params?.kParamCoarsePit), pan: num(o.params?.kParamPan) })),
     filters: (r.voice_filters || []).map((f) => ({
       slot: f.slot, on: f.params?.kParamEnable !== 0, type: f.params?.kParamType || null,
       freq: num(f.params?.kParamFreq), reso: num(f.params?.kParamReso), drive: num(f.params?.kParamDrive), wet: num(f.params?.kParamWet),

@@ -56,7 +56,9 @@ def cues(a: dict[str, Any]) -> dict[str, Any]:
     for o in audible:
         fine_by_oct.setdefault(o["params"].get("kParamOctave", 0.0), set()).add(o["params"].get("kParamFine", 0.0))
     return {
-        "active_osc": len(on),
+        "active_osc": sum(1 for o in on if o["slot"] <= 2),   # wavetable osc A–C; Noise (slot 3) and Sub (slot 4) separately
+        "noise": any(o["slot"] == 3 for o in on),
+        "sub": any(o["slot"] == 4 for o in on),
         "max_unison": max((o["unison_voices"] for o in on), default=1),
         "cross_warp": cross,
         # zapnutý hlavní oscilátor (slot 0–2) s hlasitostí 0 a bez modulace hlasitosti: nehraje, jen moduluje
