@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, "claude/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: Python tools + repo check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install
+        run: python -m pip install pytest numpy scipy cbor2 zstandard
+      - name: Tests
+        run: python -m pytest tools -q
+      - name: Repo check (sources, knowledge, preset indexes, Co dál?)
+        run: python tools/check_repo.py
+
+  vault-app:
+    name: vault-app tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/vault-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tools/vault-app/package-lock.json
+      - run: npm ci
+      - run: npm test

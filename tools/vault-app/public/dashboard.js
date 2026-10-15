@@ -42,7 +42,10 @@ function renderTasks() {
   $('#tasks').innerHTML = D.tasks.length ? D.tasks.map((t, i) => `<div class="it${t.done ? ' done' : ''}"><input type="checkbox" data-chk="${i}" ${t.done ? 'checked' : ''} aria-label="Hotovo"><span class="tx">${esc(t.text)}</span><button class="x" data-del="${i}" aria-label="Smazat">×</button></div>`).join('') : '<div class="empty-l">zatím nic</div>';
 }
 function renderSess() {
-  $('#sess').innerHTML = D.sessions.length ? D.sessions.map((s, i) => `<div class="it"><span class="tx"><b>${esc(s.title)}</b>${s.sum ? '<br><span class="muted">' + esc(s.sum) + '</span>' : ''}</span><span class="when">${esc(s.when)}</span><button class="x" data-del="${i}" aria-label="Smazat">×</button></div>`).join('') : '<div class="empty-l">zatím nic</div>';
+  $('#sess').innerHTML = D.sessions.length ? D.sessions.map((s, i) => {
+    const goal = s.goal || s.title || '', extra = s.learned || s.sum || '';
+    return `<div class="it"><span class="tx"><b>${esc(goal)}</b>${extra ? '<br><span class="muted">' + esc(extra) + '</span>' : ''}${s.next ? '<br><span class="muted">další: ' + esc(s.next) + '</span>' : ''}</span><span class="when">${esc(s.date || s.when || '')}</span><button class="x" data-del="${i}" aria-label="Smazat">×</button></div>`;
+  }).join('') : '<div class="empty-l">zatím nic</div>';
 }
 
 // Co dál? advisor on the Dashboard: the same search as the Co dál? page (advisor.js), biased to the current phase.
@@ -65,7 +68,22 @@ function wire() {
     const b = e.target.closest('[data-del]'); if (b) { D.tasks.splice(+b.dataset.del, 1); save(); renderTasks(); return; }
     const c = e.target.closest('[data-chk]'); if (c) { D.tasks[+c.dataset.chk].done = c.checked; save(); renderTasks(); }
   };
-  $('#sadd').onclick = () => { const title = prompt('Název session (např. „Sound design: body layer“)'); if (!title) return; const sum = prompt('Krátké shrnutí (nepovinné)') || ''; D.sessions.unshift({ title, sum, when: stamp() }); save(); renderSess(); };
+  $('#sadd').onclick = () => $('#sdlg').showModal();
+  $('#sform').onsubmit = (e) => {
+    const f = e.target.elements, goal = f.goal.value.trim();
+    if (!goal) { e.preventDefault(); return; }
+    const slug = (D.track.title || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'bez-tracku';
+    const s = { date: new Date().toISOString().slice(0, 10), track_id: slug, goal };
+    const done = f.done.value.split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
+    if (done.length) s.done = done;
+    for (const k of ['blocked', 'learned', 'next']) if (f[k].value.trim()) s[k] = f[k].value.trim();
+    D.sessions.unshift(s); save(); renderSess(); e.target.reset();
+  };
+  $('#sexp').onclick = () => { // one JSON array of core/session.schema.json objects; tools/import_sessions.py writes data/sessions/*.json
+    const list = D.sessions.filter((s) => s.date && s.track_id && s.goal);
+    if (!list.length) { alert('Žádná session ve schématu k exportu. Starší záznamy bez cíle a data se neexportují.'); return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(list, null, 1)], { type: 'application/json' })); a.download = 'sessions.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
   $('#sess').onclick = (e) => { const b = e.target.closest('[data-del]'); if (b) { D.sessions.splice(+b.dataset.del, 1); save(); renderSess(); } };
   const go = () => ask($('#q').value);
   $('#go').onclick = go; $('#q').onkeydown = (e) => { if (e.key === 'Enter') go(); };

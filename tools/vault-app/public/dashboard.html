@@ -69,6 +69,7 @@
   .act small { display: block; color: var(--muted); font-weight: 400; font-size: 11px; margin-top: 3px; }
   .muted { color: var(--muted); font-size: 12px; line-height: 1.5; }
   .empty-l { color: var(--faint); font-size: 12px; padding: 4px 0; }
+  dialog.sdlg { background: var(--bg2); color: var(--text); border: 1px solid var(--sam-green, #3eea9a); border-radius: 8px; padding: 14px 16px; width: min(480px, 92vw); } dialog.sdlg::backdrop { background: rgba(0,0,0,.6); } dialog.sdlg h3 { margin: 0 0 10px; font-family: var(--font-display, var(--font-ui)); } dialog.sdlg .fld { margin-bottom: 8px; }
   .bar-st { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; padding: 6px 16px calc(6px + env(safe-area-inset-bottom)); background: var(--bg2); border-top: 1px solid var(--border); font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; letter-spacing: .08em; color: var(--sam-green, #3eea9a); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   body { padding-bottom: calc(48px + env(safe-area-inset-bottom)); }
   @media (max-width: 800px) { .wrap { grid-template-columns: minmax(0, 1fr); padding: 12px 14px; } .fields { grid-template-columns: 1fr 1fr; } .two { grid-template-columns: 1fr; } .top .brand small { display: none; } }
@@ -103,8 +104,17 @@
     <div class="ask"><input id="q" type="search" placeholder="Ctrl+K · např. basa je slabá vedle kicku, drop nezní jako drop, Live padá…" aria-label="Otázka"><button class="btn pri" id="go">Hledej</button></div>
     <div class="quick" id="quick"></div><div id="ans"></div></section>
 
-  <section class="card"><h2>Sessions <em><button class="btn" id="sadd" type="button" title="Ctrl+J">+ nová</button></em></h2>
+  <section class="card"><h2>Sessions <em><button class="btn" id="sadd" type="button" title="Ctrl+J">+ nová</button> <button class="btn" id="sexp" type="button" title="JSON podle core/session.schema.json">export</button></em></h2>
     <div class="list" id="sess"></div></section>
+  <dialog id="sdlg" class="sdlg"><form method="dialog" id="sform">
+    <h3>Nová session</h3>
+    <div class="fld"><label for="s-goal">Cíl (povinné)</label><input id="s-goal" name="goal" required autocomplete="off"></div>
+    <div class="fld"><label for="s-done">Hotovo (jeden řádek = jedna věc)</label><textarea class="ta" id="s-done" name="done"></textarea></div>
+    <div class="fld"><label for="s-blocked">Co blokuje</label><input id="s-blocked" name="blocked" autocomplete="off"></div>
+    <div class="fld"><label for="s-learned">Co jsem se naučil</label><input id="s-learned" name="learned" autocomplete="off"></div>
+    <div class="fld"><label for="s-next">Další krok</label><input id="s-next" name="next" autocomplete="off"></div>
+    <div class="row" style="margin-top:10px"><button class="btn pri" value="ok">Uložit</button><button class="btn" value="cancel" formnovalidate>Zrušit</button></div>
+  </form></dialog>
 
   <section class="card"><h2>Rychlé akce</h2>
     <div class="acts">

@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Obsidian-like read-only viewer for the local vault (D:\\ObsidianVault)",
   "scripts": {
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "test": "node --test"
   },
   "dependencies": {
     "d3": "^7.9.0",

@@ -72,12 +72,20 @@ def copy(src: Path, dst: Path, dry: bool) -> bool:
 def collect_presets(dry: bool) -> dict:
     import analyze_preset as ap  # noqa: E402
 
+    groups = {}  # preset id -> group (project folder) from the committed index, so the layout reproduces the same ids
+    for jf in glob.glob(str(REPO / "data" / "presets" / "index" / "*.jsonl")):
+        for line in Path(jf).read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                r = json.loads(line)
+                groups[r["id"]] = r.get("group") or ""
     wanted: dict[str, tuple[str, str]] = {}  # hash -> (source_id, filename)
+    ids: dict[str, str] = {}  # hash -> preset id
     for f in glob.glob(str(REPO / "data" / "presets" / "_local" / "*" / "*.json")):
         d = json.loads(Path(f).read_text(encoding="utf-8"))
         h = (d.get("reading") or {}).get("preset_hash")
         if h:
             wanted[h] = (d.get("source_id", "unknown"), (d.get("reading") or {}).get("file") or "")
+            ids[h] = d.get("id", "")
     names = {fn for _, fn in wanted.values()}
     found = {}
     for root in PRESET_ROOTS:
@@ -94,7 +102,8 @@ def collect_presets(dry: bool) -> dict:
     copied = 0
     for h, p in found.items():
         sid, _ = wanted[h]
-        if copy(p, OUT / "presets" / sid / p.name, dry):
+        group = groups.get(ids.get(h, ""), "") or p.parent.name
+        if copy(p, OUT / "presets" / sid / group / p.name, dry):  # group = project folder, as in the committed index
             copied += 1
     return {"wanted": len(wanted), "found": len(found), "copied": copied, "size": size_of(found.values())}
 
