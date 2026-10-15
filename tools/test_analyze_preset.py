@@ -48,6 +48,21 @@ def test_roundtrip_and_reading(tmp_path):
     assert r["voice"] == {"kParamMonoToggle": 1.0}
 
 
+def test_enabled_and_unison_defaults(tmp_path):
+    cb = {
+        "Oscillator0": {"plainParams": {"kParamVolume": 0.5}},                       # slot 0: default zapnutý
+        "Oscillator1": {"plainParams": {"kParamUnison": 7.0, "kParamDetune": 0.3}},  # slot 1: default vypnutý
+        "Oscillator2": {"plainParams": {"kParamEnable": 1.0}},
+        "Oscillator3": {"plainParams": {"kParamEnable": 0.0, "kParamOctave": -1.0}},
+    }
+    f = tmp_path / "u.SerumPreset"
+    f.write_bytes(make_blob(cb))
+    o = {x["slot"]: x for x in ap.analyze(f, source_id="s-1")["reading"]["oscillators"]}
+    assert (o[0]["enabled"], o[0]["unison_voices"]) == (True, 1)
+    assert (o[1]["enabled"], o[1]["unison_voices"]) == (False, 7)
+    assert o[2]["enabled"] is True and o[3]["enabled"] is False
+
+
 def test_unknown_source_ids_are_not_guessed():
     assert ap.source_name(6) == "LFO 1" and ap.source_name(7) == "LFO 2"
     assert ap.source_name(2) == "Env 1" and ap.source_name(25) == "Macro 1"

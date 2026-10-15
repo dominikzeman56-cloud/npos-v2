@@ -95,6 +95,11 @@ def read_oscillators(cb: dict[str, Any]) -> list[dict[str, Any]]:
             if sub.get("tableDisplayName"):
                 entry["table_name"] = sub["tableDisplayName"]
         if entry["params"] or "kind" in entry:
+            pp = entry["params"]
+            # Odvozeno z defaultů (ověřeno na 103 presetech Letsynthesize): slot 0 je zapnutý a v souboru
+            # se objeví jen kParamEnable 0.0; sloty 1–4 jsou vypnuté a objeví se jen 1.0. Unison default = 1 hlas.
+            entry["enabled"] = bool(pp.get("kParamEnable", 1.0 if i == 0 else 0.0))
+            entry["unison_voices"] = int(pp.get("kParamUnison", 1))
             out.append(entry)
     return out
 
@@ -258,7 +263,9 @@ def summary(a: dict[str, Any]) -> str:
     lines = [f"{a['name']}  [{a['synth']}]  tagy: {', '.join(a['tags']) or '-'}"]
     for o in r["oscillators"]:
         wt = o.get("table_name") or o.get("wavetable") or ""
-        lines.append(f"  osc{o['slot']} {o.get('kind', '?')} {wt}  {o['params']}  {o.get('kind_params', '')}")
+        state = "on" if o["enabled"] else "off"
+        lines.append(f"  osc{o['slot']} [{state}, unison {o['unison_voices']}] {o.get('kind', '?')} {wt}  "
+                     f"{o['params']}  {o.get('kind_params', '')}")
     for f in r["voice_filters"]:
         lines.append(f"  filtr{f['slot']}  {f['params']}")
     for e in r["fx"]:
