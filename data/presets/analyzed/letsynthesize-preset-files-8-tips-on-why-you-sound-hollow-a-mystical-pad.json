@@ -1,0 +1,209 @@
+{
+  "id": "letsynthesize-preset-files-8-tips-on-why-you-sound-hollow-a-mystical-pad",
+  "name": "Mystical Pad",
+  "synth": "Serum2 2.1.0",
+  "source_id": "letsynthesize-preset-files",
+  "archetype": "unclassified",
+  "function": "pad",
+  "basis": "preset_file",
+  "confidence": "measured",
+  "modulation": "LFO 1 → Oscillator0 CoarsePit 1.1719",
+  "fx_chain": [
+    "Chorus",
+    "EQ"
+  ],
+  "tags": [
+    "Wavetable",
+    "Poly"
+  ],
+  "reading": {
+    "note": "Hodnoty přečtené ze souboru. Chybějící parametr = výchozí hodnota Serum. Hodnoty jsou normalizované a jednotky nejsou ověřené proti UI. Interpretace (archetyp, funkce, proč) je ruční doplněk.",
+    "file": "Mystical Pad.SerumPreset",
+    "read_on": "2026-10-15",
+    "format_version": 2,
+    "preset_hash": "ed25cb5b0aecec1fc9865659a6f3d9e6",
+    "author": null,
+    "oscillators": [
+      {
+        "slot": 0,
+        "params": {
+          "kParamDetune": 0.0372,
+          "kParamOctave": 1.0
+        },
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamWarp": 1.0,
+          "kParamWarpMenu": "kBendPos"
+        },
+        "wavetable": "S2 Tables/Digital/Hand Drawn EBass.wav",
+        "enabled": true,
+        "unison_voices": 1
+      },
+      {
+        "slot": 1,
+        "params": {},
+        "kind": "WTOsc",
+        "kind_params": {},
+        "wavetable": "S2 Tables/Default Shapes.wav",
+        "enabled": false,
+        "unison_voices": 1
+      },
+      {
+        "slot": 2,
+        "params": {},
+        "kind": "WTOsc",
+        "kind_params": {},
+        "wavetable": "S2 Tables/Default Shapes.wav",
+        "enabled": false,
+        "unison_voices": 1
+      }
+    ],
+    "voice_filters": [
+      {
+        "slot": 0,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamFreq": 0.9997
+        }
+      },
+      {
+        "slot": 1,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamFreq": 0.9997
+        }
+      }
+    ],
+    "fx": [
+      {
+        "index": 0,
+        "type_id": 3,
+        "module": "FXChorus",
+        "params": {
+          "kParamFilt": 1647.5488,
+          "kParamFiltMode": 1.0,
+          "kParamWet": 100.0
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      },
+      {
+        "index": 1,
+        "type_id": 7,
+        "module": "FXEQ",
+        "params": {
+          "kParamFreq2": 2370.4467,
+          "kParamReso2": 56.4912,
+          "kParamType2": 2.0
+        }
+      }
+    ],
+    "modulation": [
+      {
+        "slot": 0,
+        "source_id": 6,
+        "source": "LFO 1",
+        "dest_module": "Oscillator",
+        "dest_module_id": 0,
+        "dest_param": "kParamCoarsePit",
+        "amount": 1.1719,
+        "extra": {
+          "kParamBipolar": 1.0
+        },
+        "has_curve": false
+      }
+    ],
+    "lfos": [
+      {
+        "index": 0,
+        "params": {
+          "kParamBeatSync": 0.0,
+          "kParamRate": 9.7573
+        }
+      }
+    ],
+    "envs": [
+      {
+        "index": 0,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 1,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 2,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 3,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      }
+    ],
+    "routing": [
+      {
+        "slot": 1,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 2,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 3,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 4,
+        "params": {
+          "kParamFXBus1Level": 100.0,
+          "kParamRoutingDest": "kRoutingDestNone"
+        }
+      },
+      {
+        "slot": 5,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 6,
+        "params": {
+          "kParamFXBus2Level": 100.0,
+          "kParamRoutingDest": "kRoutingDestNone"
+        }
+      }
+    ],
+    "macros": [],
+    "voice": {
+      "kParamBendRangeDn": -24.0,
+      "kParamBendRangeUp": 24.0,
+      "kParamMasterVolume": 0.181
+    },
+    "voice_panel": {},
+    "arp": {}
+  }
+}

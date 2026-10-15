@@ -23,8 +23,10 @@ jobs:
         run: python -m pip install pytest numpy scipy cbor2 zstandard
       - name: Tests
         run: python -m pytest tools -q
-      - name: Repo check (sources, knowledge, preset indexes, Co dál?)
+      - name: Repo check (sources, knowledge, preset indexes, tracks, corpus)
         run: python tools/check_repo.py
+      - name: Batch analyze presets (dry-run)
+        run: python tools/batch_analyze_presets.py --dry-run
 
   vault-app:
     name: vault-app tests
@@ -41,3 +43,22 @@ jobs:
           cache-dependency-path: tools/vault-app/package-lock.json
       - run: npm ci
       - run: npm test
+
+  vault-app-export:
+    name: vault-app static export
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/vault-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tools/vault-app/package-lock.json
+      - run: npm ci
+      - run: node export-static.mjs
+        env:
+          VAULT_PATH: ${{ secrets.VAULT_PATH }}
+          VAULT_IGNORE: ${{ secrets.VAULT_IGNORE }}

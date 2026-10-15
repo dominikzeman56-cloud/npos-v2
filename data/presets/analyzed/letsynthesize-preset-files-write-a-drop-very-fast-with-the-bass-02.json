@@ -1,0 +1,526 @@
+{
+  "id": "letsynthesize-preset-files-write-a-drop-very-fast-with-the-bass-02",
+  "name": "Bass 02",
+  "synth": "Serum2 2.0.18",
+  "source_id": "letsynthesize-preset-files",
+  "archetype": "unclassified",
+  "function": "body",
+  "basis": "preset_file",
+  "confidence": "measured",
+  "modulation": "LFO 2 → FXEQ1 Freq1 16.2614; LFO 3 → WTOsc0 TablePos 14.0351; LFO 2 → WTOsc1 Warp 68.4211; source_1 (nezmapováno) → WTOsc0 Warp 50.8772; source_1 (nezmapováno) → WTOsc1 Warp 11.4035; Env 1 → LFO0 Rate 65.7895",
+  "fx_chain": [
+    "HyperD",
+    "EQ",
+    "Comp",
+    "Distortion",
+    "EQ",
+    "Reverb"
+  ],
+  "tags": [
+    "Wavetable",
+    "Mono"
+  ],
+  "reading": {
+    "note": "Hodnoty přečtené ze souboru. Chybějící parametr = výchozí hodnota Serum. Hodnoty jsou normalizované a jednotky nejsou ověřené proti UI. Interpretace (archetyp, funkce, proč) je ruční doplněk.",
+    "file": "Bass 02.SerumPreset",
+    "read_on": "2026-10-15",
+    "format_version": 2,
+    "preset_hash": "ece3205d91d70783fb94cb6004ce8e5d",
+    "author": "letsynthesize",
+    "oscillators": [
+      {
+        "slot": 0,
+        "params": {},
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamWarpMenu": "kBendNeg",
+          "kParamXfadeMode": 1.0
+        },
+        "wavetable": "/Digital/FFT_Add_3rds.wav",
+        "enabled": true,
+        "unison_voices": 1
+      },
+      {
+        "slot": 1,
+        "params": {
+          "kParamEnable": 1.0
+        },
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamTablePos": 256.0,
+          "kParamWarp": 0.1491,
+          "kParamWarpMenu": "kPD_OSC"
+        },
+        "wavetable": "S2 Tables/Digital/JF Flute.wav",
+        "enabled": true,
+        "unison_voices": 1
+      },
+      {
+        "slot": 2,
+        "params": {},
+        "kind": "WTOsc",
+        "kind_params": {},
+        "wavetable": "S2 Tables/Default Shapes.wav",
+        "enabled": false,
+        "unison_voices": 1
+      },
+      {
+        "slot": 4,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamVolume": 0.2041
+        },
+        "enabled": true,
+        "unison_voices": 1
+      }
+    ],
+    "voice_filters": [
+      {
+        "slot": 0,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamFreq": 0.5219,
+          "kParamReso": 60.4386,
+          "kParamType": "CombL6P",
+          "kParamVar": 92.5439
+        }
+      }
+    ],
+    "fx": [
+      {
+        "index": 0,
+        "type_id": 9,
+        "module": "FXHyperD",
+        "params": {
+          "kParamDimESize": 0.0,
+          "kParamWet": 0.0
+        },
+        "mix": {
+          "kUIParamMixOrGainDimE": 0.0,
+          "kUIParamMixOrGainHyper": 0.0
+        }
+      },
+      {
+        "index": 1,
+        "type_id": 7,
+        "module": "FXEQ",
+        "params": {
+          "kParamFreq1": 191.5909,
+          "kParamGain1": 18.3158,
+          "kParamReso1": 70.0877,
+          "kParamType1": 1.0
+        }
+      },
+      {
+        "index": 2,
+        "type_id": 5,
+        "module": "FXComp",
+        "params": {
+          "kParamAttack": 90.091,
+          "kParamCompensatedWetDry": 0.0,
+          "kParamGain0": 4.6,
+          "kParamGain2": 4.6,
+          "kParamMakeup": 9.0355,
+          "kParamRatio": 22.7995,
+          "kParamRatioBelow": 0.75,
+          "kParamRelease": 89.9291
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      },
+      {
+        "index": 3,
+        "type_id": 0,
+        "module": "FXDistortion",
+        "params": {
+          "kParamFreq": 0.4678
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      },
+      {
+        "index": 4,
+        "type_id": 7,
+        "module": "FXEQ",
+        "params": {
+          "kParamFreq1": 359.5307,
+          "kParamFreq2": 5167.4645,
+          "kParamGain1": -7.5789,
+          "kParamGain2": 9.6842,
+          "kParamReso1": 32.807,
+          "kParamReso2": 36.3158,
+          "kParamType1": 1.0
+        }
+      },
+      {
+        "index": 5,
+        "type_id": 6,
+        "module": "FXReverb",
+        "params": {
+          "kParamFreq": 10.5469,
+          "kParamWet": 31.1404,
+          "kParamWidth": 100.0
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      }
+    ],
+    "modulation": [
+      {
+        "slot": 0,
+        "source_id": 7,
+        "source": "LFO 2",
+        "dest_module": "FXEQ",
+        "dest_module_id": 1,
+        "dest_param": "kParamFreq1",
+        "amount": 16.2614,
+        "extra": {},
+        "has_curve": false
+      },
+      {
+        "slot": 1,
+        "source_id": 8,
+        "source": "LFO 3",
+        "dest_module": "WTOsc",
+        "dest_module_id": 0,
+        "dest_param": "kParamTablePos",
+        "amount": 14.0351,
+        "extra": {},
+        "has_curve": false
+      },
+      {
+        "slot": 2,
+        "source_id": 7,
+        "source": "LFO 2",
+        "dest_module": "WTOsc",
+        "dest_module_id": 1,
+        "dest_param": "kParamWarp",
+        "amount": 68.4211,
+        "extra": {},
+        "has_curve": false
+      },
+      {
+        "slot": 3,
+        "source_id": 1,
+        "source": "source_1 (nezmapováno)",
+        "dest_module": "WTOsc",
+        "dest_module_id": 0,
+        "dest_param": "kParamWarp",
+        "amount": 50.8772,
+        "extra": {},
+        "has_curve": false
+      },
+      {
+        "slot": 4,
+        "source_id": 1,
+        "source": "source_1 (nezmapováno)",
+        "dest_module": "WTOsc",
+        "dest_module_id": 1,
+        "dest_param": "kParamWarp",
+        "amount": 11.4035,
+        "extra": {},
+        "has_curve": false
+      },
+      {
+        "slot": 6,
+        "source_id": 2,
+        "source": "Env 1",
+        "dest_module": "LFO",
+        "dest_module_id": 0,
+        "dest_param": "kParamRate",
+        "amount": 65.7895,
+        "extra": {},
+        "has_curve": false
+      }
+    ],
+    "lfos": [
+      {
+        "index": 0,
+        "params": {
+          "kParamBeatSync": 0.0,
+          "kParamDefaultMode": 0.0,
+          "kParamMode": "Free",
+          "kParamRate": 0.5124
+        },
+        "curve_points": 3,
+        "curve": {
+          "x": [
+            0.0,
+            0.2583,
+            0.5,
+            1.0
+          ],
+          "y": [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "c": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "loopback": 65
+        }
+      },
+      {
+        "index": 1,
+        "params": {
+          "kParamDefaultMode": 0.0,
+          "kParamMode": "Free",
+          "kParamRate": 0.6664
+        },
+        "shape": "Custom",
+        "curve_points": 5,
+        "curve": {
+          "x": [
+            0.0,
+            0.2438,
+            0.3546,
+            0.7784,
+            0.8643,
+            1.0
+          ],
+          "y": [
+            0.5147,
+            0.3382,
+            0.2059,
+            0.375,
+            0.7794,
+            1.0
+          ],
+          "c": [
+            0.875,
+            0.3015,
+            0.6471,
+            0.2426,
+            1.0,
+            0.5
+          ]
+        }
+      },
+      {
+        "index": 2,
+        "params": {
+          "kParamDefaultMode": 0.0,
+          "kParamMode": "Free",
+          "kParamRate": 0.6664
+        },
+        "shape": "Custom",
+        "curve_points": 6,
+        "curve": {
+          "x": [
+            0.0,
+            0.0,
+            0.3186,
+            0.7008,
+            0.8144,
+            0.9612,
+            1.0
+          ],
+          "y": [
+            1.0,
+            0.4044,
+            1.0,
+            1.0,
+            0.0074,
+            0.0147,
+            1.0
+          ],
+          "c": [
+            0.9118,
+            0.3603,
+            0.6912,
+            0.6912,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      {
+        "index": 3,
+        "params": {
+          "kParamDefaultMode": 0.0,
+          "kParamMode": "Free"
+        },
+        "curve_points": 2,
+        "curve": {
+          "x": [
+            0.0,
+            0.5,
+            1.0
+          ],
+          "y": [
+            1.0,
+            0.0,
+            1.0
+          ],
+          "c": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "loopback": 65
+        }
+      },
+      {
+        "index": 4,
+        "params": {
+          "kParamDefaultMode": 0.0,
+          "kParamMode": "Free"
+        },
+        "shape": "Custom"
+      },
+      {
+        "index": 5,
+        "params": {
+          "kParamDefaultMode": 0.0,
+          "kParamMode": "Free"
+        },
+        "shape": "Custom"
+      },
+      {
+        "index": 6,
+        "params": {
+          "kParamDefaultMode": 0.0,
+          "kParamMode": "Free"
+        },
+        "shape": "Custom"
+      },
+      {
+        "index": 7,
+        "params": {
+          "kParamDefaultMode": 0.0,
+          "kParamMode": "Free",
+          "kParamRate": 2.0242
+        },
+        "curve_points": 2,
+        "curve": {
+          "x": [
+            0.0,
+            0.5,
+            1.0
+          ],
+          "y": [
+            1.0,
+            0.0,
+            1.0
+          ],
+          "c": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "loopback": 65
+        }
+      },
+      {
+        "index": 8,
+        "params": {
+          "kParamBeatSync": 0.0,
+          "kParamDefaultMode": 0.0,
+          "kParamDotted": 1.0,
+          "kParamRate": 0.1,
+          "kParamRate10x": 1.0,
+          "kParamTriplets": 1.0,
+          "kParamType": "Lorenz"
+        }
+      },
+      {
+        "index": 9,
+        "params": {
+          "kParamBeatSync": 0.0,
+          "kParamDefaultMode": 0.0,
+          "kParamDotted": 1.0,
+          "kParamRate": 0.1,
+          "kParamRate10x": 1.0,
+          "kParamTriplets": 1.0,
+          "kParamType": "Rossler"
+        }
+      }
+    ],
+    "envs": [
+      {
+        "index": 0,
+        "params": {
+          "kParamAttack": 0.6757,
+          "kParamCurve1": 78.2353,
+          "kParamCurve2": 60.0,
+          "kParamCurve3": 60.0,
+          "kParamDecay": 0.5687,
+          "kParamRelease": 0.0147,
+          "kParamSustain": 0.5368
+        }
+      },
+      {
+        "index": 1,
+        "params": {
+          "kParamAttack": 0.0005,
+          "kParamCurve1": 40.0,
+          "kParamCurve2": 60.0,
+          "kParamCurve3": 60.0,
+          "kParamRelease": 0.0147
+        }
+      },
+      {
+        "index": 2,
+        "params": {
+          "kParamAttack": 0.0005,
+          "kParamCurve1": 40.0,
+          "kParamCurve2": 60.0,
+          "kParamCurve3": 60.0,
+          "kParamRelease": 0.0147
+        }
+      },
+      {
+        "index": 3,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      }
+    ],
+    "routing": [
+      {
+        "slot": 1,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      }
+    ],
+    "macros": [
+      {
+        "index": 5,
+        "name": null,
+        "params": {
+          "kParamValue": 64.2338
+        }
+      },
+      {
+        "index": 6,
+        "name": null,
+        "params": {
+          "kParamValue": 31.1541
+        }
+      }
+    ],
+    "voice": {
+      "kParamBendRangeDn": -24.0,
+      "kParamBendRangeUp": 24.0,
+      "kParamLegato": 1.0,
+      "kParamLimitSameNotePolyphony": 1.0,
+      "kParamMasterVolume": 0.7313,
+      "kParamMonoToggle": 1.0,
+      "kParamS1Compatibility": 1.0
+    },
+    "voice_panel": {},
+    "arp": {}
+  }
+}

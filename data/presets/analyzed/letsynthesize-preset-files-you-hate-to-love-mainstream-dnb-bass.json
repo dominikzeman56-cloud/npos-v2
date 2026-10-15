@@ -1,0 +1,200 @@
+{
+  "id": "letsynthesize-preset-files-you-hate-to-love-mainstream-dnb-bass",
+  "name": "Bass",
+  "synth": "Serum2 2.0.24",
+  "source_id": "letsynthesize-preset-files",
+  "archetype": "unclassified",
+  "function": "body",
+  "basis": "preset_file",
+  "confidence": "measured",
+  "modulation": "Env 1 → WTOsc0 TablePos 34.6491; Env 1 → VoiceFilter0 Freq 42.9825",
+  "fx_chain": [],
+  "tags": [
+    "Wavetable",
+    "Poly"
+  ],
+  "reading": {
+    "note": "Hodnoty přečtené ze souboru. Chybějící parametr = výchozí hodnota Serum. Hodnoty jsou normalizované a jednotky nejsou ověřené proti UI. Interpretace (archetyp, funkce, proč) je ruční doplněk.",
+    "file": "Bass.SerumPreset",
+    "read_on": "2026-10-15",
+    "format_version": 2,
+    "preset_hash": "96f827ee3204d45fc66c463548f5b07a",
+    "author": null,
+    "oscillators": [
+      {
+        "slot": 0,
+        "params": {},
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamInitialPhase": 192.6562,
+          "kParamRandomPhase": 0.0,
+          "kParamTablePos": 98.3026,
+          "kParamWarp": 0.3816,
+          "kParamWarp2": 0.8509,
+          "kParamWarpMenu": "kPD_OSC",
+          "kParamWarpMenu2": "kDistTube"
+        },
+        "wavetable": "Digital/ICanHasKick.wav",
+        "enabled": true,
+        "unison_voices": 1
+      },
+      {
+        "slot": 1,
+        "params": {
+          "kParamEnable": 1.0
+        },
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamRandomPhase": 0.0
+        },
+        "wavetable": "S2 Tables/Default Shapes.wav",
+        "enabled": true,
+        "unison_voices": 1
+      },
+      {
+        "slot": 2,
+        "params": {},
+        "kind": "WTOsc",
+        "kind_params": {},
+        "wavetable": "S2 Tables/Default Shapes.wav",
+        "enabled": false,
+        "unison_voices": 1
+      },
+      {
+        "slot": 4,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamVolume": 0.4503
+        },
+        "enabled": true,
+        "unison_voices": 1
+      }
+    ],
+    "voice_filters": [
+      {
+        "slot": 0,
+        "params": {
+          "kParamDrive": 17.5439,
+          "kParamEnable": 1.0,
+          "kParamFreq": 0.2761,
+          "kParamReso": 17.4561
+        }
+      },
+      {
+        "slot": 1,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamFreq": 0.9997
+        }
+      }
+    ],
+    "fx": [],
+    "modulation": [
+      {
+        "slot": 0,
+        "source_id": 2,
+        "source": "Env 1",
+        "dest_module": "WTOsc",
+        "dest_module_id": 0,
+        "dest_param": "kParamTablePos",
+        "amount": 34.6491,
+        "extra": {},
+        "has_curve": false
+      },
+      {
+        "slot": 1,
+        "source_id": 2,
+        "source": "Env 1",
+        "dest_module": "VoiceFilter",
+        "dest_module_id": 0,
+        "dest_param": "kParamFreq",
+        "amount": 42.9825,
+        "extra": {},
+        "has_curve": false
+      }
+    ],
+    "lfos": [],
+    "envs": [
+      {
+        "index": 0,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6,
+          "kParamDecay": 0.5556,
+          "kParamSustain": 0.0
+        }
+      },
+      {
+        "index": 1,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 2,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 3,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      }
+    ],
+    "routing": [
+      {
+        "slot": 1,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 2,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 3,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 4,
+        "params": {
+          "kParamFXBus1Level": 100.0
+        }
+      },
+      {
+        "slot": 5,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 6,
+        "params": {
+          "kParamFXBus2Level": 100.0,
+          "kParamRoutingDest": "kRoutingDestNone"
+        }
+      }
+    ],
+    "macros": [],
+    "voice": {
+      "kParamBendRangeDn": -24.0,
+      "kParamBendRangeUp": 24.0
+    },
+    "voice_panel": {},
+    "arp": {}
+  }
+}

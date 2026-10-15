@@ -1,0 +1,281 @@
+{
+  "id": "pythius-patreon-presets-neww-pyth-pd-spectral",
+  "name": "Pyth PD Spectral",
+  "synth": "Serum2 2.1.5",
+  "source_id": "pythius-patreon-presets",
+  "archetype": "unclassified",
+  "function": "other",
+  "basis": "preset_file",
+  "confidence": "measured",
+  "modulation": "Macro 5 → Oscillator2 CoarsePit 100.0; Macro 1 → SpectralOsc0 Warp 100.0; Macro 6 → SpectralOsc0 Warp2 100.0; Macro 6 → WTOsc1 Warp2 100.0",
+  "fx_chain": [
+    "EQ",
+    "Distortion (kDiode1)",
+    "Comp"
+  ],
+  "tags": [
+    "Wavetable",
+    "Spectral",
+    "Poly"
+  ],
+  "reading": {
+    "note": "Hodnoty přečtené ze souboru. Chybějící parametr = výchozí hodnota Serum. Hodnoty jsou normalizované a jednotky nejsou ověřené proti UI. Interpretace (archetyp, funkce, proč) je ruční doplněk.",
+    "file": "Pyth PD Spectral.SerumPreset",
+    "read_on": "2026-10-15",
+    "format_version": 2,
+    "preset_hash": "d36c4c5e0b1e06e4d726c6e77bf036af",
+    "author": "Pythius Patreon",
+    "oscillators": [
+      {
+        "slot": 0,
+        "params": {
+          "kParamEnd": 99.9934,
+          "kParamLoopEnd": 40.5349,
+          "kParamLoopMode": "kPingPong",
+          "kParamLoopStart": 30.8634,
+          "kParamPitch": 1.0,
+          "kParamScanRate": 0.0,
+          "kParamStart": 8.4891,
+          "kParamType": "kOsc_Spectral",
+          "kParamVolume": 0.6312
+        },
+        "kind": "SpectralOsc",
+        "kind_params": {
+          "kParamSpecFltShift": -100.0,
+          "kParamWarpMenu": "kAddharmonics",
+          "kParamWarpMenu2": "kRM_OSC2"
+        },
+        "enabled": true,
+        "unison_voices": 1
+      },
+      {
+        "slot": 1,
+        "params": {
+          "kParamDetune": 0.274,
+          "kParamDetuneWid": 83.9364,
+          "kParamEnable": 1.0,
+          "kParamUnison": 9.0,
+          "kParamVolume": 1.0
+        },
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamTablePos": 122.2875,
+          "kParamWarpMenu": "kPD_OSC",
+          "kParamWarpMenu2": "kRM_OSC2"
+        },
+        "wavetable": "S2 Tables/Analog/Saw Drift 303.wav",
+        "enabled": true,
+        "unison_voices": 9
+      },
+      {
+        "slot": 2,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamOctave": -4.0,
+          "kParamVolume": 0.0
+        },
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamRandomPhase": 0.0,
+          "kParamTablePos": 56.1259
+        },
+        "wavetable": "S2 Tables/Default Shapes.wav",
+        "enabled": true,
+        "unison_voices": 1
+      },
+      {
+        "slot": 4,
+        "params": {
+          "kParamOctave": 2.0,
+          "kParamVolume": 1.0
+        },
+        "enabled": false,
+        "unison_voices": 1
+      }
+    ],
+    "voice_filters": [
+      {
+        "slot": 0,
+        "params": {
+          "kParamDrive": 6.1729,
+          "kParamEnable": 1.0,
+          "kParamFreq": 0.4853,
+          "kParamReso": 70.5537,
+          "kParamType": "Phase24N",
+          "kParamVar": 43.1127
+        }
+      }
+    ],
+    "fx": [
+      {
+        "index": 0,
+        "type_id": 7,
+        "module": "FXEQ",
+        "params": {
+          "kParamFreq1": 159.6628,
+          "kParamFreq2": 558.5416,
+          "kParamGain2": 7.3355,
+          "kParamReso1": 48.1185,
+          "kParamType1": 2.0,
+          "kParamType2": 1.0
+        }
+      },
+      {
+        "index": 1,
+        "type_id": 0,
+        "module": "FXDistortion",
+        "params": {
+          "kParamDrive": 0.0,
+          "kParamMode": "kDiode1"
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      },
+      {
+        "index": 2,
+        "type_id": 5,
+        "module": "FXComp",
+        "params": {
+          "kParamGain0": 1.582,
+          "kParamGain1": 2.5811,
+          "kParamGain2": 5.321,
+          "kParamMakeup": 6.4593,
+          "kParamMultiband": 1.0,
+          "kParamThresh": 0.5125
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      }
+    ],
+    "modulation": [
+      {
+        "slot": 0,
+        "source_id": 29,
+        "source": "Macro 5",
+        "dest_module": "Oscillator",
+        "dest_module_id": 2,
+        "dest_param": "kParamCoarsePit",
+        "amount": 100.0,
+        "extra": {
+          "kParamBipolar": 1.0
+        },
+        "has_curve": false
+      },
+      {
+        "slot": 1,
+        "source_id": 25,
+        "source": "Macro 1",
+        "dest_module": "SpectralOsc",
+        "dest_module_id": 0,
+        "dest_param": "kParamWarp",
+        "amount": 100.0,
+        "extra": {},
+        "has_curve": false
+      },
+      {
+        "slot": 2,
+        "source_id": 30,
+        "source": "Macro 6",
+        "dest_module": "SpectralOsc",
+        "dest_module_id": 0,
+        "dest_param": "kParamWarp2",
+        "amount": 100.0,
+        "extra": {},
+        "has_curve": false
+      },
+      {
+        "slot": 3,
+        "source_id": 30,
+        "source": "Macro 6",
+        "dest_module": "WTOsc",
+        "dest_module_id": 1,
+        "dest_param": "kParamWarp2",
+        "amount": 100.0,
+        "extra": {},
+        "has_curve": false
+      }
+    ],
+    "lfos": [
+      {
+        "index": 1,
+        "params": {
+          "kParamDefaultMode": 0.0,
+          "kParamMode": "Free",
+          "kParamRate": 0.6664
+        }
+      }
+    ],
+    "envs": [
+      {
+        "index": 0,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 1,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 2,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 3,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      }
+    ],
+    "routing": [
+      {
+        "slot": 1,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      }
+    ],
+    "macros": [
+      {
+        "index": 0,
+        "name": null,
+        "params": {
+          "kParamValue": 20.208
+        }
+      },
+      {
+        "index": 4,
+        "name": null,
+        "params": {
+          "kParamValue": 76.6499
+        }
+      },
+      {
+        "index": 5,
+        "name": null,
+        "params": {
+          "kParamValue": 10.2231
+        }
+      }
+    ],
+    "voice": {
+      "kParamMasterVolume": 0.0628
+    },
+    "voice_panel": {},
+    "arp": {}
+  }
+}

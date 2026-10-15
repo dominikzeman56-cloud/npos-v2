@@ -1,0 +1,246 @@
+{
+  "id": "letsynthesize-preset-files-the-genius-sound-few-can-make-it-cinematic-riser",
+  "name": "Cinematic Riser",
+  "synth": "Serum2 2.0.24",
+  "source_id": "letsynthesize-preset-files",
+  "archetype": "unclassified",
+  "function": "fx",
+  "basis": "preset_file",
+  "confidence": "measured",
+  "modulation": "matice je prázdná",
+  "fx_chain": [
+    "Distortion",
+    "Chorus"
+  ],
+  "tags": [
+    "Wavetable",
+    "Embedded-Data",
+    "Poly"
+  ],
+  "reading": {
+    "note": "Hodnoty přečtené ze souboru. Chybějící parametr = výchozí hodnota Serum. Hodnoty jsou normalizované a jednotky nejsou ověřené proti UI. Interpretace (archetyp, funkce, proč) je ruční doplněk.",
+    "file": "Cinematic Riser.SerumPreset",
+    "read_on": "2026-10-15",
+    "format_version": 2,
+    "preset_hash": "ce69f0d1b802d6b98f23834d69b0c0e1",
+    "author": null,
+    "oscillators": [
+      {
+        "slot": 0,
+        "params": {
+          "kParamDetune": 1.0,
+          "kParamDetuneMode": "kDetuneRandom",
+          "kParamOctave": -2.0,
+          "kParamUnison": 16.0,
+          "kParamUnisonRange": 7.0
+        },
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamInitialPhase": 192.6562,
+          "kParamTablePos": 94.0526,
+          "kParamWarp": 0.5482,
+          "kParamWarp2": 0.5132,
+          "kParamWarpMenu": "kFilterLPF",
+          "kParamWarpMenu2": "kBendPos"
+        },
+        "wavetable": "User/Camille - 30 Dubstep Presets/Captive.wav",
+        "table_name": "Captive",
+        "enabled": true,
+        "unison_voices": 16
+      },
+      {
+        "slot": 1,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamOctave": 4.0,
+          "kParamUnison": 9.0,
+          "kParamVolume": 0.0462
+        },
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamTablePos": 44.6184
+        },
+        "wavetable": "S2 Tables/Default Shapes.wav",
+        "enabled": true,
+        "unison_voices": 9
+      },
+      {
+        "slot": 2,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamOctave": -2.0,
+          "kParamVolume": 0.1924
+        },
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamTablePos": 135.0658,
+          "kParamWarp": 0.943,
+          "kParamWarpMenu": "kSelfPD"
+        },
+        "wavetable": "User/Camille - 30 Dubstep Presets/Ent.wav",
+        "table_name": "Ent",
+        "enabled": true,
+        "unison_voices": 1
+      },
+      {
+        "slot": 3,
+        "params": {
+          "kParamVolume": 0.4386
+        },
+        "enabled": false,
+        "unison_voices": 1
+      }
+    ],
+    "voice_filters": [
+      {
+        "slot": 0,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamFreq": 0.8726
+        }
+      },
+      {
+        "slot": 1,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamFreq": 0.9997
+        }
+      }
+    ],
+    "fx": [
+      {
+        "index": 0,
+        "type_id": 0,
+        "module": "FXDistortion",
+        "params": {
+          "kParamDrive": 83.3333
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      },
+      {
+        "index": 1,
+        "type_id": 3,
+        "module": "FXChorus",
+        "params": {
+          "kParamDelay2": 1.2065,
+          "kParamDepth": 8.067,
+          "kParamFiltMode": 1.0,
+          "kParamRate": 0.0303,
+          "kParamWet": 53.0702
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      }
+    ],
+    "modulation": [],
+    "lfos": [
+      {
+        "index": 0,
+        "params": {},
+        "shape": "Custom",
+        "curve_points": 2,
+        "curve": {
+          "x": [
+            0.0,
+            1.0,
+            1.0
+          ],
+          "y": [
+            1.0,
+            0.0,
+            1.0
+          ],
+          "c": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      }
+    ],
+    "envs": [
+      {
+        "index": 0,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 1,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 2,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      },
+      {
+        "index": 3,
+        "params": {
+          "kParamCurve1": 50.0,
+          "kParamCurve2": 66.6,
+          "kParamCurve3": 66.6
+        }
+      }
+    ],
+    "routing": [
+      {
+        "slot": 1,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 2,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 3,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestDirect"
+        }
+      },
+      {
+        "slot": 4,
+        "params": {
+          "kParamFXBus1Level": 100.0
+        }
+      },
+      {
+        "slot": 5,
+        "params": {
+          "kParamRoutingDest": "kRoutingDestFilter"
+        }
+      },
+      {
+        "slot": 6,
+        "params": {
+          "kParamFXBus2Level": 100.0,
+          "kParamRoutingDest": "kRoutingDestNone"
+        }
+      }
+    ],
+    "macros": [],
+    "voice": {
+      "kParamBendRangeDn": -24.0,
+      "kParamBendRangeUp": 24.0,
+      "kParamMasterVolume": 0.3989
+    },
+    "voice_panel": {},
+    "arp": {}
+  }
+}
