@@ -206,8 +206,19 @@ const chips = (obj, skip = []) => { const e = Object.entries(obj || {}).filter((
 
 // Point positions are from the file (x,y 0–1; y is screen-style, 0 = top, inferred from the default triangle, unverified).
 // The segment curvature `c` (0.5 = straight) is drawn as a power curve: an estimate of the shape, not Serum's exact formula.
+function lfoY(curve, fx) { // value of the (estimated) curve at cycle position fx
+  const xs = curve.x, ys = curve.y, cs = curve.c || [];
+  for (let i = 1; i < xs.length; i++) {
+    if (fx <= xs[i] || i === xs.length - 1) {
+      if (xs[i] === xs[i - 1]) return ys[i];
+      const c = cs[i] != null ? cs[i] : 0.5, tt = Math.max(0, Math.min(1, (fx - xs[i - 1]) / (xs[i] - xs[i - 1])));
+      return ys[i - 1] + (ys[i] - ys[i - 1]) * Math.pow(tt, Math.pow(4, (c - 0.5) * 2));
+    }
+  }
+  return ys[0];
+}
 function lfoSvg(curve, loopback) {
-  const W = 240, H = 96, P = 6, X = (x) => P + x * (W - 2 * P), Y = (y) => P + y * (H - 2 * P);
+  const W = 240, H = 108, P = 6, B = 14, X = (x) => P + x * (W - 2 * P), Y = (y) => P + y * (H - P - B);
   const xs = curve.x, ys = curve.y, cs = curve.c || [];
   let d = `M${X(xs[0]).toFixed(1)} ${Y(ys[0]).toFixed(1)}`;
   for (let i = 1; i < xs.length; i++) {
@@ -215,12 +226,32 @@ function lfoSvg(curve, loopback) {
     if (Math.abs(c - 0.5) < 0.01 || xs[i] === xs[i - 1]) { d += `L${X(xs[i]).toFixed(1)} ${Y(ys[i]).toFixed(1)}`; continue; }
     for (let s = 1; s <= 12; s++) { const t = s / 12, u = Math.pow(t, pw); d += `L${X(xs[i - 1] + (xs[i] - xs[i - 1]) * t).toFixed(1)} ${Y(ys[i - 1] + (ys[i] - ys[i - 1]) * u).toFixed(1)}`; }
   }
-  const grid = [0.25, 0.5, 0.75].map((g) => `<line class="grid" x1="${X(g)}" y1="${P}" x2="${X(g)}" y2="${H - P}"/>`).join('')
+  const bot = H - B;
+  const grid = [0.25, 0.5, 0.75].map((g) => `<line class="grid" x1="${X(g)}" y1="${P}" x2="${X(g)}" y2="${bot}"/>`).join('')
     + [0, 0.5, 1].map((g) => `<line class="grid" x1="${P}" y1="${Y(g)}" x2="${W - P}" y2="${Y(g)}"/>`).join('');
-  const lp = loopback != null && loopback >= 0 && loopback < xs.length ? `<line class="lp" x1="${X(xs[loopback])}" y1="${P}" x2="${X(xs[loopback])}" y2="${H - P}"/>` : '';
+  const ticks = `<text x="${P}" y="${H - 3}">0</text><text x="${W / 2}" y="${H - 3}" text-anchor="middle">½ cyklu</text><text x="${W - P}" y="${H - 3}" text-anchor="end">1</text>`;
+  const lp = loopback != null && loopback >= 0 && loopback < xs.length ? `<line class="lp" x1="${X(xs[loopback])}" y1="${P}" x2="${X(xs[loopback])}" y2="${bot}"/>` : '';
   const dots = xs.map((x, i) => `<circle class="pt" cx="${X(x).toFixed(1)}" cy="${Y(ys[i]).toFixed(1)}" r="2"/>`).join('');
-  return `<svg class="lfog" viewBox="0 0 ${W} ${H}" role="img" aria-label="Křivka LFO">${grid}<path class="fl" d="${d}L${X(xs[xs.length - 1])} ${H - P}L${X(xs[0])} ${H - P}Z"/><path class="cv" d="${d}"/>${lp}${dots}</svg>`;
+  const data = esc(JSON.stringify({ x: xs, y: ys, c: cs }));
+  return `<svg class="lfog" viewBox="0 0 ${W} ${H}" data-c="${data}" role="img" aria-label="Křivka LFO (najetím myší zobrazíš hodnotu)">${grid}${ticks}<path class="fl" d="${d}L${X(xs[xs.length - 1])} ${bot}L${X(xs[0])} ${bot}Z"/><path class="cv" d="${d}"/>${lp}${dots}<line class="xh" y1="${P}" y2="${bot}" x1="0" x2="0" visibility="hidden"/><circle class="hd" r="3.5" visibility="hidden"/><text class="rd" x="${W - P}" y="${P + 8}" text-anchor="end"></text></svg>`;
 }
+// Hover readout on every LFO graph: position in the cycle and the value (point positions are from the file, the curve between them is an estimate).
+document.addEventListener('mousemove', (e) => {
+  const svg = e.target.closest && e.target.closest('svg.lfog');
+  if (!svg) return;
+  const r = svg.getBoundingClientRect(), W = 240, H = 108, P = 6, B = 14;
+  const fx = Math.max(0, Math.min(1, ((e.clientX - r.left) / r.width * W - P) / (W - 2 * P)));
+  let c; try { c = JSON.parse(svg.dataset.c); } catch { return; }
+  const y = lfoY(c, fx), px = P + fx * (W - 2 * P), py = P + y * (H - P - B);
+  const xh = svg.querySelector('.xh'), hd = svg.querySelector('.hd');
+  xh.setAttribute('x1', px); xh.setAttribute('x2', px); hd.setAttribute('cx', px); hd.setAttribute('cy', py);
+  xh.setAttribute('visibility', 'visible'); hd.setAttribute('visibility', 'visible');
+  svg.querySelector('.rd').textContent = `pozice ${fx.toFixed(2)} · hodnota ${y.toFixed(2)}`;
+});
+document.addEventListener('mouseout', (e) => {
+  const svg = e.target.closest && e.target.closest('svg.lfog');
+  if (svg && !svg.contains(e.relatedTarget)) { svg.querySelector('.xh')?.setAttribute('visibility', 'hidden'); svg.querySelector('.hd')?.setAttribute('visibility', 'hidden'); const r = svg.querySelector('.rd'); if (r) r.textContent = ''; }
+});
 const DEFAULT_TRI = { x: [0, 0.5, 1], y: [1, 0, 1], c: [0.5, 0.5, 0.5] };
 function lfoModule(l, b) {
   const dests = b.modulation.filter((m) => m.source === `LFO ${l.index + 1}`);
