@@ -5,7 +5,7 @@ title: Návod na aranž
 status: canon
 confidence: measured
 source_type: track_analysis
-source_ids: [dont-play-skeleton, prolix-been-about-this, sinister-souls-raido-restless, triamer-nagato-hands-up, tr-tactics-mechanism, dirts-remix-skeleton, dirts-remix-reese-callresponse, breach-balron-audio, sequence-rebuild, first-contact-own, letsynthesize-noisia-course, abis-start-to-finish, abis-grains-of-sooner, pythius-fearless-remix, pythius-inquisition, pythius-template-workflow, mefjus-remix-another-life, audio-headroom-2013, ed-rush-killbox-valkyrie-podcast, redpill-manual]
+source_ids: [dont-play-skeleton, prolix-been-about-this, sinister-souls-raido-restless, triamer-nagato-hands-up, tr-tactics-mechanism, dirts-remix-skeleton, breach-balron-audio, letsynthesize-noisia-course, abis-start-to-finish, abis-grains-of-sooner, pythius-fearless-remix, pythius-inquisition, pythius-template-workflow, mefjus-remix-another-life, audio-headroom-2013, ed-rush-killbox-valkyrie-podcast, redpill-manual]
 vault_note: 06 Návod na aranž
 updated: 2026-10-15
 ---
@@ -25,12 +25,12 @@ Neurofunk se skládá z **16-barových bloků**. V každém bloku se dá změnit
 | Páka | Co se mění | Příklad ze zdrojů |
 |---|---|---|
 | **Vrstvy** | přidat / ubrat | Breach: druhá vrstva muted do baru 48 = +5 dB v pásmu 20–60 Hz (`naměřeno`) |
-| **Rytmus basy** | jiný rytmus stejného riffu | Sequence: bary 89–92 jen čtvrtky, pak rytmus B naplno; Ekwols: hustší stab v dropu než v buildupu `naměřeno` |
+| **Rytmus basy** | jiný rytmus stejného riffu | Ekwols: hustší stab v dropu než v buildupu `naměřeno`; Pythius Inquisition: drop 2 s malou změnou rytmu `kurz` |
 | **Filtr** | držet zavřený, otevřít později | LS 23/26: basa v buildupu přes LP, nikdy plně otevřená; filtrovaný pad ~2,5 kHz v první půlce bridge, plně až ve druhé `kurz` |
 | **Hlasitost** | tišší kick v buildupu, automace levelu basy | LS 23, LS 26 `kurz` |
 | **Stereo** | mono dole, široko nahoře; šířka se buduje v dropu | LS 01 `kurz`; Prolix: 23 → 64 → 70 % po pásmech `naměřeno` |
 | **Tónina / oktáva** | transpozice o semitón nebo oktávu | Restless: B-sekce +3 (Ab); Neonlight: druhá půlka o půltón; LS 27: outro o oktávu níž |
-| **Ticho** | řez, dropout, hard stop | Restless: 1 bar dropoutu před každým řezem; First Contact: 22 s ticha `naměřeno` |
+| **Ticho** | řez, dropout, hard stop | Restless: 1 bar dropoutu před každým řezem `naměřeno` |
 
 **Zlaté pravidlo transientů** `[K]` (Redpill): když udeří kick nebo snare, nemá tam být nic jiného. Čím složitější aranž, tím míň kontroly na konci.
 
@@ -47,10 +47,7 @@ Bary jsou kumulativní od začátku. Typ jistoty u všech: `naměřeno` z plnéh
 | Balron & Audio — Breach | 174 / F moll | 192 barů | lokátory 0 / 24 / 32 / 48 / 112 / 128 / 176; **drop A 80 barů** s aditivními 8-bar vrstvami; bass mute posledních 2 barů z prvních 16 |
 | Sinister Souls & RAIDO — Restless | 174 / F moll | 225 barů | intro A 1 · intro B 17 · build 33 · **drop 1A 49 · 1B 81** · reprise 113 · build 2 129 · **drop 2A/B 145** · outro 209. **AABB**, bez tichého breaku, 1 bar dropoutu před každým řezem |
 | TriaMer & Nagato — Hands Up | 175 / A moll | 260 barů | intro A 1 · intro B 17 · falešný drop (HIT) 33 · dip/vox 49 · **drop 1A 65** · break + riser 97 · drop 1B 113 · breakdown 145 · **drop 2 161–240 (~80 barů)** · outro 241. Opravdová údolí |
-| Dirts (remix, návrh podle stemů originálu) | 172 / F moll | 172 barů | intro 1–22 · build 23–34 · **drop 1 35–91** · breakdown 92–120 · build 2 121–132 · **drop 2 133–166** · outro 167–172 |
 | TR Tactics — Mechanism | 174 / chroma F | ≈ 168 barů, 240 s | intro/build ≈ 0–14 · **drop A ≈ 15–78** · **breakdown ≈ 79–96 (24 s, exponovaný pluck)** · **drop B ≈ 96–160** · outro ≈ 160–168 (přepočet ze sekund) |
-| Sequence (rebuild) | 172–174 / F# | 144 barů | drop 2 s rytmem B, 16 barů stripped (kick + sub + bas) před plnými bicími |
-| First Contact (vlastní) | 174 / E moll | 232 s | build 0–16 s · drop 16–154 s · **hard stop 154–176 s** · drop 2 176–220 s · outro 220–232 s |
 
 ### Vzory drop bloků `[Š]` (Redpill, A a B = bloky po 16 barech)
 `ABA` (More Energy, Death Ray) · `AAB` (Into Black, Brokn) · `AABA` (Beat Down, Mosh Pit) · `AABB` (ENERGY remix; Restless) · `AA` nebo `AB` (The Siren). **Délka:** intro a drop buď 3×16 a víc (silné téma, hodně variací), nebo 2×16 (silný nápad, jít k věci); „potom už neexistují pravidla“ `kurz`.
@@ -87,23 +84,23 @@ Bary jsou kumulativní od začátku. Typ jistoty u všech: `naměřeno` z plnéh
 **Úkol:** předvést basu a groove; dopad musí být okamžitý a čitelný.
 
 - **Stavba po 8 barech.** Breach: drop A má 80 barů, aditivní 8-bar vrstvy (půlka na baru 32, „wall“ na 48) `naměřeno`. Vrstvu zapni až když předchozí „dosloužila“.
-- **Drop 6+2** `[K]` (Don't Play, Dirts, Prolix): 6 barů riffu + 2 bary **switch-up** místo osmi identických. Switch-up v Don't Play (bary 7–8): sub OFF nebo oktáva nahoru, reese edit, pickupy chromaticky F/E/C#/C; druhá půlka dropu (57–62) má kick na 1 a 3 místo 3& (groove switch) `naměřeno`. Prolix: **4-barový switch-up uprostřed 16-barového dropu** (sub dip + hi-end akcent) `naměřeno`.
+- **Drop 6+2** `[K]` (Don't Play, Prolix): 6 barů riffu + 2 bary **switch-up** místo osmi identických. Switch-up v Don't Play (bary 7–8): sub OFF nebo oktáva nahoru, reese edit, pickupy chromaticky F/E/C#/C; druhá půlka dropu (57–62) má kick na 1 a 3 místo 3& (groove switch) `naměřeno`. Prolix: **4-barový switch-up uprostřed 16-barového dropu** (sub dip + hi-end akcent) `naměřeno`.
 - **Riff, ne řada nepovázaných not.** Don't Play: `G1 G1 G#1~` (16+16+8), liché bary držená G1, sudé `A#1 A#1 A1~`; sub jede nepřetržitě, pohyb dělá chromatický skluz `naměřeno`. Prolix: sub nese melodii (chromatický riff), mid reese dělá groove `naměřeno`.
 - **Sub: dva přístupy** — (a) souvislý sub s portamentem (Don't Play, Prolix; glide ~120 ms) a (b) **sub ručně do mezer v resamplu dropu** (LS 28 `kurz`; nejcennější lekce kurzu: resample drop → nakresli sub do každé mezery → fázově čisté, bezpečné pro transienty; ocasy basy ustřihni od kicku/snaru). Vyber jedno podle hustoty aranže.
 - **Stereo se buduje v dropu:** drop začíná téměř mono (stereo nese jen hi-hat), pak basa s krátkým room reverbem, až na konci široký „weird percussion“ synt (LS 01 `kurz`). Pod ~150 Hz nic stereo `[K]`.
 - **Rytmický kontrakt** drží žánr: kick na každou dobu = industrial/crossbreed (Restless), broken kick 1+2+4 / snare 2+4 + 1/16 pickup = Hands Up, 2-step = Don't Play. Neměň ho uprostřed dropu bez důvodu.
-- **Call a response** `[Š]`: call = dlouhá pohyblivá reese fráze („mluví“), response = rytmická gatovaná groove („valí“); Abis Grains: 4 dropy Reese A / 4 dropy Reese B; Dirts: call v první půlce dropu 1, response ve druhé a celý drop 2 `kurz`/`naměřeno`.
+- **Call a response** `[Š]`: call = dlouhá pohyblivá reese fráze („mluví“), response = rytmická gatovaná groove („valí“); Abis Grains: 4 dropy Reese A / 4 dropy Reese B `kurz`.
 
 ### 3.4 BREAKDOWN (≈ 16–29 barů)
 **Úkol:** obnovit napětí a dát poslechu vzduch. Zvol jednu ze tří cest a **nedělej víc než jednu v jednom tracku** `[Š]`:
 
 | Typ | Co se děje | Zdroj |
 |---|---|---|
-| **A. Hard stop do ticha** | digitální ticho (≈ 22 s) a návrat | First Contact `naměřeno` |
+| **A. Hard stop do ticha** | digitální ticho a návrat | zatím bez profi reference v datech (dřívější doklad byl vlastní track) `[Š]` |
 | **B. Stripped, ale hlasitý** | hats OFF, pad z intra se vrací, sub jede dál; žádné ticho | Restless (reprise 113–128); Don't Play (−8 dB, nejde do ticha) `naměřeno` |
 | **C. Exponovaný hlas** | jedna řídká figura nese sekci (pluck: rozložený mollový kvintakord, 1 nota na dobu, mezery) a pak re-entry do dropu | Mechanism (24 s) `naměřeno` |
 
-- **Reprise intra v breakdownu je feature** `[K]`: pady z intra se vrací (Dirts originál 2:15–2:47; Restless reprise) — posluchač dostane tvar.
+- **Reprise intra v breakdownu je feature** `[K]`: pady z intra se vrací (Dirts, originál Tao Maffa 2:15–2:47; Restless reprise) — posluchač dostane tvar.
 - **Bridge en bloc** (LS 26): zkopíruj breakdown + build + drop → „mimořádný breakdown uprostřed“; vrstvené přechodové efekty (impact → zadušený impact → dlouhý šumový sweep) `kurz`.
 - **Filtrové napětí:** v bridgi neotevírej spektrum plně; filtrovaný pad ~2,5 kHz v první polovině, plně až ve druhé (LS 26 `kurz`). Vokál/lead v breakdownu nese prostor → `Utility` před limiterem, aby šlo zvednout level tam, kde ostatní odpadne (LS 21 `kurz`).
 - **Falešný drop** (Hands Up bar 33, na G místo A) a **údolí** s dipem — nechává druhý, pravý drop zasáhnout víc `naměřeno`.
@@ -113,21 +110,20 @@ Bary jsou kumulativní od začátku. Typ jistoty u všech: `naměřeno` z plnéh
 Stejné nástroje jako build 1, ale **jiný materiál**: Dirts — vox tag originálu na přechodu (~2:47–2:56); Mefjus — risery z materiálu originální basy. Pythius: riser z jiných zdrojů než v prvním buildupu. Cíl: druhý příchod dropu je očekávaný, ale ne identický.
 
 ### 3.6 DROP 2 — jak ho dělat jiný, nikoli nový `[K]`
-Pět osvědčených cest (ze zdrojů, seřazeno od nejlevnější):
+Čtyři osvědčené cesty (ze zdrojů, seřazeno od nejlevnější):
 
 1. **Automace levelu / transpozice místo nového materiálu** (LS 26: fade křivka přes druhý drop; rozdíl −5/−10 dB není dramatický, neřeš hloubku) `kurz`.
 2. **Jiný distortion charakter na stejném riffu** (Pythius Fearless: Shade + Corrosion BP @ 1,8 kHz místo First reese) `kurz`.
-3. **Změna rytmu basy** (Sequence: rytmus B naplno po čtvrtkách; Inquisition: malá změna rytmu stačí, původně úplně jiný drop stáhnul zpět kvůli DNA) `naměřeno`/`kurz`.
-4. **Strip:** 16 barů jen kick + sub + bas, pak plná bicí „udeří“ (Sequence) `naměřeno`.
-5. **Vokálně prázdný drop 2** (Dirts originál: čistě instrumentální 3:03–3:51) = prostor pro vlastní podpis; response groove hraje sama bez call reese (Dirts remix) `naměřeno`.
+3. **Změna rytmu basy** (Inquisition: malá změna rytmu stačí, původně úplně jiný drop stáhnul zpět kvůli DNA) `kurz`.
+4. **Vokálně prázdný drop 2** (Dirts, originál Tao Maffa: čistě instrumentální 3:03–3:51) = prostor pro vlastní podpis `naměřeno`.
 
-Ještě: **Neonlight** hraje druhou půlku o půltón výš; **Restless** má B-sekci o +3 (Ab); **Hands Up** drop 2 je dlouhý (~80 barů) s vlastním vývojem. **Po druhém dropu** může přijít měkký melodic release místo třetího plného dropu (First Contact, vlastní koncept) `odhad`.
+Ještě: **Neonlight** hraje druhou půlku o půltón výš; **Restless** má B-sekci o +3 (Ab); **Hands Up** drop 2 je dlouhý (~80 barů) s vlastním vývojem.
 
 ### 3.7 OUTRO (≈ 6–20 barů)
 **Úkol:** rozloučit se známým materiálem, ne dobít poslední energii.
 
 - **Odečítání** `[K]` (LS 27 `kurz`): smaž bicí na hranici, vlož impact a později zadušený druhý; prvky z intra se vrací **o oktávu níž** (nový rejstřík); nový prvek až ve druhé půlce outra; filtrovaný pad jako **fade-out zařízení**; prodloužený tom fill kopií předdropového.
-- **Bookend:** krátký tag z intra na konci (Dirts: APPEX kytara) `návrh`; Restless outro: fade, Fm + kvinta C; Don't Play outro = riff a clap `naměřeno`.
+- **Bookend:** Restless outro: fade, Fm + kvinta C; Don't Play outro = riff a clap `naměřeno`.
 - **Neřeš fade pomocí master faderu**; řez nebo automace skupin (Restless: „řež, nefadeuj“) `[Š]`.
 
 ---
@@ -137,7 +133,7 @@ Ještě: **Neonlight** hraje druhou půlku o půltón výš; **Restless** má B-
 | Situace | Další krok | Zdroj |
 |---|---|---|
 | Drop nezní jako drop | zkontroluj kontrast: je build tišší a užší? | LS 23, LS 01 |
-| Drop 2 je nuda (kopie) | automace levelu → jiná distorze → změna rytmu basy (kap. 3.6) | LS 26, Fearless, Sequence |
+| Drop 2 je nuda (kopie) | automace levelu → jiná distorze → změna rytmu basy (kap. 3.6) | LS 26, Fearless, Inquisition |
 | Breakdown se vleče | vyber typ A/B/C a drž ho; 16–24 barů, ne víc; re-entry element před dropem | Mechanism, Restless |
 | Nevím, co dál po 16 barech dropu | switch-up (6+2) nebo +1 vrstva po 8 barech | Don't Play, Breach |
 | Drop je tlustý a plochý | sub ručně do mezer + ustřihnout ocasy basy od kicku/snaru | LS 28 |

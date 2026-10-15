@@ -20,6 +20,6 @@ updated: 2026-10-15
 - **Level law:** kick 0 dB, snare lehce nad, sub pod −10, nic jiného nad −10. `[naměřeno]` (2013) → **dnes heuristika**.
 - *Don't Play* (analýza stemů): sub čistý sine, glide ~120 ms; mid bass HP ~120 Hz; crossover 62/120 Hz. `[naměřeno]`
 **Nekopírovat.** **Kick HP100/LP 8 kHz, hats HP a level law jako zákon** — pocházejí z funkového breaku v roce 2013, ne ze syntetického neurofunku (02 Šablona kap. 13). Camel Fat zanikl (KClip 3, StandardClip, Newfangled Saturate).
-**Zdroje.** Audio (Gareth) - Headroom Breakdown 2013 · Dont Play Skeleton GsharpMinor · Ed Rush & Killbox - Valkyrie Podcast 001.
+**Zdroje.** Audio - Headroom (Virus tutorial 2013) · Dont Play Skeleton GsharpMinor · Ed Rush & Killbox - Valkyrie Podcast 001.
 
 > Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.
