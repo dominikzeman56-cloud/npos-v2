@@ -5,7 +5,7 @@ title: Návod na aranž
 status: canon
 confidence: measured
 source_type: track_analysis
-source_ids: [dont-play-skeleton, prolix-been-about-this, sinister-souls-raido-restless, triamer-nagato-hands-up, tr-tactics-mechanism, dirts-remix-skeleton, dirts-remix-reese-callresponse, breach-balron-audio, sequence-rebuild, first-contact-own, letsynthesize-noisia-course, abis-start-to-finish, abis-grains-of-sooner, pythius-fearless-remix, pythius-inquisition, pythius-template-workflow, mefjus-remix-another-life, mefjus-masterclass, audio-headroom-2013, ed-rush-killbox-valkyrie-podcast, redpill-manual]
+source_ids: [dont-play-skeleton, prolix-been-about-this, sinister-souls-raido-restless, triamer-nagato-hands-up, tr-tactics-mechanism, dirts-remix-skeleton, dirts-remix-reese-callresponse, breach-balron-audio, sequence-rebuild, first-contact-own, letsynthesize-noisia-course, abis-start-to-finish, abis-grains-of-sooner, pythius-fearless-remix, pythius-inquisition, pythius-template-workflow, mefjus-remix-another-life, audio-headroom-2013, ed-rush-killbox-valkyrie-podcast, redpill-manual]
 vault_note: 06 Návod na aranž
 updated: 2026-10-15
 ---
@@ -80,9 +80,8 @@ Bary jsou kumulativní od začátku. Typ jistoty u všech: `naměřeno` z plnéh
 4. **Riser je stack 5–8 vrstev**, z toho jen jedna ze Seru (Pythius Fearless `kurz`); vždy něco ve pozadí stoupá (Shepard-tone, Pythius). **Rozsah pitch bendu 2 oktávy**, začít dole a v půlce přepnout na opačný extrém → 4 oktávy pohybu (LS 22 `kurz`); všechny vrstvené risery nastav na stejný rozsah, jinak se nebudou sledovat. Šumový riser: tonalita nehraje roli, rozhoduje filtr; začínat velmi nízko a stažený (LS 21).
 5. **Vokál do buildupu:** reverb dry/wet automatizuj od nuly nahoru; pitch-drop na vokálu těsně před dropem (LS 21 `kurz`).
 6. **Reverse crash** pro „suck into the drop“ (Audio `kurz`); Mefjus: risery z materiálu originální basy (loop + pitch) `kurz`.
-7. **Macro Magic** (Mefjus): jedno makro = reverb dry/wet + decay (+ delay), automatizace stoupá **~2 bary před breakdownem** `kurz`.
-8. **Řez před sekcí:** vystřihni bicí těsně před změnou sekce (LS 26), nebo **1 bar dropoutu** (Restless `naměřeno`) — řezat, ne fade-ovat `[Š]`.
-9. **Chromatický walk v buildupu** (Restless build 2: E–F–F#; build 1 chromatika + 1/4 growl lock) `naměřeno`.
+7. **Řez před sekcí:** vystřihni bicí těsně před změnou sekce (LS 26), nebo **1 bar dropoutu** (Restless `naměřeno`) — řezat, ne fade-ovat `[Š]`.
+8. **Chromatický walk v buildupu** (Restless build 2: E–F–F#; build 1 chromatika + 1/4 growl lock) `naměřeno`.
 
 ### 3.3 DROP (16 nebo 2×16 barů)
 **Úkol:** předvést basu a groove; dopad musí být okamžitý a čitelný.
