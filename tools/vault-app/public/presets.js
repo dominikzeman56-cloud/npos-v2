@@ -132,56 +132,98 @@ function renderList() {
 }
 
 /* ---------- detail ---------- */
-function oscCard(o, slot) {
-  const names = ['OSC A', 'OSC B', 'OSC C'];
-  if (!o) return `<div class="osc off"><div class="oh"><b>${names[slot]}</b><span class="st">${slot === 0 ? 'výchozí' : 'vypnuto'}</span></div><div class="wt">v souboru nic neuloženo</div></div>`;
-  const wt = [kind(o.kind), o.table].filter(Boolean).join(' · ');
-  const w1 = o.warp ? warpName(o.warp) + (o.warp_amt != null ? ' ' + f2(o.warp_amt) : '') : '';
-  const w2 = o.warp2 ? warpName(o.warp2) + (o.warp2_amt != null ? ' ' + f2(o.warp2_amt) : '') : '';
-  const warp = [w1, w2].filter(Boolean).join(' + ');
-  return `<div class="osc${o.enabled ? '' : ' off'}">
-    <div class="oh"><b>${names[slot]}</b><span class="st">${o.enabled ? 'zapnuto' : 'vypnuto'}</span></div>
-    ${wt ? `<div class="wt">${esc(wt)}</div>` : ''}
-    <dl><dt>Oktáva</dt><dd>${val(o.octave)}</dd>
-    ${o.pitch != null ? `<dt>Půltóny</dt><dd>${f2(o.pitch)}</dd>` : ''}${o.fine != null ? `<dt>Fine</dt><dd>${f2(o.fine)}</dd>` : ''}
-    <dt>Warp</dt><dd>${warp ? esc(warp) : dflt}</dd>
-    <dt>Unison</dt><dd>${o.unison}</dd><dt>Detune</dt><dd>${val(o.detune)}${bar(o.detune)}</dd>
-    <dt>Level</dt><dd>${val(o.level)}${bar(o.level)}</dd>${o.pan != null ? `<dt>Pan</dt><dd>${f2(o.pan)}</dd>` : ''}</dl></div>`;
+/* ---------- synth panel: knobs, LEDs, LCD, signal flow ---------- */
+// Knob positions use the ranges seen in the files (normalized 0–1, percent 0–100, ±100 for mod amounts). Orientation only:
+// units are not verified against the Serum UI, so every knob also prints the stored number.
+const A0 = -135, SWEEP = 270; // degrees, 0 = 12 o'clock
+const pt = (r, deg) => [24 + r * Math.sin(deg * Math.PI / 180), 24 - r * Math.cos(deg * Math.PI / 180)];
+function arc(r, from, to) {
+  if (Math.abs(to - from) < 0.5) return '';
+  const [x1, y1] = pt(r, from), [x2, y2] = pt(r, to);
+  return `<path d="M${x1.toFixed(2)} ${y1.toFixed(2)}A${r} ${r} 0 ${Math.abs(to - from) > 180 ? 1 : 0} ${to > from ? 1 : 0} ${x2.toFixed(2)} ${y2.toFixed(2)}"/>`;
 }
-function extraCard(title, about, x, rows) {
-  return `<div class="osc small${x.enabled ? '' : ' off'}">
-    <div class="oh"><b>${title}</b><span class="st">${x.enabled ? 'zapnuto' : 'vypnuto'}</span></div>
-    <div class="about">${about}</div>
-    <dl>${rows.filter(([, v]) => v !== undefined).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl></div>`;
+// opts: min, max, bipolar, text (override readout), steps
+function knob(label, v, { min = 0, max = 1, bipolar = false, text } = {}) {
+  const has = v != null && Number.isFinite(v);
+  const t = has ? Math.max(0, Math.min(1, (v - min) / (max - min))) : null;
+  let val = '', ptr = '';
+  if (has) {
+    const ang = A0 + SWEEP * t;
+    val = bipolar ? arc(17, 0, ang) : arc(17, A0, ang);
+    const [px1, py1] = pt(6, ang), [px2, py2] = pt(13, ang);
+    ptr = `<line x1="${px1.toFixed(1)}" y1="${py1.toFixed(1)}" x2="${px2.toFixed(1)}" y2="${py2.toFixed(1)}"/>`;
+  }
+  const shown = text != null ? text : has ? f2(v) : 'výchozí';
+  return `<div class="kn${has ? '' : ' nov'}"><svg viewBox="0 0 48 48" aria-hidden="true">
+      <g class="trk">${arc(17, A0, A0 + SWEEP)}</g><g class="val">${val}</g><g class="ptr">${ptr}</g>${bipolar ? '<circle class="mid" cx="24" cy="7" r="1.3"/>' : ''}</svg>
+    <b>${esc(label)}</b><i>${esc(String(shown))}</i></div>`;
+}
+const led = (on) => `<span class="led${on ? ' on' : ''}" title="${on ? 'zapnuto' : 'vypnuto'}"></span>`;
+const lcd = (s, sub) => `<div class="lcd"><span>${esc(s || '—')}</span>${sub ? `<small>${esc(sub)}</small>` : ''}</div>`;
+const mod = (title, on, body, cls = '') => `<section class="mod ${cls}${on ? '' : ' off'}"><header>${led(on)}<h4>${esc(title)}</h4></header>${body}</section>`;
+const readout = (k, v) => `<div class="ro"><span>${esc(k)}</span><b>${esc(String(v))}</b></div>`;
+
+function oscModule(o, slot) {
+  const name = ['OSC A', 'OSC B', 'OSC C'][slot];
+  if (!o) return mod(name, slot === 0, lcd('výchozí', 'v souboru nic neuloženo'));
+  const w1 = o.warp ? warpName(o.warp) + (o.warp_amt != null ? ' · ' + f2(o.warp_amt) : '') : '';
+  const w2 = o.warp2 ? warpName(o.warp2) + (o.warp2_amt != null ? ' · ' + f2(o.warp2_amt) : '') : '';
+  const screen = lcd([kind(o.kind), o.table].filter(Boolean).join(' · ') || 'wavetable', [w1, w2].filter(Boolean).join('  ＋  ') || 'bez warpu');
+  const knobs = [
+    knob('OCT', o.octave, { min: -4, max: 4, bipolar: true }),
+    o.pitch != null ? knob('SEMI', o.pitch, { min: -12, max: 12, bipolar: true }) : '',
+    o.fine != null ? knob('FINE', o.fine, { min: -100, max: 100, bipolar: true }) : '',
+    knob('LEVEL', o.level),
+    knob('UNI', o.unison, { min: 1, max: 16, text: String(o.unison) }),
+    knob('DETUNE', o.detune),
+    o.pan != null ? knob('PAN', o.pan, { min: -1, max: 1, bipolar: true }) : '',
+  ].join('');
+  return mod(name, o.enabled, screen + `<div class="knobs">${knobs}</div>`);
+}
+function noiseModule(x) {
+  return mod('NOISE', x.enabled, lcd('šum', 'bez wavetable') + `<div class="knobs">${knob('LEVEL', x.level)}${x.pan != null ? knob('PAN', x.pan, { min: -1, max: 1, bipolar: true }) : ''}${x.pitch_track != null ? readout('PITCH TRACK', f2(x.pitch_track)) : ''}</div>`, 'small');
+}
+function subModule(x) {
+  return mod('SUB', x.enabled, lcd('sinus', 'podtón pod oscilátory') + `<div class="knobs">${knob('LEVEL', x.level)}${knob('OCT', x.octave, { min: -4, max: 4, bipolar: true })}${x.coarse != null ? knob('COARSE', x.coarse, { min: -12, max: 12, bipolar: true }) : ''}${x.pan != null ? knob('PAN', x.pan, { min: -1, max: 1, bipolar: true }) : ''}</div>`, 'small');
+}
+function filterModule(f) {
+  const knobs = [knob('CUTOFF', f.freq), knob('RESO', f.reso, { max: 100 }), knob('DRIVE', f.drive, { max: 100 }), f.wet != null ? knob('MIX', f.wet, { max: 100 }) : ''].join('');
+  return mod(`FILTR ${f.slot + 1}`, f.on, lcd(f.type || 'výchozí typ') + `<div class="knobs">${knobs}</div>`, 'small');
+}
+function fxModule(e, i) {
+  const keys = Object.entries(e.params).filter(([k]) => KEYP.some((x) => k.endsWith(x))).slice(0, 4);
+  const knobs = keys.map(([k, v]) => {
+    const n = k.replace(/^kParam/, '');
+    return /^(Wet|Drive)$/.test(n) ? knob(n.toUpperCase(), v, { max: 100 }) : readout(n.toUpperCase(), f2(v));
+  }).join('');
+  return `<div class="slot"><span class="no">${i + 1}</span>${mod(FXN[e.module] || e.module, e.on, (e.mode ? lcd(String(e.mode).replace(/^k/, '')) : '') + (knobs ? `<div class="knobs">${knobs}</div>` : '<div class="dim" style="font-size:12px">bez nastavených parametrů</div>'), 'fx')}</div>`;
+}
+function modMatrix(b) {
+  const rows = b.modulation.map((m) => {
+    const t = Math.max(-1, Math.min(1, m.amount / 100));
+    const fill = t >= 0 ? `left:50%;width:${(t * 50).toFixed(1)}%` : `left:${(50 + t * 50).toFixed(1)}%;width:${(-t * 50).toFixed(1)}%`;
+    return `<div class="mrow"><span class="src">${esc(m.source)}</span><span class="arr">→</span><span class="dst">${esc(m.dest)} <em>${esc(m.param)}</em></span>
+      <span class="amt"><i class="bip"><b style="${fill}"></b></i><u>${f2(m.amount)}</u></span></div>`;
+  }).join('');
+  return rows || '<div class="dim">matice je prázdná</div>';
 }
 function renderBuild(b) {
-  const oscs = [0, 1, 2].map((s) => oscCard(b.oscillators.find((o) => o.slot === s), s)).join('')
-    + extraCard('Noise', 'šumový generátor, bez wavetable', b.noise, [['Level', `${val(b.noise.level)}${bar(b.noise.level)}`],
-      ['Pan', b.noise.pan != null ? f2(b.noise.pan) : undefined], ['Pitch track', b.noise.pitch_track != null ? f2(b.noise.pitch_track) : undefined]])
-    + extraCard('Sub', 'sinusový podtón pod hlavními oscilátory', b.sub, [['Level', `${val(b.sub.level)}${bar(b.sub.level)}`],
-      ['Oktáva', val(b.sub.octave)], ['Coarse', b.sub.coarse != null ? f2(b.sub.coarse) : undefined], ['Pan', b.sub.pan != null ? f2(b.sub.pan) : undefined]]);
-  const flt = b.filters.length
-    ? b.filters.map((f) => `<div class="frow${f.on ? '' : ' off'}"><b>Filtr ${f.slot + 1}</b> ${esc(f.type || 'výchozí typ')} · cutoff ${val(f.freq)} · reso ${val(f.reso)} · drive ${val(f.drive)}${f.wet != null ? ' · wet ' + f2(f.wet) : ''}</div>`).join('')
-    : '<div class="dim">bez filtru</div>';
-  const fxItems = b.fx.map((e) => {
-    const ps = Object.entries(e.params).filter(([k]) => KEYP.some((x) => k.endsWith(x))).slice(0, 5).map(([k, v]) => `${k.replace(/^kParam/, '')} ${f2(v)}`).join(' · ');
-    const mode = e.mode ? ' <span class="m">' + esc(String(e.mode).replace(/^k/, '')) + '</span>' : '';
-    return `<li${e.on ? '' : ' class="off"'}><b>${esc(FXN[e.module] || e.module)}</b>${mode}${e.on ? '' : ' <span class="dim">vypnuto</span>'}${ps ? `<div class="dim">${esc(ps)}</div>` : ''}</li>`;
-  }).join('');
-  const fx = b.fx.length ? `<ol class="fxl">${fxItems}</ol>` : '<div class="dim">bez FX</div>';
-  const modItems = b.modulation.map((m) => `<li>${esc(m.source)} → ${esc(m.dest)} ${esc(m.param)} <span class="dim">${f2(m.amount)}</span></li>`).join('');
-  const mod = b.modulation.length ? `<ul class="modl">${modItems}</ul>` : '<div class="dim">matice je prázdná</div>';
-  const lfo = b.lfos.map((l) => `LFO ${l.index + 1}: ${esc(l.type || l.mode || 'výchozí')}${l.rate != null ? ' · rate ' + f2(l.rate) : ''}${l.points ? ' · ' + l.points + ' bodů' : ''}`).join(' · ');
-  const mac = b.macros.map((m) => `M${m.index + 1} ${val(m.value)}`).join(' · ');
+  const flow = ['OSC', 'FILTR', 'FX', 'OUT'].map((s, i) => `<span>${s}</span>${i < 3 ? '<em>▶</em>' : ''}`).join('');
+  const oscs = [0, 1, 2].map((s) => oscModule(b.oscillators.find((o) => o.slot === s), s)).join('') + noiseModule(b.noise) + subModule(b.sub);
+  const flt = b.filters.length ? b.filters.map(filterModule).join('') : mod('FILTR', false, lcd('bez filtru'), 'small');
+  const fx = b.fx.length ? `<div class="chain">${b.fx.map(fxModule).join('<em class="join">▶</em>')}</div>` : '<div class="dim">bez FX</div>';
+  const lfo = b.lfos.map((l) => `<span class="pill">LFO ${l.index + 1} · ${esc(l.type || l.mode || 'výchozí')}${l.rate != null ? ' · rate ' + f2(l.rate) : ''}${l.points ? ' · ' + l.points + ' bodů' : ''}</span>`).join('');
+  const macros = b.macros.length ? `<div class="knobs macros">${b.macros.map((m) => knob('M' + (m.index + 1), m.value, { max: 100 })).join('')}</div>` : '';
   const v = b.voice;
-  const vo = [v.kParamMonoToggle === 1 ? 'mono' : 'poly', v.kParamLegato === 1 ? 'legato' : null, v.kParamPortamentoTime != null ? 'porta ' + f2(v.kParamPortamentoTime) : null].filter(Boolean).join(' · ');
-  return `<div class="sec"><h3>Oscilátory</h3><div class="oscs">${oscs}</div></div>
-    <div class="cols">
-      <div class="sec"><h3>Filtry</h3>${flt}<h3 style="margin-top:16px">Hlas</h3><div>${vo}</div></div>
-      <div class="sec"><h3>FX řetěz (v pořadí)</h3>${fx}</div>
-    </div>
-    <div class="sec"><h3>Modulace</h3>${mod}${lfo ? `<div class="dim" style="margin-top:6px">${lfo}</div>` : ''}${mac ? `<div class="dim">Makra: ${mac}</div>` : ''}</div>
-    <div class="pnote">Serum 2 má tři wavetable oscilátory (A–C) a k nim Noise a Sub; v souboru se jmenují <code>NoiseOsc3</code> a <code>SubOsc4</code>. Hodnoty jsou přímo ze souboru (normalizované, jednotky neověřené proti Serum UI); „výchozí“ = v souboru chybí. Zdroje modulace mimo LFO, obálky a makra zatím nejsou pojmenované.</div>`;
+  const voice = `<div class="voice">${led(v.kParamMonoToggle === 1)}<b>MONO</b>${led(v.kParamLegato === 1)}<b>LEGATO</b>${v.kParamPortamentoTime != null ? `<b>PORTA</b><i>${f2(v.kParamPortamentoTime)}</i>` : ''}</div>`;
+  return `<div class="panel">
+    <div class="flow" aria-label="Signálový tok">${flow}</div>
+    <div class="sect"><h3>Oscilátory</h3><div class="row-mods">${oscs}</div></div>
+    <div class="sect"><h3>Filtry a hlas</h3><div class="row-mods">${flt}${mod('HLAS', true, voice, 'small')}</div></div>
+    <div class="sect"><h3>FX řetěz</h3>${fx}</div>
+    <div class="sect"><h3>Modulace</h3><div class="matrix">${modMatrix(b)}</div>${lfo ? `<div class="pills">${lfo}</div>` : ''}${macros}</div>
+  </div>
+  <div class="pnote">Serum 2 má tři wavetable oscilátory (A–C) a k nim Noise a Sub; v souboru se jmenují <code>NoiseOsc3</code> a <code>SubOsc4</code>. Čísla pod knoby jsou přímo ze souboru (normalizované, jednotky neověřené proti Serum UI); poloha knobu je jen orientační. „výchozí“ = v souboru chybí. Zdroje modulace mimo LFO, obálky a makra zatím nejsou pojmenované.</div>`;
 }
 async function loadBuildFor(id) {
   if (BUILDS.has(id)) return BUILDS.get(id);
