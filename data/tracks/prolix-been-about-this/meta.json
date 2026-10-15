@@ -1,0 +1,11 @@
+{
+  "id": "prolix-been-about-this",
+  "title": "Been About This",
+  "artist": "Prolix & Figure",
+  "label": "",
+  "year": null,
+  "bpm": 172.3,
+  "key": "Am",
+  "notes": "Měřeno tools/analyze_track.py z plného mixu (lokální soubor, mimo repo). BPM a tónina z rozboru ve vaultu. Zdrojový soubor: FLAC.",
+  "source_id": "prolix-been-about-this"
+}

@@ -1,0 +1,175 @@
+{
+  "id": "prolix-been-about-this",
+  "mode": "deep",
+  "analyzed": "2026-10-15",
+  "method": {
+    "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
+    "stems": false,
+    "basis": "full_mix",
+    "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low. Bass modulation from a full mix is at most a hypothesis (hi-hats contaminate the envelope; see docs/BLUEPRINT.md section 7)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [
+      {
+        "name": "build",
+        "start_sec": 0.0,
+        "end_sec": 22.58
+      },
+      {
+        "name": "drop_a",
+        "start_sec": 22.58,
+        "end_sec": 44.13
+      },
+      {
+        "name": "breakdown",
+        "start_sec": 44.13,
+        "end_sec": 60.1
+      },
+      {
+        "name": "drop_c",
+        "start_sec": 60.1,
+        "end_sec": 110.5
+      },
+      {
+        "name": "breakdown",
+        "start_sec": 110.5,
+        "end_sec": 126.35
+      },
+      {
+        "name": "drop_d",
+        "start_sec": 126.35,
+        "end_sec": 196.2
+      },
+      {
+        "name": "outro",
+        "start_sec": 196.2,
+        "end_sec": 209.25
+      }
+    ],
+    "notes": "Auto-detected from RMS energy curve (prolix-been-about-this). Section boundaries approximate; verify by ear.",
+    "confidence": "estimated"
+  },
+  "dynamics": {
+    "crest_factor_drop_db": 6.11,
+    "loudness_strategy": "controlled",
+    "notes": "Crest = špička/RMS v nejhlasitějších 10 s hlavního dropu (od 2026-10-15). Rozbory ve vaultu měřily jinými skripty a okny, rozdíl ~1–2 dB je metodický.",
+    "confidence": "measured"
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -5.09,
+      "fundament_rel_db": -6.08,
+      "profile": "balanced",
+      "notes": ""
+    },
+    "modulation": {
+      "primary_hz": 3.62,
+      "grid_match": "off_grid",
+      "secondary_hz": [
+        1.45,
+        2.18,
+        5.8,
+        7.24,
+        7.97
+      ],
+      "detection": "bandpass 60-300 -> Hilbert envelope -> FFT",
+      "source": "unknown",
+      "basis": "full_mix",
+      "confidence": "hypothesis"
+    },
+    "timbre": {
+      "spectral_centroid_hz": 5539.4,
+      "notes": ""
+    },
+    "stereo": {
+      "sub_side_db": -33.48,
+      "fundament_side_db": -19.36,
+      "notes": ""
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 3.33 Hz -> off_grid (off-grid (reese/detune path))",
+      "hi_res_fft_350_900": "202 peaks, median spacing 2.0 Hz",
+      "conclusion": "reese-like (dense peak forest, close spacing) — full mix: not discriminative, confirm on stems"
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured"
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "measured",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "prolix-been-about-this"
+}

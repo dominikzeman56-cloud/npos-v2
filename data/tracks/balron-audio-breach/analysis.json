@@ -1,0 +1,163 @@
+{
+  "id": "balron-audio-breach",
+  "mode": "deep",
+  "analyzed": "2026-10-15",
+  "method": {
+    "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
+    "stems": false,
+    "basis": "full_mix",
+    "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low. Bass modulation from a full mix is at most a hypothesis (hi-hats contaminate the envelope; see docs/BLUEPRINT.md section 7)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [
+      {
+        "name": "build",
+        "start_sec": 0.0,
+        "end_sec": 45.1
+      },
+      {
+        "name": "drop_a",
+        "start_sec": 45.1,
+        "end_sec": 153.03
+      },
+      {
+        "name": "breakdown",
+        "start_sec": 153.03,
+        "end_sec": 171.86
+      },
+      {
+        "name": "drop_c",
+        "start_sec": 171.86,
+        "end_sec": 243.2
+      },
+      {
+        "name": "outro",
+        "start_sec": 243.2,
+        "end_sec": 264.83
+      }
+    ],
+    "notes": "Auto-detected from RMS energy curve (balron-audio-breach). Section boundaries approximate; verify by ear.",
+    "confidence": "estimated"
+  },
+  "dynamics": {
+    "crest_factor_drop_db": 8.51,
+    "loudness_strategy": "open",
+    "notes": "Crest = špička/RMS v nejhlasitějších 10 s hlavního dropu (od 2026-10-15). Rozbory ve vaultu měřily jinými skripty a okny, rozdíl ~1–2 dB je metodický.",
+    "confidence": "measured"
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -3.55,
+      "fundament_rel_db": -7.66,
+      "profile": "sub_dominant",
+      "notes": ""
+    },
+    "modulation": {
+      "primary_hz": 5.8,
+      "grid_match": "1/8",
+      "secondary_hz": [
+        2.9,
+        3.62,
+        11.6
+      ],
+      "detection": "bandpass 60-300 -> Hilbert envelope -> FFT; na plném mixu 1/4 = rytmus kicku, 1/8 = rytmus hatů — pravděpodobně bicí v pásmu 60–300 Hz, ne modulace basy",
+      "source": "unknown",
+      "basis": "full_mix",
+      "confidence": "hypothesis"
+    },
+    "timbre": {
+      "spectral_centroid_hz": 4387.6,
+      "notes": ""
+    },
+    "stereo": {
+      "sub_side_db": -31.27,
+      "fundament_side_db": -19.7,
+      "notes": ""
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 3.33 Hz -> 1/4 (on-grid: growl path, or drums leaking into 60-300 Hz)",
+      "hi_res_fft_350_900": "211 peaks, median spacing 2.0 Hz",
+      "conclusion": "reese-like (dense peak forest, close spacing) — full mix: not discriminative, confirm on stems"
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured"
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "measured",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "breach-balron-audio"
+}

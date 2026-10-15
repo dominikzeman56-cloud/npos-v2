@@ -1,0 +1,11 @@
+{
+  "id": "audio-dont-play",
+  "title": "Don't Play (Original Mix)",
+  "artist": "Audio",
+  "label": "",
+  "year": null,
+  "bpm": 172.3,
+  "key": "G#m",
+  "notes": "Měřeno tools/analyze_track.py z plného mixu (lokální soubor, mimo repo). BPM a tónina z rozboru ve vaultu. Zdrojový soubor: MP3.",
+  "source_id": "dont-play-skeleton"
+}

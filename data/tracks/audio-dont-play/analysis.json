@@ -1,0 +1,161 @@
+{
+  "id": "audio-dont-play",
+  "mode": "deep",
+  "analyzed": "2026-10-15",
+  "method": {
+    "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
+    "stems": true,
+    "basis": "full_mix",
+    "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low. Bass modulation from a full mix is at most a hypothesis (hi-hats contaminate the envelope; see docs/BLUEPRINT.md section 7). Basová modulace a rozdělení sub/mid převzaty z analýzy stemů (rozbor ve vaultu)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [
+      {
+        "name": "build",
+        "start_sec": 0.0,
+        "end_sec": 19.79
+      },
+      {
+        "name": "drop_a",
+        "start_sec": 19.79,
+        "end_sec": 22.69
+      },
+      {
+        "name": "breakdown",
+        "start_sec": 22.69,
+        "end_sec": 33.55
+      },
+      {
+        "name": "drop_c",
+        "start_sec": 33.55,
+        "end_sec": 223.41
+      },
+      {
+        "name": "outro",
+        "start_sec": 223.41,
+        "end_sec": 234.39
+      }
+    ],
+    "notes": "Auto-detected from RMS energy curve (audio-dont-play). Section boundaries approximate; verify by ear.",
+    "confidence": "estimated"
+  },
+  "dynamics": {
+    "crest_factor_drop_db": 6.41,
+    "loudness_strategy": "controlled",
+    "notes": "Crest = špička/RMS v nejhlasitějších 10 s hlavního dropu (od 2026-10-15). Rozbory ve vaultu měřily jinými skripty a okny, rozdíl ~1–2 dB je metodický.",
+    "confidence": "measured"
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -3.58,
+      "fundament_rel_db": -7.29,
+      "profile": "sub_dominant",
+      "notes": "Stemy: 99 % energie subu pod 62 Hz, crossover sub/mid 62/120 Hz, mid bass HP ~120 Hz, sub glide ~120 ms."
+    },
+    "modulation": {
+      "primary_hz": 2.15,
+      "grid_match": "off_grid",
+      "secondary_hz": [
+        0.72
+      ],
+      "source": "note_rhythm",
+      "basis": "stems",
+      "confidence": "measured",
+      "detection": "obálka basového stemu (rozbor Dont_Play_Skeleton_GsharpMinor, 42 stemů): rytmus not, žádná 1/16 AM. Plný mix pro srovnání: 5.74 Hz (1/8) = bicí."
+    },
+    "timbre": {
+      "spectral_centroid_hz": 4866.2,
+      "notes": ""
+    },
+    "stereo": {
+      "sub_side_db": -24.15,
+      "fundament_side_db": -12.02,
+      "notes": ""
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 1.33 Hz -> off_grid (off-grid (reese/detune path))",
+      "hi_res_fft_350_900": "44 peaks, median spacing 2.0 Hz",
+      "conclusion": "reese-like (dense peak forest, close spacing) — full mix: not discriminative, confirm on stems"
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured"
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "measured",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "dont-play-skeleton"
+}

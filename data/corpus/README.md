@@ -1,5 +1,5 @@
 # Korpus
 
-`tracks.jsonl` a `presets.jsonl` — generované z `data/tracks/` a `data/presets/` (`tools/rebuild_track_index.py`, plánováno). Nikdy se needitují ručně.
+`tracks.jsonl` — generovaný z `data/tracks/` (`python tools/rebuild_track_index.py`). Jen reference od profesionálů: vlastní tracky (`access: own_work`) se přeskakují. Needituje se ručně.
 
-Zatím nevygenerováno: je třeba víc než jedna analýza (BLUEPRINT kap. 10, krok 1).
+Stav 2026-10-15: 4 tracky (Prolix, Restless, Don't Play, Breach).

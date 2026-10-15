@@ -1,0 +1,149 @@
+{
+  "id": "sinister-souls-raido-restless",
+  "mode": "deep",
+  "analyzed": "2026-10-15",
+  "method": {
+    "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
+    "stems": false,
+    "basis": "full_mix",
+    "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low. Bass modulation from a full mix is at most a hypothesis (hi-hats contaminate the envelope; see docs/BLUEPRINT.md section 7)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [
+      {
+        "name": "drop_a",
+        "start_sec": 0.01,
+        "end_sec": 292.79
+      },
+      {
+        "name": "outro",
+        "start_sec": 292.79,
+        "end_sec": 310.32
+      }
+    ],
+    "notes": "Auto-detected from RMS energy curve (sinister-souls-raido-restless). Section boundaries approximate; verify by ear.",
+    "confidence": "estimated"
+  },
+  "dynamics": {
+    "crest_factor_drop_db": 6.4,
+    "loudness_strategy": "controlled",
+    "notes": "Crest = špička/RMS v nejhlasitějších 10 s hlavního dropu (od 2026-10-15). Rozbory ve vaultu měřily jinými skripty a okny, rozdíl ~1–2 dB je metodický.",
+    "confidence": "measured"
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -2.8,
+      "fundament_rel_db": -6.57,
+      "profile": "sub_dominant",
+      "notes": ""
+    },
+    "modulation": {
+      "primary_hz": 2.9,
+      "grid_match": "1/4",
+      "secondary_hz": [
+        2.89,
+        5.8,
+        5.81,
+        8.7
+      ],
+      "detection": "bandpass 60-300 -> Hilbert envelope -> FFT; na plném mixu 1/4 = rytmus kicku, 1/8 = rytmus hatů — pravděpodobně bicí v pásmu 60–300 Hz, ne modulace basy",
+      "source": "unknown",
+      "basis": "full_mix",
+      "confidence": "hypothesis"
+    },
+    "timbre": {
+      "spectral_centroid_hz": 4439.4,
+      "notes": ""
+    },
+    "stereo": {
+      "sub_side_db": -42.04,
+      "fundament_side_db": -26.68,
+      "notes": ""
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 4.00 Hz -> off_grid (off-grid (reese/detune path))",
+      "hi_res_fft_350_900": "5 peaks, median spacing 1.7 Hz",
+      "conclusion": "hybrid (some layer density, not pure reese) — full mix: not discriminative, confirm on stems"
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured"
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "measured",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "sinister-souls-raido-restless"
+}

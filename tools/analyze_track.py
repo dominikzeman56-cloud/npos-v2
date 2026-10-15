@@ -233,20 +233,39 @@ def bass_modulation(x: np.ndarray, t0: float, t1: float, bpm: float) -> dict:
             sec.append(float(freqs[i]))
     sec = sec[:5]
 
-    # grid match: modulation rate vs tempo grid (1/4..1/32)
-    beat_hz = bpm / 60.0
-    grid_match = "off_grid"
-    best_d = 1e9
-    for div, label in GRID_LABELS.items():
-        gf = beat_hz * div  # 1/4=beat, 1/8=2x, 1/16=4x, 1/32=8x
-        d = abs(primary - gf) / max(gf, 1e-9)
-        if d < best_d:
-            best_d = d
-            grid_match = label
-    if best_d > 0.15:
-        grid_match = "off_grid"
+    return {"primary_hz": round(primary, 2), "grid_match": grid_label(primary, bpm), "secondary_hz": [round(v, 2) for v in sec], "detection": "bandpass 60-300 -> Hilbert envelope -> FFT"}
 
-    return {"primary_hz": round(primary, 2), "grid_match": grid_match, "secondary_hz": [round(v, 2) for v in sec], "detection": "bandpass 60-300 -> Hilbert envelope -> FFT"}
+
+def loudest_window_crest(mono: np.ndarray, win_s: float = 10.0, hop_s: float = 1.0) -> float:
+    """Crest factor (peak/RMS, dB) of the loudest `win_s` window."""
+    win, hop = int(win_s * SR), int(hop_s * SR)
+    if len(mono) <= win:
+        seg = mono
+    else:
+        sq = np.concatenate([[0.0], np.cumsum(mono.astype(np.float64) ** 2)])
+        starts = np.arange(0, len(mono) - win + 1, hop)
+        energy = sq[starts + win] - sq[starts]
+        s = int(starts[int(np.argmax(energy))])
+        seg = mono[s:s + win]
+    peak = np.abs(seg).max()
+    rms = np.sqrt(np.mean(seg.astype(np.float64) ** 2))
+    return float(20.0 * np.log10(max(peak / max(rms, 1e-9), 1e-9)))
+
+
+def grid_label(rate_hz: float, bpm: float, tol: float = 0.15) -> str:
+    """Modulation rate vs tempo grid. 1/4 = one per beat (bpm/60 Hz), 1/8 = 2x, 1/16 = 4x, 1/32 = 8x.
+
+    (Before 2026-10-15 the multiplier was `div` instead of `div / 4`, so every label was off by 4x and
+    e.g. 1/8 at 174 BPM = 5.8 Hz was reported as off_grid.)
+    """
+    beat_hz = bpm / 60.0
+    best, best_d = "off_grid", 1e9
+    for div, label in GRID_LABELS.items():
+        gf = beat_hz * div / 4.0
+        d = abs(rate_hz - gf) / max(gf, 1e-9)
+        if d < best_d:
+            best, best_d = label, d
+    return best if best_d <= tol else "off_grid"
 
 
 def reese_vs_growl(x: np.ndarray, t0: float, t1: float, bpm: float) -> dict:
@@ -276,10 +295,10 @@ def reese_vs_growl(x: np.ndarray, t0: float, t1: float, bpm: float) -> dict:
     if band.any():
         peak_i = int(np.argmax(mag[band])) + int(np.where(band)[0][0])
         fpeak = freqs[peak_i]
-        gf = beat_hz * 8  # 1/8 grid, typical growl
-        on_grid = abs(fpeak - gf) / max(gf, 1e-9) < 0.15
+        label = grid_label(fpeak, bpm)
         result["envelope_vs_grid"] = (
-            f"peak {fpeak:.2f} Hz vs 1/8 grid {gf:.2f} Hz -> {'on-grid (growl path)' if on_grid else 'off-grid (reese/detune path)'}"
+            f"peak {fpeak:.2f} Hz -> {label} "
+            f"({'on-grid: growl path, or drums leaking into 60-300 Hz' if label != 'off_grid' else 'off-grid (reese/detune path)'})"
         )
     else:
         result["envelope_vs_grid"] = "no envelope peak in 0.5-30 Hz"
@@ -306,12 +325,15 @@ def reese_vs_growl(x: np.ndarray, t0: float, t1: float, bpm: float) -> dict:
             else f"{n_peaks} peaks (single dominant) — clean harmonic spikes"
         )
         result["hi_res_fft_350_900"] = desc
+        # Full mix: drums, vocals and pads also put peaks into 350-900 Hz, so a "dense forest" is
+        # what almost every full mix shows. The verdict is only meaningful on an isolated bass (stems).
+        caveat = " — full mix: not discriminative, confirm on stems"
         if n_peaks >= 8 and spacing < 12.0:
-            result["conclusion"] = "reese (dense peak forest, close spacing)"
+            result["conclusion"] = "reese-like (dense peak forest, close spacing)" + caveat
         elif n_peaks <= 4:
-            result["conclusion"] = "growl/modulated (few oscillators, clean harmonics)"
+            result["conclusion"] = "growl/modulated (few oscillators, clean harmonics)" + caveat
         else:
-            result["conclusion"] = "hybrid (some layer density, not pure reese)"
+            result["conclusion"] = "hybrid (some layer density, not pure reese)" + caveat
     else:
         result["hi_res_fft_350_900"] = "no content in 350-900 Hz"
         result["conclusion"] = "unknown"
@@ -323,12 +345,11 @@ def measure(x: np.ndarray, bpm: float, mode: str) -> dict:
     sections, main_drop = detect_sections(db, times)
     drop = slice_range(x, main_drop[0], main_drop[1]) if main_drop[1] > main_drop[0] else x
 
-    # Dynamics: crest factor in main drop
+    # Dynamics: crest factor in the loudest 10 s of the main drop. The detected drop window can span
+    # breakdowns (or the whole track when section detection fails); quiet parts lower the RMS and
+    # inflate the crest, so measure only the densest stretch.
     mono_drop = drop.mean(axis=1)
-    peak = np.abs(mono_drop).max()
-    rms_drop = np.sqrt(np.mean(mono_drop ** 2))
-    crest_lin = peak / max(rms_drop, 1e-9)
-    crest_db = 20.0 * np.log10(max(crest_lin, 1e-9))
+    crest_db = loudest_window_crest(mono_drop)
     if crest_db <= 4.5:
         strategy = "crushed"
     elif crest_db <= 6.5:
