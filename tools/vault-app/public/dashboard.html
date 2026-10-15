@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<title>Dashboard – Vault</title>
+<script>try{var s=JSON.parse(localStorage.getItem("vault.skin"));document.documentElement.dataset.theme=["samurai","dark","light"].indexOf(s)<0?"samurai":s}catch(e){document.documentElement.dataset.theme="samurai"}</script>
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/skin-samurai.css">
+<style>
+  html, body { height: auto; min-height: 100%; overflow: auto; }
+  body { padding: 0 0 calc(32px + env(safe-area-inset-bottom)); font-family: var(--font-ui); }
+  .top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 14px; padding: 10px 16px; padding-top: calc(10px + env(safe-area-inset-top)); background: var(--bg2); border-bottom: 1px solid var(--border); }
+  .top .brand { font-family: var(--font-mono, ui-monospace, Consolas, monospace); font-weight: 700; letter-spacing: .12em; color: var(--sam-green, #3eea9a); font-size: 14px; }
+  .top .brand small { color: var(--muted); font-weight: 400; letter-spacing: .06em; margin-left: 10px; }
+  .top nav { display: flex; gap: 14px; margin-left: auto; align-items: center; flex-wrap: wrap; }
+  .top a { color: var(--link); text-decoration: none; font-weight: 600; white-space: nowrap; }
+  .top select { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font: inherit; min-height: 36px; }
+  .wrap { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 16px; display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .full { grid-column: 1 / -1; }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px 14px; min-width: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 2px 12px rgba(0,0,0,.2); }
+  .card > h2 { margin: 0 0 10px; font-family: var(--font-mono, ui-monospace, Consolas, monospace); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--sam-green, #3eea9a); display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .card > h2 em { margin-left: auto; font-style: normal; color: var(--muted); letter-spacing: .06em; text-transform: none; font-size: 11px; }
+  .card > h2::before { content: ">"; opacity: .8; }
+  .fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 14px; }
+  .fld label { display: block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; font-family: var(--font-mono, ui-monospace, monospace); }
+  .fld input, .fld select, .ta { width: 100%; background: var(--bg1); color: var(--text); border: 1px solid var(--border); border-radius: 5px; padding: 6px 8px; font: inherit; min-height: 34px; }
+  .fld input:focus, .ta:focus, .ask input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .fld.bad input { color: #ff6b6b; }
+  .ta { min-height: 74px; resize: vertical; line-height: 1.45; }
+  .pipe { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+  .st { text-align: left; border: 1px solid var(--border); border-radius: 6px; background: var(--bg1); color: var(--muted); padding: 8px 10px; cursor: pointer; font: inherit; min-height: 48px; }
+  .st b { display: block; font-size: 13px; color: var(--text); }
+  .st small { font-family: var(--font-mono, monospace); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  .st.cur { border-color: var(--sam-green, #3eea9a); box-shadow: 0 0 10px rgba(62,234,154,.25); }
+  .st.cur small { color: var(--sam-green, #3eea9a); }
+  .st.done { opacity: .6; } .st.done small { color: var(--sam-gold, #f6da63); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+  .row input[type=text] { flex: 1; min-width: 140px; background: var(--bg1); color: var(--text); border: 1px solid var(--border); border-radius: 5px; padding: 6px 8px; font: inherit; min-height: 34px; }
+  .row select { background: var(--bg1); color: var(--text); border: 1px solid var(--border); border-radius: 5px; padding: 6px; min-height: 34px; font: inherit; }
+  .btn { background: var(--bg3); color: var(--text); border: 1px solid var(--border); border-radius: 5px; padding: 6px 12px; cursor: pointer; font: inherit; min-height: 34px; }
+  .btn:hover { border-color: var(--sam-green, #3eea9a); color: var(--sam-green, #3eea9a); }
+  .btn.pri { border-color: var(--sam-green, #3eea9a); color: var(--sam-green, #3eea9a); }
+  .list { display: grid; gap: 6px; }
+  .it { display: flex; gap: 10px; align-items: baseline; padding: 7px 10px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg1); line-height: 1.4; }
+  .it .tag { font-family: var(--font-mono, monospace); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 1px 6px; border-radius: 3px; border: 1px solid currentColor; flex: none; }
+  .tag.breakthrough { color: var(--sam-green, #3eea9a); } .tag.issue { color: #ff6b6b; } .tag.idea { color: var(--sam-gold, #f6da63); }
+  .it .tx { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .it .when { color: var(--muted); font-size: 11px; font-family: var(--font-mono, monospace); flex: none; }
+  .it .x { color: var(--faint); cursor: pointer; padding: 0 4px; background: none; border: 0; font-size: 16px; }
+  .it .x:hover { color: #ff6b6b; }
+  .it.done .tx { text-decoration: line-through; color: var(--muted); }
+  .it input[type=checkbox] { accent-color: var(--sam-green, #3eea9a); width: 18px; height: 18px; flex: none; align-self: center; }
+  .bar { height: 6px; background: var(--bg3); border-radius: 3px; width: 120px; overflow: hidden; display: inline-block; }
+  .bar i { display: block; height: 100%; background: var(--sam-green, #3eea9a); }
+  .ask { display: flex; gap: 8px; }
+  .ask input { flex: 1; background: var(--bg1); color: var(--text); border: 1px solid var(--border); border-radius: 5px; padding: 8px 10px; font: inherit; min-height: 40px; }
+  .hit { margin-top: 10px; border: 1px solid var(--border); border-left: 3px solid var(--sam-green, #3eea9a); border-radius: 5px; padding: 8px 12px; background: var(--bg1); }
+  .hit b { display: block; margin-bottom: 4px; }
+  .hit ol { margin: 4px 0 6px; padding-left: 20px; line-height: 1.45; }
+  .hit a { color: var(--link); font-weight: 600; text-decoration: none; }
+  .quick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .quick button { font-size: 12px; }
+  .acts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+  .act { display: block; text-align: center; text-decoration: none; color: var(--text); border: 1px solid var(--border); border-radius: 6px; background: var(--bg1); padding: 12px 8px; font-weight: 600; cursor: pointer; font: inherit; }
+  .act:hover { border-color: var(--sam-green, #3eea9a); }
+  .act small { display: block; color: var(--muted); font-weight: 400; font-size: 11px; margin-top: 3px; }
+  .muted { color: var(--muted); font-size: 12px; line-height: 1.5; }
+  .empty-l { color: var(--faint); font-size: 12px; padding: 4px 0; }
+  @media (max-width: 800px) { .wrap { grid-template-columns: minmax(0, 1fr); padding: 12px 14px; } .fields { grid-template-columns: 1fr 1fr; } .two { grid-template-columns: 1fr; } .top .brand small { display: none; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="brand">NPOS/CTRL<small>neurofunk production OS</small></span>
+  <nav>
+    <a href="/">Kánon</a><a href="/presets.html">Presety</a><a href="/dal.html">Co dál?</a>
+    <select id="skin" aria-label="Vzhled (skin)"><option value="samurai">Samurai</option><option value="dark">Tmavý</option><option value="light">Světlý</option></select>
+  </nav>
+</header>
+<div class="wrap">
+  <section class="card full"><h2>Aktuální track <em id="saved">uloženo jen v tomhle prohlížeči</em></h2>
+    <div class="fields" id="track"></div></section>
+
+  <section class="card full"><h2>Fáze práce <em>klikni na aktuální</em></h2>
+    <div class="pipe" id="pipe"></div>
+    <div class="two">
+      <div class="fld"><label for="last">Poslední session</label><textarea class="ta" id="last" placeholder="co se naposled povedlo / zamklo"></textarea></div>
+      <div class="fld"><label for="next">Další krok</label><textarea class="ta" id="next" placeholder="co udělám dál"></textarea></div>
+    </div>
+    <div id="phaseHelp" class="muted" style="margin-top:10px"></div></section>
+
+  <section class="card"><h2>Poznámky</h2>
+    <div class="row"><select id="nt"><option value="idea">idea</option><option value="issue">issue</option><option value="breakthrough">průlom</option></select>
+      <input type="text" id="ntx" placeholder="rychlá poznámka…" aria-label="Text poznámky"><button class="btn pri" id="nadd">Přidat</button></div>
+    <div class="list" id="notes"></div></section>
+
+  <section class="card"><h2>Dnešní priority <em id="pct"></em></h2>
+    <div class="row"><input type="text" id="ttx" placeholder="úkol…" aria-label="Text úkolu"><button class="btn pri" id="tadd">Přidat</button></div>
+    <div class="list" id="tasks"></div></section>
+
+  <section class="card full"><h2>Poradce <em>hledá v „Co dál?“, není to AI</em></h2>
+    <div class="ask"><input id="q" type="search" placeholder="např. basa je slabá vedle kicku, drop nezní jako drop, Live padá…" aria-label="Otázka"><button class="btn pri" id="go">Hledej</button></div>
+    <div class="quick" id="quick"></div><div id="ans"></div></section>
+
+  <section class="card"><h2>Sessions <em><button class="btn" id="sadd" type="button">+ nová</button></em></h2>
+    <div class="list" id="sess"></div></section>
+
+  <section class="card"><h2>Rychlé akce</h2>
+    <div class="acts">
+      <a class="act" href="/presets.html">Presety<small>stavba Serum presetu</small></a>
+      <a class="act" href="/dal.html">Co dál?<small>zasekl jsem se</small></a>
+      <a class="act" href="/#00%20Start.md">Kánon<small>začni tady</small></a>
+      <a class="act" href="/#:graph">Mapa<small>souvislosti poznámek</small></a>
+      <button class="act" type="button" id="exp">Export<small>záloha do JSON</small></button>
+      <label class="act" for="imp" style="cursor:pointer">Import<small>načíst zálohu</small></label><input id="imp" type="file" accept="application/json" hidden>
+    </div></section>
+</div>
+<script src="/dashboard.js"></script>
+</body>
+</html>

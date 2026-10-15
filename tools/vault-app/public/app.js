@@ -31,6 +31,7 @@ const IMG = /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i;
 const ICONS = {
   files: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
   search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  dash: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
   graph: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
   tags: '<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
   switcher: '<path d="m13 2-9 12h7l-1 8 9-12h-7Z"/>',
@@ -345,6 +346,7 @@ function renderRibbon() {
     ['tags', 'tags', 'Tagy', 'Tagy: poznámky seskupené podle štítků', () => setLeft('tags')],
     ['graph', 'graph', 'Mapa', 'Mapa: jak spolu poznámky souvisí (Ctrl+G)', () => openGraph()],
     ['switcher', 'switcher', 'Otevřít', 'Rychlé otevření poznámky podle názvu (Ctrl+O)', () => quickSwitcher()],
+    ['dash', 'dash', 'Dashboard', 'Dashboard: aktuální track, fáze práce, poznámky, priority a poradce', () => { location.href = '/dashboard.html'; }],
     ['presets', 'presets', 'Presety', 'Presety: prohlížeč Serum presetů, stavba každého (oscilátory, filtry, FX, LFO)', () => { location.href = '/presets.html'; }],
     ['next', 'next', 'Co dál?', 'Co dál?: zasekl jsem se, poraď mi další krok', () => { location.href = '/dal.html'; }],
     ['panel', 'panel', 'Osnova', 'Osnova a odkazy aktuální poznámky', toggleRight, 'mob-only'],
