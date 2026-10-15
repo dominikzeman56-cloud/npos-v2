@@ -14,7 +14,7 @@
     },
     "bpm": { "type": "number" },
     "key": { "type": "string" },
-    "template": { "type": "string", "description": "Např. NEUROFUNK_TEMPLATE_FINAL." },
+    "template": { "type": "string", "description": "Výchozí projekt/šablona, ze které session vychází (volitelné; NPOS nemá kanonickou šablonu)." },
     "reference": {
       "type": "object",
       "description": "Reference musí být ověřený zdroj: source_id z knowledge/sources.jsonl nebo track_id z data/tracks.",

@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildIndex, DEFAULT_IGNORE, indexPayload, notePayload, tagsPayload, graphPayload } from './lib/vault-index.mjs';
+import { scrubDeep } from './lib/scrub-paths.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const arg = (name, def) => { const i = process.argv.indexOf('--' + name); return i > 0 ? process.argv[i + 1] : def; };
@@ -36,7 +37,7 @@ await cleanOut();
 
 const notes = {};
 for (const n of idx.notes.values()) notes[n.path] = notePayload(idx, n);
-const db = { index: indexPayload(idx), notes, tags: tagsPayload(idx), graph: graphPayload(idx) };
+const db = scrubDeep({ index: indexPayload(idx), notes, tags: tagsPayload(idx), graph: graphPayload(idx) });
 await fs.mkdir(path.join(OUT, 'data'), { recursive: true });
 await fs.writeFile(path.join(OUT, 'data', 'vault.json'), JSON.stringify(db));
 

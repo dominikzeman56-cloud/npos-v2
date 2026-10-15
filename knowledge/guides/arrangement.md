@@ -169,7 +169,7 @@ Syntéza z naměřených forem — **nejde o naměřený standard**, ale o start
 
 **Kostra C — AABB, bez ticha (~225 barů, vzor Restless).** `INTRO A 1–16 · INTRO B 17–32 · BUILD 33–48 · DROP 1A 49–80 · 1B 81–112 (B o +3 semitóny) · REPRISE 113–128 · BUILD 2 129–144 · DROP 2A/B 145–208 · OUTRO 209–225.`
 
-Pro každou kostru nastav lokátory v `NEUROFUNK_TEMPLATE`/vlastní šabloně a **ověř A/B proti referenci na vlastní stopě** (BUS, ne master).
+Pro každou kostru nastav lokátory v projektu a **ověř A/B proti referenci na vlastní stopě** (BUS, ne master).
 
 ---
 
