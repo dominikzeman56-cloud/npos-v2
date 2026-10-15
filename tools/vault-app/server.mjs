@@ -60,6 +60,7 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/search') return json(res, search(idx.notes.values(), q.get('q') || ''));
     if (p === '/api/tags') return json(res, tagsPayload(idx));
     if (p === '/api/graph') return json(res, graphPayload(idx));
+    if (p === '/api/next-step') return sendFile(res, path.resolve(HERE, '..', '..', 'knowledge', 'guides', 'next-step.json'), { 'Cache-Control': 'no-store' });
     if (p === '/api/presets') return json(res, await loadPresets(path.resolve(HERE, '..', '..')));
     if (p === '/api/preset') { const b = await loadBuild(path.resolve(HERE, '..', '..'), q.get('id')); return b ? json(res, b) : json(res, { error: 'not found' }, 404); }
     if (p === '/asset') {

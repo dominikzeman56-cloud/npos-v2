@@ -97,6 +97,55 @@ def parse_frontmatter(text: str):
     return meta
 
 
+def _vault_headings(vault: Path, note: str) -> set[str] | None:
+    """Texty nadpisů poznámky (bez backticků, malými písmeny), nebo None, když poznámka není dostupná."""
+    p = vault / (note if note.endswith(".md") else note + ".md")
+    if not p.is_file():
+        return None
+    out = set()
+    for line in p.read_text(encoding="utf-8").splitlines():
+        m = re.match(r"^#{1,6}\s+(.+?)\s*$", line)
+        if m:
+            out.add(re.sub(r"\s+", " ", m.group(1).replace("`", "")).strip().lower())
+    return out
+
+
+def check_next_step(path: Path, vault: Path) -> list[str]:
+    """Struktura a odkazy v next-step.json; kotvy se ověřují proti nadpisům ve vaultu (aplikace je porovnává přesným textem)."""
+    errs: list[str] = []
+    try:
+        d = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        return [f"{path.name}: neplatný JSON ({e})"]
+    phases = {p.get("id") for p in d.get("phases", [])}
+    items = d.get("items", [])
+    ids = [i.get("id") for i in items]
+    for dup in {x for x in ids if ids.count(x) > 1}:
+        errs.append(f"{path.name}: duplicitní id {dup!r}")
+    for it in items:
+        w = f"{path.name}:{it.get('id')}"
+        for k in ("id", "phase", "situation", "steps", "sources", "confidence", "vault"):
+            if not it.get(k):
+                errs.append(f"{w}: chybí {k}")
+        if it.get("phase") not in phases:
+            errs.append(f"{w}: neznámá fáze {it.get('phase')!r}")
+        if it.get("confidence") not in CONFIDENCE:
+            errs.append(f"{w}: confidence {it.get('confidence')!r} mimo slovník")
+        for t in it.get("then", []):
+            if t not in ids:
+                errs.append(f"{w}: then → {t!r} neexistuje")
+        if vault.is_dir() and it.get("vault"):
+            heads = _vault_headings(vault, it["vault"])
+            if heads is None:
+                errs.append(f"{w}: poznámka {it['vault']!r} ve vaultu nenalezena")
+            elif it.get("anchor") and re.sub(r"\s+", " ", it["anchor"].replace("`", "")).strip().lower() not in heads:
+                errs.append(f"{w}: kotva {it['anchor']!r} není nadpisem v {it['vault']!r}")
+    for p in phases:
+        if not any(i.get("phase") == p for i in items):
+            errs.append(f"{path.name}: fáze {p!r} nemá žádnou položku")
+    return errs
+
+
 def main() -> int:
     for stream in (sys.stdout, sys.stderr):
         try:
@@ -134,6 +183,11 @@ def main() -> int:
                 warnings.append(f"sources.jsonl:{n}: vault_note {vn!r} ve vaultu nenalezen")
     else:
         warnings.append(f"vault {vault} není dostupný; kontrola vault_note přeskočena")
+
+    # --- knowledge/guides/next-step.json (rozhodovací pomůcka „Co dál?“)
+    ns = ROOT / "knowledge" / "guides" / "next-step.json"
+    if ns.exists():
+        errors.extend(check_next_step(ns, vault))
 
     # --- knowledge/**/*.md
     seen_ids: dict[str, Path] = {}

@@ -1,0 +1,183 @@
+{
+  "title": "Co dál? Zasekl jsem se",
+  "note": "Rozhodovací pomůcka sestavená z tabulek „situace → další krok“ ve vaultu (30 Aranž kap. 4, 40 Mix a master kap. 1) a z postupů v 80 Nástroje a v rozborech. Žádný krok tu není bez zdroje; všechno jsou heuristiky se štítkem odhad, ne zákony (P9).",
+  "phases": [
+    { "id": "napad", "title": "Nápad a zvuk", "hint": "začínám, zvuk nikam nevede" },
+    { "id": "groove", "title": "Groove a bicí", "hint": "beat, haty, kick" },
+    { "id": "drop", "title": "Drop a basa", "hint": "basa je slabá, drop je plochý" },
+    { "id": "intro", "title": "Intro a build", "hint": "nastavení napětí před dropem" },
+    { "id": "aranz", "title": "Aranž", "hint": "formy, drop 2, breakdown, remix" },
+    { "id": "mix", "title": "Mix při tvorbě", "hint": "maskování, bahno, generic" },
+    { "id": "master", "title": "Master a dodání", "hint": "hlasitost, stemy, demo" },
+    { "id": "live", "title": "Live a nástroje", "hint": "Live padá, Serum, .als" }
+  ],
+  "items": [
+    {
+      "id": "zvuk-nikam", "phase": "napad", "situation": "Zvuk nikam nevede",
+      "steps": [
+        "Po zhruba 2 hodinách zvuk ulož a jdi dál; další dostane jen zvuk, který má potenciál.",
+        "Dej si 5 minut pauzu po hodině až dvou, po ní se často otevře nový směr.",
+        "Když zní zajímavé místo, vyrenderuj ho jako audio místo hromady podobných patchů.",
+        "Parametr, který zní, dej na makro a nech ho na místě, ať ho dalším laděním nerozbiješ."
+      ],
+      "sources": ["Abis, Basy v Serumu (Bass 01 43:29–72:12)"], "confidence": "measured",
+      "vault": "60 Rozbory/Kurzy/Abis - Basy v Serumu (DNB Academy)", "anchor": "1. Pracovní metoda",
+      "then": ["zni-generic"]
+    },
+    {
+      "id": "render-midi", "phase": "napad", "situation": "Renderovat, nebo zůstat v MIDI?",
+      "steps": ["Render jen kvůli CPU, externímu zpracování nebo dodání. Do té doby zůstaň v MIDI."],
+      "sources": ["10 Principy P3; heuristika (decision-heuristics)"], "confidence": "estimated",
+      "vault": "10 Principy", "anchor": "P3 · V MIDI, dokud se zvuk rozhoduje; resamplovat vědomě"
+    },
+    {
+      "id": "loop-stejny", "phase": "groove", "situation": "Loop je pořád stejný",
+      "steps": ["Nejdřív změň rytmus hatů, je to nejlevnější páka.", "Až potom sahej na basu nebo harmonii."],
+      "sources": ["40 Mix a master kap. 1 (heuristika)"], "confidence": "estimated",
+      "vault": "40 Mix a master", "anchor": "1. Mixdown při tvorbě",
+      "then": ["drop2-nuda"]
+    },
+    {
+      "id": "kick-maskuje-basu", "phase": "groove", "situation": "Kick maskuje basu",
+      "steps": [
+        "Sidechain basy o 2–4 dB, nebo laděný kick × sub (pitch-lock).",
+        "Drž kick-over-sub: kick a sub se nesmí potkat v souboji o stejný kmitočet (separace nebo fáze).",
+        "HP100 na kicku patří jen k samplovému funkovému kicku, u syntetického neurofunk kicku neplatí."
+      ],
+      "sources": ["40 Mix a master kap. 1", "Breach (měřeno)", "Audio 2013 (původ HP100)"], "confidence": "estimated",
+      "vault": "21 Bicí", "anchor": "2. Kick: low end a syntéza",
+      "then": ["kase-150-400", "tenka-basa"]
+    },
+    {
+      "id": "drop-neznie", "phase": "drop", "situation": "Drop nezní jako drop",
+      "steps": ["Zkontroluj kontrast: je build tišší a užší než drop?"],
+      "sources": ["LS 23", "LS 01"], "confidence": "estimated",
+      "vault": "30 Aranž", "anchor": "3.2 BUILD (≈ 8–16 barů)",
+      "then": ["buildup-nezvedá", "tlusty-plochy"]
+    },
+    {
+      "id": "po-16-barech", "phase": "drop", "situation": "Nevím, co dál po 16 barech dropu",
+      "steps": ["Switch-up (6+2): 6 barů riffu a 2 bary změny místo osmi identických.", "Nebo přidej jednu vrstvu po 8 barech."],
+      "sources": ["Don't Play", "Breach"], "confidence": "estimated",
+      "vault": "30 Aranž", "anchor": "3.3 DROP (16 nebo 2×16 barů)"
+    },
+    {
+      "id": "tlusty-plochy", "phase": "drop", "situation": "Drop je tlustý a plochý",
+      "steps": ["Nakresli sub ručně do mezer po resamplu dropu.", "Ustřihni ocasy basy od kicku a snaru."],
+      "sources": ["LS 28"], "confidence": "estimated",
+      "vault": "20 Basa", "anchor": "7. Sub",
+      "then": ["vse-soutezi"]
+    },
+    {
+      "id": "tenka-basa", "phase": "drop", "situation": "Slabá nebo tenká basa",
+      "steps": ["Nejdřív sub a mono-kompatibilita, ne další vrstvy.", "Pak teprve zvaž vrstvu navíc."],
+      "sources": ["40 Mix a master kap. 1 (heuristika)"], "confidence": "estimated",
+      "vault": "20 Basa", "anchor": "7. Sub",
+      "then": ["kick-maskuje-basu", "zni-generic"]
+    },
+    {
+      "id": "zni-generic", "phase": "drop", "situation": "Zní to generic",
+      "steps": ["Přidej noise nebo texturní vrstvu, ale až když sub a body drží.", "Dřív zkus ubrat vrstvu, ne přidat další."],
+      "sources": ["40 Mix a master kap. 1 (heuristika)", "10 Principy 2.1"], "confidence": "estimated",
+      "vault": "10 Principy", "anchor": "2.1 Rozhodovací heuristiky: nejdřív odečíst, pak přidat",
+      "then": ["vse-soutezi"]
+    },
+    {
+      "id": "intro-nic", "phase": "intro", "situation": "Intro mi nic neříká",
+      "steps": ["Foreshadowing: propašuj do intra prvek z dropu.", "Filtrovaný pad jako „neviditelný lead“ dá intru melodii.", "Nejdřív placeholder zvuky, finální až potom."],
+      "sources": ["Abis (Start to Finish 20:42)", "LS 16"], "confidence": "estimated",
+      "vault": "30 Aranž", "anchor": "3.1 INTRO (≈ 16–32 barů)"
+    },
+    {
+      "id": "buildup-nezvedá", "phase": "intro", "situation": "Buildup se nezvedá",
+      "steps": [
+        "Ztiš kick v buildupu.",
+        "Riser jako stack s 4 oktávami pohybu (2 oktávy, v půlce přepnout na opačný extrém).",
+        "Automatizuj reverb od wet k dry a řízni bicí těsně před dropem."
+      ],
+      "sources": ["LS 22/23", "Audio 2013 (Headroom)"], "confidence": "estimated",
+      "vault": "30 Aranž", "anchor": "3.2 BUILD (≈ 8–16 barů)",
+      "then": ["energie-klesa"]
+    },
+    {
+      "id": "energie-klesa", "phase": "intro", "situation": "Energie klesá uprostřed",
+      "steps": ["Přidej riser nebo přechodový FX.", "Přezkoumej kontrast sekcí: dostává každá jiný tvar než předchozí?"],
+      "sources": ["40 Mix a master kap. 1 (heuristika)"], "confidence": "estimated",
+      "vault": "30 Aranž", "anchor": "1. Princip: aranž je řízení energie, ne řazení bloků"
+    },
+    {
+      "id": "drop2-nuda", "phase": "aranz", "situation": "Drop 2 je nuda (kopie)",
+      "steps": ["Automace levelu nebo transpozice místo nového materiálu.", "Jiný charakter distorze na stejném riffu.", "Změna rytmu basy."],
+      "sources": ["LS 26", "Pythius Fearless", "Pythius Inquisition"], "confidence": "estimated",
+      "vault": "30 Aranž", "anchor": "3.6 DROP 2 — jak ho dělat jiný, nikoli nový [K]",
+      "then": ["loop-stejny"]
+    },
+    {
+      "id": "breakdown-vlece", "phase": "aranz", "situation": "Breakdown se vleče",
+      "steps": ["Vyber typ A, B nebo C a drž ho, nemíchej víc typů.", "Drž 16–24 barů, ne víc.", "Dej re-entry element před dropem."],
+      "sources": ["TR Tactics (Mechanism)", "Restless"], "confidence": "estimated",
+      "vault": "30 Aranž", "anchor": "3.4 BREAKDOWN (≈ 16–29 barů)"
+    },
+    {
+      "id": "remix-jak", "phase": "aranz", "situation": "Remix: jak ho odlišit",
+      "steps": ["Originální stemy dej do vlastní skupiny.", "Postav question/answer riff.", "Drž jednu barvu reese na A i B."],
+      "sources": ["Pythius Fearless", "30 Aranž kap. 5"], "confidence": "estimated",
+      "vault": "30 Aranž", "anchor": "5. Remix: aranžérské zvláštnosti"
+    },
+    {
+      "id": "kolik-baru", "phase": "aranz", "situation": "Kolik barů má mít track?",
+      "steps": ["2×16 pro silný nápad, 3×16 pro silné téma.", "Celek vychází 140–260 barů u změřených tracků."],
+      "sources": ["Redpill (Délka a struktura tracků)", "30 Aranž kap. 2"], "confidence": "estimated",
+      "vault": "30 Aranž", "anchor": "2. Formy: co se skutečně měřilo"
+    },
+    {
+      "id": "kick-maskuje-pady", "phase": "mix", "situation": "Kick maskuje pady a synty",
+      "steps": ["Sidechain o 1–3 dB."],
+      "sources": ["40 Mix a master kap. 1 (heuristika)"], "confidence": "estimated",
+      "vault": "21 Bicí", "anchor": "4. Sidechain"
+    },
+    {
+      "id": "kase-150-400", "phase": "mix", "situation": "Kaše kolem 150–400 Hz",
+      "steps": ["Ořízni spodek u prvků, které nejsou basa (HP).", "Řež 200–400 Hz na basu a kicku zvlášť, ne globálně."],
+      "sources": ["40 Mix a master kap. 1 (heuristika)", "Audio 2013 (EQ každého prvku zvlášť)"], "confidence": "estimated",
+      "vault": "40 Mix a master", "anchor": "1. Mixdown při tvorbě"
+    },
+    {
+      "id": "nepřenáší-se", "phase": "mix", "situation": "Nepřenáší se na jiné systémy",
+      "steps": ["Zkontroluj mono kompatibilitu dřív než sáhneš na EQ.", "Pod ~150 Hz nic stereo."],
+      "sources": ["40 Mix a master kap. 1 (heuristika)", "Prolix, Breach (měřeno)"], "confidence": "estimated",
+      "vault": "20 Basa", "anchor": "2. Fyzikální základy, které se opakují"
+    },
+    {
+      "id": "vse-soutezi", "phase": "mix", "situation": "Všechno spolu soutěží",
+      "steps": ["Odečti prvek, nepřidávej opravu navrch.", "Mute test: když ztlumením 3 z 5 hat tracků neslyšíš rozdíl, zahoď je."],
+      "sources": ["40 Mix a master kap. 1 (heuristika)", "Audio 2013 (Headroom)"], "confidence": "estimated",
+      "vault": "10 Principy", "anchor": "2.1 Rozhodovací heuristiky: nejdřív odečíst, pak přidat"
+    },
+    {
+      "id": "hlasitost", "phase": "master", "situation": "Je to dost hlasité?",
+      "steps": ["Neřeš LUFS. Rozhodují crest v nejhlasitějších 10 s dropu a spektrum.", "Porovnej A/B s referencí od prvního baru."],
+      "sources": ["Redpill (Mastering v DNB)", "70 Data a měření"], "confidence": "estimated",
+      "vault": "40 Mix a master", "anchor": "5. Master (krátce)"
+    },
+    {
+      "id": "handoff", "phase": "master", "situation": "Posílám stemy nebo demo",
+      "steps": [
+        "Stemy a mastering: −6 dB peak, bez limiteru, 24 bit (lépe 32), 44,1–48 kHz, bez ditheringu.",
+        "Demo nebo release: full volume, limiter bez přidaného gainu."
+      ],
+      "sources": ["Redpill (Kolaborace, Posílání dem)"], "confidence": "estimated",
+      "vault": "40 Mix a master", "anchor": "2. Tři výstupy: psací stav, handoff, release"
+    },
+    {
+      "id": "live-pada", "phase": "live", "situation": "Live padá",
+      "steps": [
+        "Serum 2 shazuje Live při více otevřených editorech: v hustém setu freeze nebo resample, max 1–2 otevřené editory.",
+        "Pokud generuješ `.als` skriptem: nepřenášej plugin XML z cizích setů, falešný chunk shodí Live.",
+        "Po opravě XML Live zavři a otevři znovu, ne Reload."
+      ],
+      "sources": ["80 Nástroje kap. 3 (zkušenost, paměť Groku)"], "confidence": "estimated",
+      "vault": "80 Nástroje", "anchor": "3. Pasti `.als`"
+    }
+  ]
+}

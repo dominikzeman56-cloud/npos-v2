@@ -125,8 +125,9 @@ function renderList() {
   const shown = list.slice(0, 500);
   $('#list').innerHTML = shown.length ? shown.map(rowHtml).join('') : '<div class="pempty">Nic neodpovídá filtrům.</div>';
   const active = ['q', 'pack', 'xw', 'uni', 'mono'].filter((k) => F[k]).length + F.fn.size + F.arch.size;
+  const extra = ['pack', 'xw', 'uni', 'mono'].filter((k) => F[k]).length;
   $('#count').textContent = `${list.length} z ${DATA.presets.length} presetů` + (list.length > shown.length ? ` (zobrazeno ${shown.length})` : '');
-  $('#fsum').textContent = active ? `${active} aktivní` : '';
+  $('#fsum').textContent = extra ? `${extra} aktivní` : '';
   $('#reset').hidden = !active;
   return list;
 }
@@ -209,17 +210,18 @@ function modMatrix(b) {
 }
 function renderBuild(b) {
   const flow = ['OSC', 'FILTR', 'FX', 'OUT'].map((s, i) => `<span>${s}</span>${i < 3 ? '<em>▶</em>' : ''}`).join('');
-  const oscs = [0, 1, 2].map((s) => oscModule(b.oscillators.find((o) => o.slot === s), s)).join('') + noiseModule(b.noise) + subModule(b.sub);
+  const oscs = [0, 1, 2].map((s) => oscModule(b.oscillators.find((o) => o.slot === s), s)).join('');
   const flt = b.filters.length ? b.filters.map(filterModule).join('') : mod('FILTR', false, lcd('bez filtru'), 'small');
-  const fx = b.fx.length ? `<div class="chain">${b.fx.map(fxModule).join('<em class="join">▶</em>')}</div>` : '<div class="dim">bez FX</div>';
+  const aux = noiseModule(b.noise) + subModule(b.sub) + flt;
+  const fx = b.fx.length ? `<div class="chain">${b.fx.map(fxModule).join('')}</div>` : '<div class="dim">bez FX</div>';
   const lfo = b.lfos.map((l) => `<span class="pill">LFO ${l.index + 1} · ${esc(l.type || l.mode || 'výchozí')}${l.rate != null ? ' · rate ' + f2(l.rate) : ''}${l.points ? ' · ' + l.points + ' bodů' : ''}</span>`).join('');
-  const macros = b.macros.length ? `<div class="knobs macros">${b.macros.map((m) => knob('M' + (m.index + 1), m.value, { max: 100 })).join('')}</div>` : '';
+  const macros = b.macros.length ? `<div class="macros">${b.macros.map((m) => knob('M' + (m.index + 1), m.value, { max: 100 })).join('')}</div>` : '';
   const v = b.voice;
   const voice = `<div class="voice">${led(v.kParamMonoToggle === 1)}<b>MONO</b>${led(v.kParamLegato === 1)}<b>LEGATO</b>${v.kParamPortamentoTime != null ? `<b>PORTA</b><i>${f2(v.kParamPortamentoTime)}</i>` : ''}</div>`;
   return `<div class="panel">
     <div class="flow" aria-label="Signálový tok">${flow}</div>
-    <div class="sect"><h3>Oscilátory</h3><div class="row-mods">${oscs}</div></div>
-    <div class="sect"><h3>Filtry a hlas</h3><div class="row-mods">${flt}${mod('HLAS', true, voice, 'small')}</div></div>
+    <div class="sect"><h3>Oscilátory</h3><div class="g-osc">${oscs}</div></div>
+    <div class="sect"><h3>Noise, sub, filtry a hlas</h3><div class="g-aux">${aux}${mod('HLAS', true, voice, 'small')}</div></div>
     <div class="sect"><h3>FX řetěz</h3>${fx}</div>
     <div class="sect"><h3>Modulace</h3><div class="matrix">${modMatrix(b)}</div>${lfo ? `<div class="pills">${lfo}</div>` : ''}${macros}</div>
   </div>
@@ -240,10 +242,10 @@ async function renderDetail() {
   if (!p) { el.innerHTML = '<div class="pick">Vyber preset ze seznamu.</div>'; return; }
   const head = `<button class="back-list" type="button" id="backlist">← Seznam</button>
     <div class="dh"><h2>${esc(p.name)}</h2>
-      <div class="tags"><span class="tag">${esc(FN[p.function] || p.function)}</span>${archTag(p)}<span class="tag hyp" title="Funkce a archetyp jsou návrh z heuristiky (jméno + stopy v souboru)">hypotéza</span></div>
-      <div class="cues">${cueList(p).map(esc).join(' <span class="dim">·</span> ')}</div>
-      ${(p.why || []).length ? `<div class="why">Proč tenhle návrh: ${esc(p.why.join('; '))}</div>` : ''}
-      <div class="meta">${esc(p.synth || '')}${(p.tags || []).length ? ' · tagy ve Seru: ' + esc(p.tags.join(', ')) : ''}</div></div>`;
+      <div class="l"><div class="tags"><span class="tag">${esc(FN[p.function] || p.function)}</span>${archTag(p)}<span class="tag hyp" title="Funkce a archetyp jsou návrh z heuristiky (jméno + stopy v souboru)">hypotéza</span></div>
+        <div class="cues">${cueList(p).map(esc).join(' <span class="dim">·</span> ')}</div></div>
+      <div class="r">${(p.why || []).length ? `<div class="why">Proč tenhle návrh: ${esc(p.why.join('; '))}</div>` : ''}
+        <div class="meta">${esc(p.synth || '')}${(p.tags || []).length ? ' · tagy ve Seru: ' + esc(p.tags.join(', ')) : ''}</div></div></div>`;
   el.innerHTML = head + '<div id="bd" class="dim">Načítám stavbu…</div>';
   $('#backlist').onclick = () => { history.length > 1 ? history.back() : select(null, false); };
   const myId = SEL;
@@ -284,7 +286,7 @@ function bind() {
   $('#reset').addEventListener('click', () => { Object.assign(F, { q: '', pack: '', xw: '', uni: '', mono: '', fn: new Set(), arch: new Set() }); $('#q').value = ''; render(); });
   const sk = $('#skin'); sk.value = lsGet('skin', 'samurai'); // skin switcher (shared with the vault: localStorage vault.skin)
   sk.addEventListener('change', () => { lsSet('skin', sk.value); applyTheme(); });
-  $('#filters').open = !isNarrow();
+  $('#filters').open = ['pack', 'xw', 'uni', 'mono'].some((k) => F[k]); // collapsed unless one of them is set
   addEventListener('popstate', () => { readUrl(); $('#q').value = F.q; render(); renderDetail(); });
   matchMedia('(max-width: 899px)').addEventListener('change', () => { if (!SEL && !isNarrow()) render(); applySelectionUi(); });
 }

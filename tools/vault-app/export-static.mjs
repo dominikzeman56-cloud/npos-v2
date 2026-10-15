@@ -45,6 +45,7 @@ await fs.writeFile(path.join(OUT, 'data', 'vault.json'), JSON.stringify(db));
 // preset index (compact index only; full dumps in data/presets/_local are never read)
 const presets = await loadPresets(path.resolve(HERE, '..', '..'));
 await fs.writeFile(path.join(OUT, 'data', 'presets.json'), JSON.stringify(presets));
+await copy(path.resolve(HERE, '..', '..', 'knowledge', 'guides', 'next-step.json'), path.join(OUT, 'data', 'next-step.json'));
 // Builds (full parameter detail of paid packs) stay local unless explicitly requested: node export-static.mjs --builds
 let builds = 0;
 if (process.argv.includes('--builds')) {
@@ -56,7 +57,7 @@ if (process.argv.includes('--builds')) {
 }
 
 // UI + vendor libs
-for (const f of ['index.html', 'style.css', 'app.js', 'search-core.js', 'presets.html', 'presets.js', 'skin-samurai.css']) await copy(path.join(HERE, 'public', f), path.join(OUT, f));
+for (const f of ['index.html', 'style.css', 'app.js', 'search-core.js', 'presets.html', 'presets.js', 'dal.html', 'dal.js', 'skin-samurai.css']) await copy(path.join(HERE, 'public', f), path.join(OUT, f));
 for (const f of await fs.readdir(path.join(HERE, 'public', 'fonts'))) await copy(path.join(HERE, 'public', 'fonts', f), path.join(OUT, 'fonts', f));
 await copy(path.join(HERE, 'node_modules/markdown-it/dist/markdown-it.min.js'), path.join(OUT, 'vendor/markdown-it.min.js'));
 await copy(path.join(HERE, 'node_modules/d3/dist/d3.min.js'), path.join(OUT, 'vendor/d3.min.js'));
