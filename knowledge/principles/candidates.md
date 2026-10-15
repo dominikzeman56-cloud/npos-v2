@@ -6,7 +6,7 @@ status: candidate
 confidence: estimated
 source_type: producer_course
 source_ids: [pythius-inquisition, joe-ford-bassgorilla-course, letsynthesize-noisia-course, abis-start-to-finish, audio-headroom-2013, phenom-layering, dont-play-skeleton, prolix-been-about-this, breach-balron-audio, redpill-manual, ed-rush-killbox-valkyrie-podcast, ekwols-reese-layering, letsynthesize-preset-files, pythius-patreon-presets, enta-serum-presets, notequal-serum-presets]
-vault_note: 01 Principy
+vault_note: 10 Principy
 updated: 2026-10-15
 ---
 

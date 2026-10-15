@@ -6,15 +6,15 @@ status: canon
 confidence: measured
 source_type: track_analysis
 source_ids: [dont-play-skeleton, prolix-been-about-this, sinister-souls-raido-restless, triamer-nagato-hands-up, tr-tactics-mechanism, dirts-remix-skeleton, breach-balron-audio, letsynthesize-noisia-course, abis-start-to-finish, abis-grains-of-sooner, pythius-fearless-remix, pythius-inquisition, pythius-template-workflow, mefjus-remix-another-life, audio-headroom-2013, ed-rush-killbox-valkyrie-podcast, redpill-manual]
-vault_note: 06 Návod na aranž
+vault_note: 30 Aranž
 updated: 2026-10-15
 ---
 
-# 06 Návod na aranž
+# 30 Aranž
 
-> **Jak poskládat neurofunk track od intra po outro tak, aby měl tah.** Nejde o encyklopedii, ale o postup: co má která sekce dělat, čím se staví napětí, jak se dělá druhý drop jiný a co když se zasekneš. Vše je vytěžené z rozborů v 05 Rozbory — přehled (workshopy, kurzy, projekty `.als`, analyzované tracky); u každého bodu je zdroj a štítek.
+> **Jak poskládat neurofunk track od intra po outro tak, aby měl tah.** Nejde o encyklopedii, ale o postup: co má která sekce dělat, čím se staví napětí, jak se dělá druhý drop jiný a co když se zasekneš. Vše je vytěžené z rozborů v 60 Rozbory — přehled (workshopy, kurzy, projekty `.als`, analyzované tracky); u každého bodu je zdroj a štítek.
 > **Štítky.** Jistota: `naměřeno` (spektrální analýza, stemy, `.als`) · `kurz` (řečeno nebo ukázáno v kurzu) · `odhad` (moje syntéza). Pravidlo: **[K]** konsenzus ≥ 3 zdroje · **[P]** podmíněné (platí v určitém kontextu) · **[Š]** metoda jednoho producenta nebo školy · **[D]** k ověření.
-> **Co tu není.** Zvukový design a mix jednotlivých vrstev (viz 03 Zvuk a mix), nastavení šablony, vokální texty. **Meze:** formy z cizích tracků jsou měřené z plného mixu (hranice sekcí ±pár barů); bary jsou přepočet ze sekund.
+> **Co tu není.** Zvukový design a mix jednotlivých vrstev (viz 20 Basa, 21 Bicí, 40 Mix a master), vokální texty. **Meze:** formy z cizích tracků jsou měřené z plného mixu (hranice sekcí ±pár barů); bary jsou přepočet ze sekund.
 
 ---
 

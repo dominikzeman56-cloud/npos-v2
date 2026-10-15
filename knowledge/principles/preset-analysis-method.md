@@ -6,7 +6,7 @@ status: conditional
 confidence: estimated
 source_type: personal_observation
 source_ids: []
-vault_note: 01 Principy
+vault_note: 10 Principy
 updated: 2026-10-15
 ---
 
@@ -15,7 +15,7 @@ updated: 2026-10-15
 *Zdroj v repu:* `preset-analysis-method.md` · `personal_observation` · `odhad` (0/30 presetů analyzováno *ve schématu*).
 **Princip:** preset je výchozí bod; hledá se **vzor výroby** (proč je postaven tak), ne hodnoty parametrů. Schéma výstupu je v BLUEPRINTu §4.3.
 **Postup:** (1) načíst ve zdroji, zdokumentovat po kategoriích: oscilátory, filtr, modulace, FX řetěz, makra · (2) zařadit podle výčtu `sub|body|movement|noise|lead|pad|fx|other` · (3) vytáhnout *jeden znovupoužitelný princip* · (4) jistota: `measured` jen pro hodnoty přečtené z UI synthu, „proč" je `estimated`/`hypothesis`, pokud nepochází z autorova vysvětlení.
-**Stav dat:** ~15 presetů je zdokumentováno **v próze** (build sheety: Abis, Burr Oak, Ekwols ×3, Magnetude, Mefjus ×2, Pythius RE52REVIVE02 / Current Wompbassaarp3, Phenom roar, Skullstep, Prolix MID REESE, Operator FM, PitchBend, Stab) — úkol je převod do schématu (03 Zvuk a mix kap. 3 a 12).
+**Stav dat:** ~15 presetů je zdokumentováno **v próze** (build sheety: Abis, Burr Oak, Ekwols ×3, Magnetude, Mefjus ×2, Pythius RE52REVIVE02 / Current Wompbassaarp3, Phenom roar, Skullstep, Prolix MID REESE, Operator FM, PitchBend, Stab) — úkol je převod do schématu (20 Basa, kap. 3. Archetypy basů, 70 Data a měření).
 **Kategorie kandidátů archetypů (nepovyšovat, dokud se neopakují v datech):** bass — reese foundation, growl (filter LFO), mid-bass texturer (FM), sub vrstva; lead — acid, supersaw, digital, formant; FX — riser, downlifter, atmosférický pad, impact.
 **Umístění presetů Serum:** cesty a oprava rozbitých odkazů na wavetables viz `07 Nástroje`.
 

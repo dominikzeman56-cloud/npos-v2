@@ -6,7 +6,7 @@ status: canon
 confidence: estimated
 source_type: producer_course
 source_ids: [skullstep-rave-lead]
-vault_note: 04 Producenti
+vault_note: 50 Producenti
 updated: 2026-10-15
 ---
 

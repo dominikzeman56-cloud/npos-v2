@@ -6,7 +6,7 @@ status: canon
 confidence: measured
 source_type: producer_course
 source_ids: [abis-reese-fm-masterclass, abis-start-to-finish, abis-grains-of-sooner, abis-dnb-academy-tune]
-vault_note: 04 Producenti
+vault_note: 50 Producenti
 updated: 2026-10-15
 ---
 

@@ -7,7 +7,7 @@ rule_label: consensus
 confidence: measured
 source_type: producer_course
 source_ids: [letsynthesize-noisia-course, pythius-template-workflow, ekwols-reese-layering, phenom-layering, dont-play-skeleton]
-vault_note: 01 Principy
+vault_note: 10 Principy
 updated: 2026-10-15
 ---
 

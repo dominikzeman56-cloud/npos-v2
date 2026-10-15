@@ -7,7 +7,7 @@ rule_label: school
 confidence: measured
 source_type: producer_course
 source_ids: [mefjus-remix-another-life, letsynthesize-noisia-course, ed-rush-killbox-valkyrie-podcast]
-vault_note: 01 Principy
+vault_note: 10 Principy
 updated: 2026-10-15
 ---
 
@@ -15,6 +15,6 @@ updated: 2026-10-15
 
 **Pravidlo:** z producenta se bere *co rozhoduje a proč*, ne kopie zvuku. Žádné životopisy.
 **Důkaz:** Mefjus „over-exaggerate, ne nahradit"; LS: „není fér vzít bicí a použít je přímo" (jen transient se půjčuje); Ed Rush & Killbox: prompt „ve stylu konkrétního producenta" je „ultimate cheat code" bez smyslu řemesla. `naměřeno`.
-**V session:** u každého převzatého triku zapsat *proč funguje* (princip) a *co nekopírovat* (04 Producenti).
+**V session:** u každého převzatého triku zapsat *proč funguje* (princip) a *co nekopírovat* (50 Producenti).
 
 > Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.

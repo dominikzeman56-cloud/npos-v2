@@ -872,6 +872,8 @@ async function init() {
   NAV.max = curI();
   if (hash === ':graph') { openGraph({ hist: 'replace' }); return; }
   if (hash && S.noteSet.has(hash)) { openNote(hash, { hist: 'replace' }); return; }
+  const start = idx.notes.find((n) => /^00 Start\.md$/i.test(n.path))?.path;
+  if (!S.tabs.length && start) { openNote(start, { hist: 'replace' }); return; } // first visit: vault entry point
   syncHistory('replace');
   renderAll();
 }

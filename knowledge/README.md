@@ -1,6 +1,6 @@
 # Znalostní vrstva (`knowledge/`)
 
-Strojově čitelný kánon NPOS (vrstva 2). Lidská podoba žije ve vaultu `Hudební produkce` (kap. 00–08); soubory tady se z ní **generují** (`python tools/sync_knowledge.py`, vault z env `NPOS_VAULT`) a ručně se needitují. Tok a podmínky povýšení: `docs/KNOWLEDGE_PIPELINE.md`.
+Strojově čitelný kánon NPOS (vrstva 2). Lidská podoba žije ve vaultu `Hudební produkce` (sekce 00–90, vstup `00 Start`); soubory tady se z ní **generují** (`python tools/sync_knowledge.py`, vault z env `NPOS_VAULT`) a ručně se needitují. Tok a podmínky povýšení: `docs/KNOWLEDGE_PIPELINE.md`.
 
 ## Pravidlo pravdivosti
 

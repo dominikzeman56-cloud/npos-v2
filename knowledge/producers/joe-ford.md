@@ -6,7 +6,7 @@ status: canon
 confidence: estimated
 source_type: ableton_project
 source_ids: [joe-ford-bassgorilla-course]
-vault_note: 04 Producenti
+vault_note: 50 Producenti
 updated: 2026-10-15
 ---
 

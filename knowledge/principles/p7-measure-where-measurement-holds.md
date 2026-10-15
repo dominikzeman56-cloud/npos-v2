@@ -7,7 +7,7 @@ rule_label: consensus
 confidence: measured
 source_type: track_analysis
 source_ids: [dont-play-skeleton, breach-balron-audio, sinister-souls-raido-restless]
-vault_note: 01 Principy
+vault_note: 10 Principy
 updated: 2026-10-15
 ---
 

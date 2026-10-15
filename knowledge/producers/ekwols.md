@@ -6,7 +6,7 @@ status: canon
 confidence: measured
 source_type: track_analysis
 source_ids: [ekwols-reese-layering, ekwols-stab-accent, ekwols-harmonic-chord]
-vault_note: 04 Producenti
+vault_note: 50 Producenti
 updated: 2026-10-15
 ---
 

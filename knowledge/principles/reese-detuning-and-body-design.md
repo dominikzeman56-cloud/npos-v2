@@ -6,7 +6,7 @@ status: canon
 confidence: measured
 source_type: producer_course
 source_ids: [abis-reese-fm-masterclass, pythius-reese-tutorial, phenom-roar]
-vault_note: 01 Principy
+vault_note: 10 Principy
 updated: 2026-10-15
 ---
 
@@ -24,6 +24,6 @@ updated: 2026-10-15
 - **Stereo kontrola každé basové vrstvy:** v Mid-Side utilitě sólovat mono (sub) složku — zda se nehádá široká horní vrstva s mono low endem.
 - **„Dvě basové linky bez soudržnosti"** je skutečné selhání: spojit shodným zpracováním a šířkou (sdílený chorus na groupě; Abis).
 **Selhání:** boostnutý fundament mizí po distorzi (chyba pořadí EQ), reese po přidání subu plochá, dvě basy v jedné sekci nesouvisí, samplové wavetables bez low endu.
-**Doplnění z konsolidace:** tři mechanismy pohybu (detune / detune + moderní post / LFO bez detune a FM; Pythius Reese); `RE52REVIVE02` (WT z detunované saw s note-triggered LFO); roar = pitch obálka nahoru-dolů 3 st (Phenom) — archetypy v 03 Zvuk a mix kap. 3.
+**Doplnění z konsolidace:** tři mechanismy pohybu (detune / detune + moderní post / LFO bez detune a FM; Pythius Reese); `RE52REVIVE02` (WT z detunované saw s note-triggered LFO); roar = pitch obálka nahoru-dolů 3 st (Phenom) — archetypy v 20 Basa, kap. 3. Archetypy basů.
 
 > Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.

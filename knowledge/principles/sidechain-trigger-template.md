@@ -6,7 +6,7 @@ status: canon
 confidence: measured
 source_type: producer_course
 source_ids: [abis-start-to-finish, joe-ford-bassgorilla-course, pythius-template-workflow]
-vault_note: 01 Principy
+vault_note: 10 Principy
 updated: 2026-10-15
 ---
 
@@ -18,7 +18,7 @@ updated: 2026-10-15
 - **Tiché MIDI spouštěče místo sidechain kompresorů:** `KICK SC TRIGGER`, `SNARE SC TRIGGER` spouštějí ducking (LFO tool / ShaperBox / Duck) na sidechain group; nakreslená křivka dává víc kontroly než attack/release kompresoru.
 - **Umístění trigger klipů *je* návrh sidechainu**, ne dodatečná věc.
 - **Basy žijí v cílové sidechain group** by default — každý nový patch je ducknutý bez nastavování.
-- **Minimální master během psaní:** Maximizer ve výchozím stavu + Utility ~−5 dB jen pro headroom; detailní mix později („volná paleta"). *Pozor:* Audio/Redpill píší s limiterem od první vteřiny (02 Šablona 9.1).
+- **Minimální master během psaní:** Maximizer ve výchozím stavu + Utility ~−5 dB jen pro headroom; detailní mix později („volná paleta"). *Pozor:* Audio/Redpill píší s limiterem od první vteřiny (40 Mix a master, kap. 2. Tři výstupy: psací stav, handoff, release).
 - **Ladění:** nejčastější „nefunguje sidechain" = trigger klipy nejsou zapnuté/routované.
 - **Nevyřešeno:** klikání LFO toolu — smoothing křivky ho snižuje, ne odstraňuje (ShaperBox `Smooth` ~28 %).
 **Konsenzus tří zdrojů (Abis, Pythius, Ford): dva tiché MIDI spouštěče, ne jeden audio sidechain.** `naměřeno`. Struktura: Kick SC Trigger, Snare SC Trigger → LFO tool na Bass/sidechain group; Kick, Snare, Hats pod Drums group.

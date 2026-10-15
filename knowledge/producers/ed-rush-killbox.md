@@ -6,7 +6,7 @@ status: canon
 confidence: measured
 source_type: interview
 source_ids: [ed-rush-killbox-valkyrie-podcast]
-vault_note: 04 Producenti
+vault_note: 50 Producenti
 updated: 2026-10-15
 ---
 

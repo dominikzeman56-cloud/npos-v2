@@ -24,4 +24,4 @@ Devět principů NPOS (P1–P9; závazné znění v `docs/BLUEPRINT.md`, kap. 4)
 | `vocal-texture-and-foreshadowing` | předznamenání dropu |
 | `candidates` | kandidáti, kteří čekají na ověření v datech |
 
-Povyšování a degradace: `docs/KNOWLEDGE_PIPELINE.md`. Lidská podoba: vault `01 Principy`.
+Povyšování a degradace: `docs/KNOWLEDGE_PIPELINE.md`. Lidská podoba: vault `10 Principy`.

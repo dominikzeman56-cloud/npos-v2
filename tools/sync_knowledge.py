@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """sync_knowledge.py - vygeneruje knowledge/ (krome sources.jsonl) z kanonu ve vaultu.
 
-Vault (Obsidian) je zdroj pravdy pro lidsky kanon (01 Principy, 03 Zvuk a mix, 04 Producenti,
-06 Navod na aranz); soubory v knowledge/ se z nej generuji a rucne se needituji.
+Vault (Obsidian) je zdroj pravdy pro lidsky kanon (10 Principy, 20 Basa, 50 Producenti,
+30 Aranz); soubory v knowledge/ se z nej generuji a rucne se needituji.
 Cesta k vaultu: env NPOS_VAULT, vychozi D:/ObsidianVault/Hudební produkce (viz DEFAULT_VAULT).
 Registr zdroju knowledge/sources.jsonl se edituje rucne. Po generovani: python tools/check_repo.py
 """
@@ -18,7 +18,11 @@ def rd(n):
 
 def unlink(t):
     t = re.sub(r"\[\[([^\]|]*)\|([^\]]*)\]\]", r"\2", t)
-    t = re.sub(r"\[\[([^\]]*)\]\]", lambda m: m.group(1).replace("_", " "), t)
+    def plain(target):  # "40 Mix a master#2. Tři výstupy" -> "40 Mix a master, kap. 2. Tři výstupy"
+        note, _, head = target.partition("#")
+        note = note.split("/")[-1].replace("_", " ")
+        return f"{note}, kap. {head}" if head else note
+    t = re.sub(r"\[\[([^\]]*)\]\]", lambda m: plain(m.group(1)), t)
     return t
 
 def fm(d):
@@ -57,7 +61,7 @@ def sections(text, level):
 NOTE = "\n\n> Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.\n"
 
 # ---------- principles ----------
-pr = rd("01 Principy.md")
+pr = rd("10 Principy.md")
 P = [
     ("p1-decision-system", "P1", "canon", "estimated", "consensus", "personal_observation", ["ed-rush-killbox-valkyrie-podcast", "ableton-template-final"]),
     ("p2-mixdown-from-first-second", "P2", "canon", "measured", "consensus", "producer_course", ["redpill-manual", "audio-headroom-2013", "letsynthesize-noisia-course", "pythius-template-workflow", "abis-start-to-finish"]),
@@ -74,7 +78,7 @@ for slug, pid, status, conf, label, stype, srcs in P:
     t, b = secs[pid]
     meta = {"id": slug, "type": "principle", "title": t, "status": status, "rule_label": label,
             "confidence": conf, "source_type": stype, "source_ids": srcs,
-            "vault_note": "01 Principy", "updated": DATE}
+            "vault_note": "10 Principy", "updated": DATE}
     write(f"principles/{slug}.md", meta, f"# {t}\n\n" + unlink(b) + NOTE)
 
 M = [
@@ -90,7 +94,7 @@ for slug, num, status, conf, stype, srcs in M:
     t, b = msecs[num]
     t = t[len(num):].strip()
     meta = {"id": slug, "type": "method", "title": t, "status": status, "confidence": conf,
-            "source_type": stype, "source_ids": srcs, "vault_note": "01 Principy", "updated": DATE}
+            "source_type": stype, "source_ids": srcs, "vault_note": "10 Principy", "updated": DATE}
     write(f"principles/{slug}.md", meta, f"# {t}\n\n" + unlink(b) + NOTE)
 
 # candidates
@@ -103,7 +107,7 @@ write("principles/candidates.md",
                       "audio-headroom-2013", "phenom-layering", "dont-play-skeleton", "prolix-been-about-this", "breach-balron-audio",
                       "redpill-manual", "ed-rush-killbox-valkyrie-podcast", "ekwols-reese-layering",
                       "letsynthesize-preset-files", "pythius-patreon-presets", "enta-serum-presets", "notequal-serum-presets"],
-       "vault_note": "01 Principy", "updated": DATE},
+       "vault_note": "10 Principy", "updated": DATE},
       "# Kandidáti na nové principy\n\n" + unlink(cand.replace("## 3. Kandidáti na nové principy", "").strip()) + NOTE)
 
 write("principles/README.md",
@@ -124,10 +128,10 @@ Devět principů NPOS (P1–P9; závazné znění v `docs/BLUEPRINT.md`, kap. 4)
 | `vocal-texture-and-foreshadowing` | předznamenání dropu |
 | `candidates` | kandidáti, kteří čekají na ověření v datech |
 
-Povyšování a degradace: `docs/KNOWLEDGE_PIPELINE.md`. Lidská podoba: vault `01 Principy`.""")
+Povyšování a degradace: `docs/KNOWLEDGE_PIPELINE.md`. Lidská podoba: vault `10 Principy`.""")
 
 # ---------- producers ----------
-pd = rd("04 Producenti.md")
+pd = rd("50 Producenti.md")
 prof = {t: b for t, b in sections(pd, 3)}
 # skip the blockquote note, studijní tracky
 PRODS = [
@@ -151,7 +155,7 @@ for name, slug, conf, stype, srcs in PRODS:
     body = prof[name].split("\n> **Black Sun")[0].strip()
     meta = {"id": f"producer-{slug}", "type": "producer", "title": name, "status": "canon",
             "confidence": conf, "source_type": stype, "source_ids": srcs,
-            "vault_note": "04 Producenti", "updated": DATE}
+            "vault_note": "50 Producenti", "updated": DATE}
     write(f"producers/{slug}.md", meta, f"# {name}\n\n" + unlink(body) + NOTE)
 
 write("producers/README.md",
@@ -167,7 +171,7 @@ Filozofie, ne životopisy. Každý profil: co rozhoduje a proč · rozhodnutí s
 """ + "\n".join(f"| [{n}]({s}.md) | `{c}` | `{t}` |" for n, s, c, t, _ in PRODS))
 
 # ---------- archetypes ----------
-zm = rd("03 Zvuk a mix.md")
+zm = rd("20 Basa.md")
 a = zm[zm.index("## 3. Archetypy basů"):zm.index("## 4. Pohyb")].split("\n---\n")[0]
 a = a.replace("## 3. Archetypy basů", "").strip()
 write("archetypes/bass.md",
@@ -176,7 +180,7 @@ write("archetypes/bass.md",
        "source_ids": ["abis-reese-fm-masterclass", "pythius-reese-tutorial", "pythius-fearless-remix", "phenom-roar", "letsynthesize-noisia-course",
                       "magnetude-neuro-basses", "burr-oak-harmonic-growl", "ekwols-reese-layering", "prolix-been-about-this",
                       "letsynthesize-preset-files", "pythius-patreon-presets", "enta-serum-presets", "notequal-serum-presets"],
-       "vault_note": "03 Zvuk a mix", "updated": DATE},
+       "vault_note": "20 Basa", "updated": DATE},
       "# Archetypy basů\n\nSeed (řádky 1–5) je v kontraktu BLUEPRINT kap. 5; řádky 6–16 jsou **kandidáti** — do slovníku se povyšují až po opakování v datech.\n\n" + unlink(a) + NOTE)
 
 write("archetypes/README.md",
@@ -199,7 +203,7 @@ def strip_frontmatter(t):
     return t
 
 
-ga = strip_frontmatter(rd("06 Návod na aranž.md"))
+ga = strip_frontmatter(rd("30 Aranž.md"))
 ga = re.split(r"\n## Zdroje\b", ga)[0]  # seznam wikilinků zdrojů je v source_ids
 write("guides/arrangement.md",
       {"id": "guide-arrangement", "type": "guide", "title": "Návod na aranž", "status": "canon",
@@ -210,7 +214,7 @@ write("guides/arrangement.md",
                       "pythius-fearless-remix", "pythius-inquisition", "pythius-template-workflow",
                       "mefjus-remix-another-life", "audio-headroom-2013",
                       "ed-rush-killbox-valkyrie-podcast", "redpill-manual"],
-       "vault_note": "06 Návod na aranž", "updated": DATE},
+       "vault_note": "30 Aranž", "updated": DATE},
       unlink(ga) + NOTE)
 write("guides/README.md",
       {"id": "guides-index", "type": "index", "title": "Návody — rozcestník", "status": "canon",

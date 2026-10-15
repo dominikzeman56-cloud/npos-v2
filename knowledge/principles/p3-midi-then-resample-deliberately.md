@@ -7,7 +7,7 @@ rule_label: conditional
 confidence: measured
 source_type: producer_course
 source_ids: [redpill-manual, audio-headroom-2013, joe-ford-bassgorilla-course, pythius-inquisition, abis-start-to-finish, letsynthesize-noisia-course]
-vault_note: 01 Principy
+vault_note: 10 Principy
 updated: 2026-10-15
 ---
 

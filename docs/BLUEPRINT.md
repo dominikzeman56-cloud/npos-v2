@@ -14,7 +14,7 @@
 **NPOS je:** kánon znalostí s důkazy a mírou jistoty · datová vrstva (analýzy tracků a presetů se schématem) · sada nástrojů nad tím.
 **NPOS není:** encyklopedie · web/dashboard pro produkční rozhodování · chatbot · generátor celých tracků · náhrada sound designu.
 
-**Stav (2026-10-15):** kánon v češtině je napsaný (vault `Hudební produkce`, kap. 00–08); šablona Ableton mimo kánon (kap. 8); `analyze_track.py` funguje; datová vrstva je téměř prázdná (1 analýza ve schématu) a **je to další práce** (kap. 10).
+**Stav (2026-10-15):** kánon v češtině je napsaný (vault `Hudební produkce`, sekce 00–90: vstup `00 Start`); šablona Ableton mimo kánon (kap. 8); `analyze_track.py` funguje; datová vrstva je téměř prázdná (1 analýza ve schématu) a **je to další práce** (kap. 10).
 
 ---
 
@@ -23,8 +23,8 @@
 | Vrstva | Obsah | Kde žije | Pravidlo |
 |---|---|---|---|
 | **0 · surové zdroje** | videa, přepisy, PDF, referenční audio | lokální disk | **nikdy v repu ani ve sdíleném exportu** (placený cizí obsah) |
-| **1 · destilace** | rozbory vlastními slovy, jeden zdroj = jeden rozbor | vault `Hudební produkce\Rozbory`, `05 Rozbory` | archiv zdrojů, odkazuje se na něj |
-| **2 · kánon** | principy, šablona, zvuk a mix, producenti | vault `00–08` (pro lidi) a `knowledge/` (strojově čitelná podoba) | povyšuje se jen přes pipeline (`docs/KNOWLEDGE_PIPELINE.md`) |
+| **1 · destilace** | rozbory vlastními slovy, jeden zdroj = jeden rozbor | vault `60 Rozbory` (Kurzy, Tracky, Redpill manuál) | archiv zdrojů, odkazuje se na něj |
+| **2 · kánon** | principy, basa, bicí, lead/pad/vokál, aranž, mix a master, producenti | vault `10–50`, `70–80` (pro lidi) a `knowledge/` (strojově čitelná podoba) | povyšuje se jen přes pipeline (`docs/KNOWLEDGE_PIPELINE.md`) |
 | **3 · data a nástroje** | analýzy, presety, session logy, korpus, skripty | `data/`, `core/`, `tools/` | schémata jsou v `core/*.schema.json` |
 
 **Tok:** 0 → 1 → 2 → 3. Nový poznatek nejde přímo do kánonu.
@@ -84,7 +84,7 @@ npos-v2/
 
 ## 4. Principy
 
-Plné znění s důkazy a mezemi: `knowledge/principles/` (lidská podoba: vault `01 Principy`). Zde jen znění závazných principů.
+Plné znění s důkazy a mezemi: `knowledge/principles/` (lidská podoba: vault `10 Principy`). Zde jen znění závazných principů.
 
 1. **Rozhodovací systém, ne skládka dokumentace.** Při volbě mezi „víc informací" a „lepší workflow" vyhrává workflow.
 2. **Sound design = mixdown od první vteřiny.** Nový zvuk se hned usadí (hlasitost, frekvence, stereo) a nehýbe se s ním; aranž a mix se nedělí.

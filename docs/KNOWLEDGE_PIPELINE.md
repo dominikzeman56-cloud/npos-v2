@@ -4,7 +4,7 @@ Jak se z cizího zdroje stane poznatek v kánonu. Nahrazuje `PHASE_0_KNOWLEDGE_S
 
 ## Vrstvy (viz BLUEPRINT kap. 2)
 
-`0 surový zdroj → 1 destilace (vault Rozbory) → 2 kánon (vault 00–08 a knowledge/) → 3 data a nástroje`
+`0 surový zdroj → 1 destilace (vault 60 Rozbory) → 2 kánon (vault 10–50, 70–80 a knowledge/) → 3 data a nástroje`
 
 ## Kroky
 

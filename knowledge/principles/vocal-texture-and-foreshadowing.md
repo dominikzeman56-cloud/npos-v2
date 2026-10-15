@@ -6,7 +6,7 @@ status: canon
 confidence: measured
 source_type: producer_course
 source_ids: [abis-intro-vocal, abis-start-to-finish, pythius-template-workflow]
-vault_note: 01 Principy
+vault_note: 10 Principy
 updated: 2026-10-15
 ---
 
@@ -20,6 +20,6 @@ updated: 2026-10-15
 - **Řetěz vokál → pad:** reverb ~100 % wet na jedné vrstvě, mírná distorze (po první příliš agresivní iteraci stažená), duplikát o oktávu níž; všechny zpracované záběry do jedné group, sdílený reverb na groupě (CPU + jednota).
 - **Sekundární prvek (nádech) maskuje umělé místo** v primárním záběru místo opravy záběru.
 - **Tenzní sekce:** projít osobní knihovnu (drony, pady, risery) proti tónině, ponechat jen to, co sedí; **preferovat prvek, který se vrátí v dropu**.
-**Doplnění z konsolidace:** vokální sendy FINAL (Dry / Delay 1/4 / Dist / Shimmer), volume automation před delayem, AI vokál „zničit" (02 Šablona 7.3); „drop 2 má stejnou DNA, jinou špínu" (Pythius, Mefjus).
+**Doplnění z konsolidace:** vokální sendy (Pythius: Dry / Delay 1/4 / Dist / Shimmer), volume automation před delayem, AI vokál „zničit" (22 Lead, pad, vokál); „drop 2 má stejnou DNA, jinou špínu" (Pythius, Mefjus).
 
 > Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.
