@@ -1,0 +1,3 @@
+node_modules/
+# generated export contains vault content: never commit
+site/

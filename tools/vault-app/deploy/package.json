@@ -1,0 +1,9 @@
+{
+  "name": "vault-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vercel/functions": "^3.10.1"
+  }
+}
