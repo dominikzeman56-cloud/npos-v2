@@ -1,30 +1,27 @@
-# Mefjus — Production Philosophy
-
-**Knowledge source type:** `personal_observation` (derived from own workshop-transcript analysis + track listening — promote to `producer_course` only if a formal Mefjus course/workshop is processed through the Phase 0.5 Issue pipeline)
-
-## Core Philosophy
-
-"Clean foundation, organic movement." Clarity before character — low end stays clean and mono-compatible; personality is added through modulation that feels organic, not through aggression or distortion.
-
-## Decisions (actionable)
-
-- Bass architecture: clean `sub` (sine) + warm `body` (saw/square) + filter-driven `movement` layer. No `noise`/texture layer by default. `[estimated]`
-- Movement is the primary sonic interest — prioritize modulation depth/shape over harmonic distortion. `[estimated]`
-- Arrangement is simpler and more groove-oriented than Noisia; section transitions happen through filtering, not FX throws/risers. `[hypothesis]`
-- Mastering target: `loudness_strategy: controlled`, ~-6 LUFS. `[measured]`
-
-## What NOT to copy
-
-Don't stack aggressive distortion/noise layers here — that contradicts the clean-foundation philosophy. If a track needs more edge, that's a different producer's approach (see Noisia/Black-Sun-Empire once converted).
-
-## Reference tracks
-
-Stink, Senses, Phosphene, Blinker. "Zenith" (ft. flowanastasia) has a separate deep-dive from a track-insights transcript — candidate for its own `data/tracks/` entry rather than folded in here.
-
-## Related
-
-- `knowledge/principles/layer-separation-bass.md`
-- Archetype candidate: `clean-sub-sine` (already in BLUEPRINT §3 seed list)
-
 ---
-*Converted from `Producer-Knowledge/Mefjus.md` in networkfunk-production-os, 2026-08-02. Original gear-list and generic bio-style sections (Sound Design tool list, Mixing/Mastering as separate un-tagged sections) dropped — philosophy only, per Vision.*
+id: producer-mefjus
+type: producer
+title: Mefjus
+status: canon
+confidence: measured
+source_type: producer_course
+source_ids: [mefjus-masterclass, mefjus-remix-another-life, mefjus-zenith-track-insights]
+vault_note: 04 Producenti
+updated: 2026-10-15
+---
+
+# Mefjus
+
+**Filozofie.** **„Čistý základ, organický pohyb."** Jasnost před charakterem: low end čistý a mono-kompatibilní; osobnost přichází z modulace, která zní organicky, ne z agrese. V remixu **over-exaggerate, ne nahradit**.
+**Rozhodnutí:**
+- Basa = čistý `sub` (sine) + teplý `body` (saw/square) + filtrem tažený `movement`; **bez `noise` vrstvy by default**. `[odhad]`
+- **Pohyb je hlavní zajímavost** — hloubka a tvar modulace před harmonickou distorzí; přechody **filtrem, ne FX hity**. `[odhad]` / `[hypotéza]`
+- **Kick přes Coarse Pitch (Env 2 ≈ +40)**, snare sine + noise + sampler transient, invert test fáze; **Macro Magic** (Reverb + Delay na jednom makru, automace před breakdownem). `[odhad]`
+- **Reese architektura:** sine sub, harmonická sine s key trackingem, PM vrstva (neroutovaná do výstupu), glue vrstvy přes send bus s gate-LFO, phaser send přes 8 barů; **lineární pitch drift 0 → −3 cent** na bounced audiu. `[naměřeno]`
+- **Remix:** zachovat DNA (kick originálu pod vlastním), chop-and-rebuild (sound on the one + rhythm in between), risery z materiálu originálu. `[naměřeno]`
+- *Zenith (Track Insights, přepis; `odhad`):* čistý sub sine, zatlačené low-mids, lineární („německá") aranž, vokálový stem přepitchovaný dolů pro temnější charakter, outro zranitelnější a jam-like.
+**Nekopírovat.** Nestackovat agresivní distorzi/šum — rozporuje filozofii; potřebuješ-li víc hrany, je to jiný přístup (např. styl Noisia podle kurzu Letsynthesize).
+**Reference (ověřeno).** *Zenith* (Mefjus ft. flowanastasia) — workshop Track Insights, lokální video a přepis.
+**Zdroje.** Mefjus Masterclass · Mefjus Remix Philosophy Another Life.
+
+> Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.

@@ -1,5 +1,5 @@
-# Tracks
+# Tracky
 
-One directory per analyzed track: `<id>/meta.json`, `<id>/analysis.json` (per `docs/BLUEPRINT.md` §4.2), and optional `<id>/notes.md`.
+Jeden adresář na analyzovaný track: `<id>/meta.json`, `<id>/analysis.json` (podle `core/track-analysis.schema.json`), volitelně `<id>/build-sheet.json` a `<id>/notes.md`.
 
-Empty until Skateboard step 3 ("The First Analysis").
+Pravidla: cizí track musí mít záznam v `knowledge/sources.jsonl` (`source_id`); každé pole analýzy nese `confidence` a `basis`; basová modulace z plného mixu je nejvýš `hypothesis`. Poznámky „po sluchu" k trackům, jejichž existenci nelze ověřit, se sem nezapisují.

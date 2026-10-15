@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NPOS Track Analysis",
+  "description": "Výstup analyze_track.py + ruční doplnění. Každé tvrzení nese confidence (measured/estimated/hypothesis) a basis (z čeho je změřeno). Modulace basy z plného mixu je nejvýš hypothesis (hi-haty kontaminují obálku, viz docs/BLUEPRINT.md §7).",
+  "type": "object",
+  "required": ["id", "mode", "analyzed", "method", "confidence_overall"],
+  "definitions": {
+    "confidence": { "type": "string", "enum": ["measured", "estimated", "hypothesis", "mixed", ""] },
+    "basis": {
+      "type": "string",
+      "enum": ["full_mix", "stems", "project_file", "course_video", "course_files", "listening", "own_work"]
+    }
+  },
+  "properties": {
+    "id": { "type": "string" },
+    "mode": { "type": "string", "enum": ["quick", "deep"] },
+    "analyzed": { "type": "string", "format": "date" },
+    "source_id": { "type": "string", "description": "Záznam v knowledge/sources.jsonl, pokud jde o cizí track." },
+    "method": {
+      "type": "object",
+      "required": ["tooling"],
+      "properties": {
+        "tooling": { "type": "string" },
+        "stems": { "type": "boolean" },
+        "basis": { "$ref": "#/definitions/basis" },
+        "notes": { "type": "string" }
+      }
+    },
+    "confidence_overall": { "$ref": "#/definitions/confidence" },
+    "structure": {
+      "type": "object",
+      "properties": {
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "start_sec", "end_sec"],
+            "properties": {
+              "name": { "type": "string" },
+              "start_sec": { "type": "number" },
+              "end_sec": { "type": "number" }
+            }
+          }
+        },
+        "notes": { "type": "string" },
+        "confidence": { "$ref": "#/definitions/confidence" }
+      }
+    },
+    "dynamics": {
+      "type": "object",
+      "properties": {
+        "crest_factor_drop_db": { "type": ["number", "null"] },
+        "loudness_strategy": { "type": "string", "enum": ["crushed", "controlled", "open", ""] },
+        "lufs_integrated": { "type": ["number", "null"] },
+        "notes": { "type": "string" },
+        "confidence": { "$ref": "#/definitions/confidence" }
+      }
+    },
+    "bass": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["growl", "reese", "hybrid", "sub_led", "other", ""] },
+        "type_confidence": { "$ref": "#/definitions/confidence" },
+        "archetype": { "type": "string" },
+        "layers": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["sub", "body", "movement", "noise", "texture"] }
+        },
+        "energy": {
+          "type": "object",
+          "properties": {
+            "sub_rel_db": { "type": ["number", "null"] },
+            "fundament_rel_db": { "type": ["number", "null"] },
+            "profile": { "type": "string", "enum": ["sub_dominant", "fundament_dominant", "balanced", ""] },
+            "notes": { "type": "string" }
+          }
+        },
+        "modulation": {
+          "type": "object",
+          "properties": {
+            "primary_hz": { "type": ["number", "null"] },
+            "grid_match": { "type": "string", "enum": ["1/4", "1/8", "1/16", "1/32", "off_grid", "unknown"] },
+            "secondary_hz": { "type": "array", "items": { "type": "number" } },
+            "source": {
+              "type": "string",
+              "enum": ["lfo_grid", "note_rhythm", "kick_sidechain", "detune_beating", "unknown"],
+              "description": "Co modulaci způsobuje. Z plného mixu zpravidla unknown."
+            },
+            "basis": { "$ref": "#/definitions/basis" },
+            "confidence": { "$ref": "#/definitions/confidence" },
+            "detection": { "type": "string" }
+          }
+        },
+        "timbre": {
+          "type": "object",
+          "properties": { "spectral_centroid_hz": { "type": ["number", "null"] }, "notes": { "type": "string" } }
+        },
+        "stereo": {
+          "type": "object",
+          "properties": {
+            "sub_side_db": { "type": ["number", "null"] },
+            "fundament_side_db": { "type": ["number", "null"] },
+            "notes": { "type": "string" }
+          }
+        },
+        "reese_vs_growl_test": {
+          "type": "object",
+          "properties": {
+            "envelope_vs_grid": { "type": "string" },
+            "hi_res_fft_350_900": { "type": "string" },
+            "conclusion": { "type": "string" }
+          }
+        },
+        "body_design": {
+          "type": "object",
+          "properties": {
+            "primary": {
+              "type": "string",
+              "enum": ["fm", "wavetable", "detune_reese", "filter_growl", "sample", "hybrid", "other", ""]
+            },
+            "post": { "type": "array", "items": { "type": "string" } },
+            "confidence": { "$ref": "#/definitions/confidence" }
+          }
+        },
+        "confidence": { "$ref": "#/definitions/confidence" }
+      }
+    },
+    "lead": { "type": "object" },
+    "midi_intent": { "type": "object" },
+    "drums": { "type": "object" },
+    "stereo_global": {
+      "type": "object",
+      "properties": {
+        "low_mono_below_hz": { "type": "number" },
+        "rule": { "type": "string" },
+        "confidence": { "$ref": "#/definitions/confidence" }
+      }
+    },
+    "production_decisions": { "type": "array", "items": { "type": "string" } },
+    "recreate_workflow": { "type": "array", "items": { "type": "string" } },
+    "lessons": { "type": "array", "maxItems": 5, "items": { "type": "string" } },
+    "related_archetypes": { "type": "array", "items": { "type": "string" } },
+    "usable_for": { "type": "array", "items": { "type": "string" } },
+    "fields_confidence": { "type": "object" }
+  }
+}

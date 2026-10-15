@@ -1,18 +1,28 @@
-# NPOS Vision
+# NPOS — Vize
 
-NPOS (Neurofunk Production System) is a production decision system and a data engine. It is not an encyclopedia. It is not a web app. It is not a chatbot.
+**NPOS (Neurofunk Production System)** je rozhodovací systém a datový stroj pro produkci neurofunku/DnB. Není to encyklopedie, webová aplikace ani chatbot.
 
-## The Prime Directive
+## Hlavní direktiva
 
-Whenever there is a choice between more information and better workflow, always choose better workflow.
+Kdykoli stojí proti sobě „víc informací" a „lepší workflow", vyhrává workflow.
 
-## The Scorched Earth Mandate
+## Mandát: žádný balast, žádná nepodložená znalost
 
-- Do not migrate old baggage. No old markdown files, no old web UIs. Start empty.
-- Data is the product, not the code. The holy grail is the `data/corpus/tracks.jsonl` file.
-- Physical enforcement. Philosophy means nothing if the DAW doesn't enforce it.
-- Build the skateboard first. Do not build the query engine before you have analyzed one track.
+(Nahrazuje původní „Scorched Earth". Mazat všechno naslepo se ukázalo jako chyba stejně jako dědit všechno naslepo: původní repo bylo prázdné, ale naplnilo se tvrzeními, která nikdo neověřil.)
 
-## Success Metric
+- **Dědí se jen to, co má zdroj.** Starý obsah vstupuje jen přes pipeline (`docs/KNOWLEDGE_PIPELINE.md`) a s ověřeným záznamem v `knowledge/sources.jsonl`. Co zdroj nemá, se nepíše.
+- **Vault je archiv zdrojů** (destilace jednotlivých kurzů, projektů a analýz). **Repo je strojově čitelný kánon a data.** Nikdy opačně a nikdy obojí zvlášť psané ručně.
+- **Data jsou produkt, kód je prostředek.** Svatý grál je `data/corpus/tracks.jsonl` — ale až z reálných, poctivě označených analýz.
+- **Fyzické vynucení.** Filozofie nic neznamená, pokud ji DAW nevynucuje: pravidla žijí v šabloně (routing, skupiny, lokátory, limiter), ne v textu.
+- **Stavět od skateboardu.** Dotazovací vrstva až po tom, co existuje dost analyzovaných tracků, aby měla co dotazovat.
+- **Placený cizí obsah (videa, přepisy, PDF) zůstává lokálně.** Do repa a do sdílení jde jen vlastní destilace.
 
-Used in every session. Better decisions made faster. Not more files generated.
+## Měřítko úspěchu
+
+Použití v každé session. Lepší rozhodnutí za kratší čas. Ne víc vygenerovaných souborů, ne víc znalostí.
+
+## Co to znamená v praxi
+
+- Znalost se rozšiřuje, **když se v práci zasekneš**, ne preventivně.
+- Radši 10 poctivě změřených tracků než 100 dojmů.
+- Když si nejsme jistí, říkáme to: `measured` / `estimated` / `hypothesis` — a u neověřené existence zdroje vůbec nic nepíšeme.

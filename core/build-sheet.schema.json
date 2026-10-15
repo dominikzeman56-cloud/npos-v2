@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "NPOS Build Sheet",
+  "title": "NPOS Build Sheet (stavební list)",
+  "description": "Rozhodnutí o jednom tracku: cíl, reference, archetyp basy, vrstvy. Výčty viz docs/BLUEPRINT.md §5.",
   "type": "object",
   "required": ["id", "title", "created", "bpm", "key", "reference", "goal"],
   "properties": {
@@ -13,12 +14,15 @@
     },
     "bpm": { "type": "number" },
     "key": { "type": "string" },
+    "template": { "type": "string", "description": "Např. NEUROFUNK_TEMPLATE_FINAL." },
     "reference": {
       "type": "object",
+      "description": "Reference musí být ověřený zdroj: source_id z knowledge/sources.jsonl nebo track_id z data/tracks.",
       "properties": {
         "track": { "type": "string" },
         "artist": { "type": "string" },
-        "why": { "type": "string" }
+        "why": { "type": "string" },
+        "source_id": { "type": "string" }
       }
     },
     "bass": {
@@ -29,7 +33,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["sub", "body", "movement", "noise"]
+            "enum": ["sub", "body", "movement", "noise", "texture"]
           }
         }
       }

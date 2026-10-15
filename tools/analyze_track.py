@@ -385,7 +385,8 @@ def build_analysis(id_: str, bpm: float, key: str, title: str, mode: str, audio_
         "method": {
             "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
             "stems": False,
-            "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low.",
+            "basis": "full_mix",
+            "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low. Bass modulation from a full mix is at most a hypothesis (hi-hats contaminate the envelope; see docs/BLUEPRINT.md section 7).",
         },
         "confidence_overall": "measured" if mode == "quick" else "mixed",
         "structure": {
@@ -410,7 +411,7 @@ def build_analysis(id_: str, bpm: float, key: str, title: str, mode: str, audio_
                 "profile": m["profile"],
                 "notes": "",
             },
-            "modulation": m["modulation"],
+            "modulation": {**m["modulation"], "source": "unknown", "basis": "full_mix", "confidence": "hypothesis"},
             "timbre": {"spectral_centroid_hz": m["spectral_centroid_hz"], "notes": ""},
             "stereo": {"sub_side_db": m["sub_side_db"], "fundament_side_db": m["fundament_side_db"], "notes": ""},
             "reese_vs_growl_test": m["reese_vs_growl"] or {"envelope_vs_grid": "", "hi_res_fft_350_900": "", "conclusion": "not run (quick mode)"},

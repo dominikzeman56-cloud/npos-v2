@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NPOS Source Registry Entry",
+  "description": "Jeden řádek v knowledge/sources.jsonl. Každá zmínka tracku, producenta, kurzu nebo čísla v knowledge/ musí vést na záznam tady nebo na data/tracks/<id>. Neověřený zdroj se do knowledge nepíše.",
+  "type": "object",
+  "required": ["id", "kind", "title", "verified_by", "verified_on"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "kind": {
+      "type": "string",
+      "enum": ["course", "video", "track", "podcast", "project", "manual", "memory"]
+    },
+    "title": { "type": "string" },
+    "author": { "type": "string" },
+    "label_or_platform": { "type": "string" },
+    "year": { "type": ["integer", "null"] },
+    "access": {
+      "type": "string",
+      "enum": ["owned_paid", "public", "local_file", "own_work", "membership_gated"]
+    },
+    "verified_by": {
+      "type": "string",
+      "enum": ["local_file", "transcript", "project_file", "web", "screen", "own_work"],
+      "description": "Jak víme, že zdroj existuje a říká, co mu připisujeme."
+    },
+    "verified_on": { "type": "string", "format": "date" },
+    "evidence_url": { "type": "string" },
+    "vault_note": { "type": "string", "description": "Cesta k rozboru ve vaultu (vrstva 1), relativní k vaultu." },
+    "redistribution": {
+      "type": "string",
+      "enum": ["own_distillation_only", "public", "none"],
+      "description": "Placené kurzy: jen vlastní destilace, žádné přepisy ani videa mimo lokální disk."
+    },
+    "basis": {
+      "type": "string",
+      "enum": ["full_mix", "stems", "project_file", "course_video", "course_files", "listening", "own_work"]
+    },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": false
+}

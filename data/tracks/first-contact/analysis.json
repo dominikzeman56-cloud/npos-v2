@@ -5,7 +5,8 @@
   "method": {
     "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
     "stems": false,
-    "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low."
+    "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low. Modulace basy z plneho mixu je nejvyse hypothesis (hi-haty kontaminuji obalku, BLUEPRINT kap. 7).",
+    "basis": "full_mix"
   },
   "confidence_overall": "mixed",
   "structure": {
@@ -51,7 +52,10 @@
         3.62,
         4.35
       ],
-      "detection": "bandpass 60-300 -> Hilbert envelope -> FFT"
+      "detection": "bandpass 60-300 -> Hilbert envelope -> FFT",
+      "source": "unknown",
+      "basis": "full_mix",
+      "confidence": "hypothesis"
     },
     "timbre": {
       "spectral_centroid_hz": 4697.5,

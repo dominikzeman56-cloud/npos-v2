@@ -1,24 +1,20 @@
-# Burr Oak — Production Philosophy
-
-**Knowledge source type:** `personal_observation` — no course/interview processed yet through Phase 0.5. Treat as a low-confidence placeholder until a real source is run through the Issue pipeline.
-
-## Core Philosophy
-
-"Technical mastery, clean production, emotional depth." Technical excellence exists in service of emotional impact, not as an end in itself — complexity stays organized, never messy.
-
-## Decisions (actionable)
-
-- Sound design: complex layering kept clean and organized rather than dense-and-muddy; warmth in the processing chain. `[hypothesis]`
-- Arrangement leans on space/density contrast — complex structures built around emotional builds, not just drop-to-drop energy. `[hypothesis]`
-- Mastering target: `loudness_strategy: controlled`, ~-6 LUFS, full frequency balance. `[hypothesis]`
-
-## What NOT to copy
-
-Don't use as a reference for raw/aggressive impact-first production (see Aggressor Bunx instead) — this philosophy prioritizes clarity and organization over rawness.
-
-## Reference tracks
-
-"I Want You" (with Magnetude), Hollow, Static, Binary.
-
 ---
-*Converted from `Producer-Knowledge/Burr-Oak.md`, 2026-08-02. Source reads as a generic filled-in template, not extracted from a cited source — claims downgraded to `hypothesis`. Needs a real source through Phase 0.5.*
+id: producer-burr-oak
+type: producer
+title: Burr Oak
+status: canon
+confidence: measured
+source_type: track_analysis
+source_ids: [burr-oak-harmonic-growl]
+vault_note: 04 Producenti
+updated: 2026-10-15
+---
+
+# Burr Oak
+
+**Filozofie.** **Technická vyspělost ve službě emoce; složitost zůstává organizovaná, ne špinavá.** Zvuk: jeden silný fundament s bohatými harmonickými.
+**Rozhodnutí:** **single-fundament harmonic growl** (jeden osc, 2-stage waveshaping, filtr 0,8–1,5 kHz, pomalé LFO/ENV) — `naměřeno`: špičky 48/102/145/194/296/737 Hz, 48 × 3 = 144 (145,3), 48 × 4 = 192 (193,8), nota G1; **levnější na CPU** a bez rizika, že se vrstvy poperou. Arrangement: kontrast prostoru a hustoty kolem emočních buildů. `[odhad]` (z původního profilu); insert: HP 100 Hz (MID BASS) / 150 Hz (FILLER BASS), Saturator jako druhý stupeň harmonik, Duck z kicku.
+**Nekopírovat.** Jako vzor pro raw/impact-first produkci — to je jiný směr. Camel Fat „v každém tracku" je historický zvyk (plugin zanikl).
+**Reference (ověřeno).** *Diamonds Bootleg* (analyzovaný úsek t≈60–64 s, lokální soubor); *Criminal Romance (Pythius Remix)* jako A/B reference v Pythiusově projektu. **Zdroj:** Burr Oak Harmonic Growl.
+
+> Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.

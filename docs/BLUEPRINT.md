@@ -1,290 +1,235 @@
-# NPOS — Master Blueprint & Holy Grail
+# NPOS — Blueprint (v2)
 
-Single source of truth. The definitive document for the Neurofunk Production System.
+> **Jediný zdroj pravdy o struktuře a kontraktech projektu.** Text je česky. **Identifikátory, výčty, klíče JSON a názvy souborů jsou kontrakt kódu a zůstávají anglicky.**
+> v2 přepsáno 2026-10-15. Nahrazuje v1 (skeleton ze 2026-08-02), která vznikla dřív než znalostní konsolidace: obsahovala profily bez zdroje, odkazy na neexistující tracky a mandát „spálené země", který se ukázal nepoužitelný. Co se změnilo, je na konci (kap. 12).
 
-## 1. Repo Structure (Strict & Enforced)
+---
+
+## 1. Co NPOS je
+
+**NPOS (Neurofunk Production System)** je **rozhodovací systém a datový stroj** pro neurofunk/DnB v Ableton Live. Uživatel je jeden (Domin, Architekt), spolupracují s ním AI agenti.
+
+**Měřítko úspěchu:** lepší rozhodnutí za kratší čas v každé session. Ne počet souborů, ne objem znalostí.
+
+**NPOS je:** kánon znalostí s důkazy a mírou jistoty · jedna Ableton šablona, která fyzicky vynucuje rozhodnutí · datová vrstva (analýzy tracků a presetů se schématem) · sada nástrojů nad tím.
+**NPOS není:** encyklopedie · web/dashboard pro produkční rozhodování · chatbot · generátor celých tracků · náhrada sound designu.
+
+**Stav (2026-10-15):** kánon v češtině je napsaný (vault `Hudební produkce`, kap. 00–08); šablona `NEUROFUNK_TEMPLATE_FINAL` hotová; `analyze_track.py` funguje; datová vrstva je téměř prázdná (1 analýza ve schématu) a **je to další práce** (kap. 10).
+
+---
+
+## 2. Vrstvy znalosti a kam patří
+
+| Vrstva | Obsah | Kde žije | Pravidlo |
+|---|---|---|---|
+| **0 · surové zdroje** | videa, přepisy, PDF, referenční audio | lokální disk | **nikdy v repu ani ve sdíleném exportu** (placený cizí obsah) |
+| **1 · destilace** | rozbory vlastními slovy, jeden zdroj = jeden rozbor | vault `Hudební produkce\Rozbory`, `05 Rozbory` | archiv zdrojů, odkazuje se na něj |
+| **2 · kánon** | principy, šablona, zvuk a mix, producenti | vault `00–08` (pro lidi) a `knowledge/` (strojově čitelná podoba) | povyšuje se jen přes pipeline (`docs/KNOWLEDGE_PIPELINE.md`) |
+| **3 · data a nástroje** | analýzy, presety, session logy, korpus, skripty | `data/`, `core/`, `tools/` | schémata jsou v `core/*.schema.json` |
+
+**Tok:** 0 → 1 → 2 → 3. Nový poznatek nejde přímo do kánonu.
+**Jazyk:** próza česky, identifikátory a výčty anglicky. Překlad nikdy nemění kontrakt.
+
+### 2.1 Pravidlo pravdivosti (zavedeno kvůli incidentu v1)
+V1 `knowledge/` obsahovalo profily vygenerované ze šablony a seznamy „referenčních tracků", které neexistují. Proto:
+1. **Žádný odkaz na track, producenta, kurz ani číslo bez ověřeného zdroje.** Zdroj je záznam v `knowledge/sources.jsonl` (schéma `core/source.schema.json`) nebo adresář `data/tracks/<id>`.
+2. **Ověření** = `local_file` (soubor na disku) · `transcript` · `project_file` · `web` (s URL) · `screen` · `own_work`. Zapisuje se, jak a kdy.
+3. **Neověřené = nezapsané.** Ne „hypotéza se štítkem", ale vůbec ne. Štítek `hypothesis` je pro *interpretaci*, ne pro *existenci zdroje*.
+4. `tools/check_repo.py` toto vynucuje (kap. 9).
+
+---
+
+## 3. Struktura repa (závazná)
 
 ```
 npos-v2/
+├── README.md
 ├── docs/
-│   ├── BLUEPRINT.md              ← This file
 │   ├── VISION.md
+│   ├── BLUEPRINT.md                 ← tento soubor
 │   ├── AGENT_RULES.md
-│   └── PHASE_0_KNOWLEDGE_SYNC.md
+│   └── KNOWLEDGE_PIPELINE.md        ← jak se znalost povyšuje do kánonu
 ├── core/
-│   ├── ableton/                  ← ONE live template only
+│   ├── ableton/                     ← JEDNA živá šablona (FINAL), README s odkazem na spec
+│   ├── source.schema.json
 │   ├── build-sheet.schema.json
+│   ├── track-analysis.schema.json
+│   ├── preset-analysis.schema.json
 │   └── session.schema.json
 ├── knowledge/
-│   ├── principles/                ← reese-vs-growl, fm-body, layers…
-│   ├── archetypes/                ← controlled vocabulary
-│   └── producers/                 ← philosophy only, no bios
+│   ├── README.md                    ← kontrakt frontmatteru
+│   ├── sources.jsonl                ← registr ověřených zdrojů
+│   ├── principles/                  ← principy (P1–P9 + šest z vrstvy 1 + kandidáti)
+│   ├── archetypes/                  ← slovník archetypů s důkazy
+│   └── producers/                   ← filozofie, jen se zdrojem
 ├── data/
-│   ├── tracks/
-│   │   ├── meta.json
-│   │   ├── analysis.json
-│   │   └── notes.md               ← optional free text
-│   ├── presets/
+│   ├── tracks/<id>/{meta.json, analysis.json, notes.md}
+│   ├── presets/<id>.json
 │   ├── sessions/
-│   └── corpus/
-│       ├── tracks.jsonl           ← THE HOLY GRAIL
-│       └── presets.jsonl
+│   └── corpus/{tracks.jsonl, presets.jsonl}   ← generované
 ├── tools/
-│   ├── analyze_preset.py
-│   ├── analyze_track.py
-│   ├── rebuild_track_index.py
-│   └── query_tracks.py
-├── neuroman/                     ← approved 2026-08-02: async LLM orchestrator/session mentor, migrated from networkfunk-production-os
+│   ├── analyze_track.py             ← hotové
+│   ├── check_repo.py                ← kontrola kontraktu a zdrojů
+│   ├── vault-app/                   ← read-only prohlížeč a export vaultu (viz kap. 9)
+│   └── (plánováno: analyze_preset.py, rebuild_track_index.py, query_tracks.py)
+├── neuroman/                        ← legacy, neoživovat (kap. 9)
 └── pyproject.toml
 ```
+**Nové adresáře nejvyšší úrovně jen se souhlasem Architekta** (výjimky: `neuroman/` a `tools/vault-app/`).
 
-**Blocklist (Absolute Zero Tolerance):** web UI, Streamlit hub, auth, synth engine, second frontend, stems pipeline, new top-level folders without approval (exception: `neuroman/`, approved 2026-08-02).
+---
 
-## 2. Principles (Non-Negotiable)
+## 4. Principy
 
-1. **Decision system, not documentation dump.**
-2. **Sound design = mixing from the first moment.**
-3. **Stay in MIDI as long as possible.**
-4. **One layer = one function:** sub | body | movement | noise | stereo | air | texture | fx.
-5. **Producers = philosophies, not copies.**
-6. **Every claim tagged:** `measured` | `estimated` | `hypothesis`.
-7. **Full-mix analysis only (no stems).**
-8. **MIDI intent > note transcription** from masters.
+Plné znění s důkazy a mezemi: `knowledge/principles/` (lidská podoba: vault `01 Principy`). Zde jen znění závazných principů.
 
-## 3. Controlled Vocabularies
+1. **Rozhodovací systém, ne skládka dokumentace.** Při volbě mezi „víc informací" a „lepší workflow" vyhrává workflow.
+2. **Sound design = mixdown od první vteřiny.** Nový zvuk se hned usadí (hlasitost, frekvence, stereo) a nehýbe se s ním; aranž a mix se nedělí.
+3. **V MIDI, dokud se zvuk rozhoduje; resamplovat vědomě.** Resample je tvůrčí krok (groove z bounce), fázový zámek, úleva CPU nebo dodání — ne ústup.
+4. **Jedna vrstva = jedna funkce.** `sub` · `body` · `movement` · `noise` · `texture` (basa) a `lead` · `pad` · `fx`. Zvuk pokrývá záměrně úzké pásmo.
+5. **Producenti jsou filozofie, ne předlohy.** Žádné životopisy, žádné kopie zvuku.
+6. **Každé tvrzení nese jistotu a zdroj.** `measured` · `estimated` · `hypothesis` + odkaz na zdroj (kap. 2.1).
+7. **Měřit tam, kde měření platí.** Výchozí je plný mix (dynamika, spektrum, struktura). **Basové pásmo (modulace, harmonické) se zapisuje ze stemů nebo bass-mute; z plného mixu je to nejvýš `hypothesis`** (hi-haty kontaminují obálku, kap. 7). Zakázáno je budování stem-separation pipeline, ne analýza stemů, které existují.
+8. **Záměr v MIDI má přednost před přepisem not.** Z mastera se berou role, mezery a design.
+9. **Šablona drží dráty, ne spektrum.** Pevné jsou skupiny, routing, sub mimo bass bus, dva MIDI spouštěče sidechainu, lokátory, limiter na masteru. Hodnoty EQ, OTT, šířky a hloubky ducku jsou startovní body.
 
-*These enums are locked. Do not extend without Architect approval.*
+---
 
-**Bass type:** `growl` | `reese` | `hybrid` | `sub_led` | `other`
-**Bass energy profile:** `sub_dominant` | `fundament_dominant` | `balanced`
-**Modulation grid:** `1/4` | `1/8` | `1/16` | `1/32` | `off_grid` | `unknown`
-**Loudness strategy:** `crushed` | `controlled` | `open` *(guide: crest ~4 dB / 5–6 dB / >6 dB)*
-**Layer function:** `sub` | `body` | `movement` | `noise` | `lead` | `pad` | `fx` | `other`
-**Lead playing style:** `held_pad` | `short_stabs` | `riff` | `call_and_response` | `sparse_ornament` | `continuous_line` | `unknown`
-**Lead roles (multi):** `hook` | `answer` | `riser` | `atmosphere` | `stab` | `counter_melody` | `none`
-**Buildup type:** `held_drone_plus_harmonics` | `pitch_riser_gesture` | `filter_only` | `other`
-**Breakdown type:** `atmosphere_no_bass` | `gated_sub_stutter` | `glitch_texture` | `other`
-**Body design primary:** `fm` | `wavetable` | `detune_reese` | `filter_growl` | `sample` | `hybrid` | `other`
-**Knowledge source type:** `producer_course` | `ableton_project` | `preset_pack` | `interview` | `personal_observation` | `other`
+## 5. Slovníky (kontrakt)
 
-**Archetypes (Seed — extend only when repeated in data):**
-`grid-locked-filter-growl` | `slow-grid-growl` | `detuned-unison-reese` | `fm-distorted-body` | `clean-sub-sine` | `serum-overlay-chords`
+Hodnoty jsou **zamčené**. Změna jen se souhlasem Architekta.
 
-## 4. Schemas
+| Slovník | Hodnoty |
+|---|---|
+| `confidence` | `measured` · `estimated` · `hypothesis` |
+| `basis` (z čeho je to změřeno) | `full_mix` · `stems` · `project_file` · `course_video` · `course_files` · `listening` · `own_work` |
+| `rule_label` (kánon) | `consensus` · `conditional` · `school` · `dogma_unverified` |
+| `knowledge status` | `canon` · `candidate` · `deprecated` |
+| `bass.type` | `growl` · `reese` · `hybrid` · `sub_led` · `other` |
+| `bass energy profile` | `sub_dominant` · `fundament_dominant` · `balanced` |
+| `modulation grid` | `1/4` · `1/8` · `1/16` · `1/32` · `off_grid` · `unknown` |
+| `modulation source` | `lfo_grid` · `note_rhythm` · `kick_sidechain` · `detune_beating` · `unknown` |
+| `loudness_strategy` | `crushed` · `controlled` · `open` |
+| `layer function` | `sub` · `body` · `movement` · `noise` · `texture` · `lead` · `pad` · `fx` · `other` |
+| `lead playing style` | `held_pad` · `short_stabs` · `riff` · `call_and_response` · `sparse_ornament` · `continuous_line` · `unknown` |
+| `lead roles` | `hook` · `answer` · `riser` · `atmosphere` · `stab` · `counter_melody` · `none` |
+| `buildup type` | `held_drone_plus_harmonics` · `pitch_riser_gesture` · `filter_only` · `other` |
+| `breakdown type` | `atmosphere_no_bass` · `gated_sub_stutter` · `glitch_texture` · `other` |
+| `body design primary` | `fm` · `wavetable` · `detune_reese` · `filter_growl` · `sample` · `hybrid` · `other` |
+| `knowledge source type` | `producer_course` · `ableton_project` · `preset_pack` · `interview` · `track_analysis` · `personal_observation` · `other` |
+| `source kind` | `course` · `video` · `track` · `podcast` · `project` · `manual` · `memory` |
+| **seed archetypů** | `grid-locked-filter-growl` · `slow-grid-growl` · `detuned-unison-reese` · `fm-distorted-body` · `clean-sub-sine` · `serum-overlay-chords` |
 
-### 4.1 Build Sheet (`core/build-sheet.schema.json`)
+**Referenční hodnoty `loudness_strategy`** (crest v okně dropu): `crushed` ≈ 4 dB · `controlled` 5–6 dB · `open` > 6 dB. Naměřeno u hotových tracků: Restless 5 dB, Breach 6,4–7 dB, Hands Up 8,4 dB, First Contact 6,1 dB (`knowledge/archetypes`, vault `03 Zvuk a mix` kap. 12).
+**Archetypy:** seed se rozšiřuje jen tím, co se opakuje v datech. Kandidáti jsou v `knowledge/archetypes/bass.md` se stavem `candidate`.
+**Co se změnilo ve slovnících proti v1:** `layer function` sjednocen (princip 4 v v1 uváděl jiný seznam než slovník), přibyl `texture`; přibyly `basis`, `modulation source`, `rule_label`, `knowledge status`, `track_analysis` u typů zdrojů.
 
-*Required: id, title, created, bpm, key, reference, goal*
+---
 
-```json
-{
-  "id": "string",
-  "title": "string",
-  "created": "YYYY-MM-DD",
-  "status": "idea|groove|drop|arrange|mix|master|done",
-  "bpm": 0,
-  "key": "string",
-  "reference": { "track": "", "artist": "", "why": "" },
-  "bass": {
-    "archetype": "",
-    "layers": ["sub", "body", "movement", "noise"]
-  },
-  "drums": { "kick_style": "", "snare_style": "" },
-  "lead": { "playing_style": "", "roles": [] },
-  "goal": "",
-  "problem": "",
-  "unique_idea": "",
-  "notes": ""
-}
-```
+## 6. Schémata
 
-### 4.2 Track Analysis (`data/tracks/<id>/analysis.json`)
+**Schémata nejsou opsaná v tomto dokumentu.** Jediný zdroj jsou soubory v `core/`; BLUEPRINT drží jen jejich účel.
 
-```json
-{
-  "id": "",
-  "mode": "quick|deep",
-  "analyzed": "YYYY-MM-DD",
-  "method": {
-    "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
-    "stems": false,
-    "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low."
-  },
-  "confidence_overall": "measured|estimated|mixed|hypothesis",
+| Soubor | Účel |
+|---|---|
+| `source.schema.json` | registr ověřených zdrojů (`knowledge/sources.jsonl`) |
+| `build-sheet.schema.json` | rozhodnutí o jednom tracku (povinné: `id, title, created, bpm, key, reference, goal`) |
+| `track-analysis.schema.json` | analýza tracku (`data/tracks/<id>/analysis.json`), každé pole s `confidence` a `basis` |
+| `preset-analysis.schema.json` | strategie presetu (`data/presets/<id>.json`), ne výpis parametrů |
+| `session.schema.json` | log session (`date, track_id, goal, done, blocked, learned, next`) |
 
-  "structure": {
-    "sections": [{ "name": "", "start_sec": 0, "end_sec": 0 }],
-    "notes": "",
-    "confidence": "estimated"
-  },
+Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_workflow` = seřazené kroky Ableton/MIDI/synth · u každého důležitého pole `confidence`.
 
-  "dynamics": {
-    "crest_factor_drop_db": null,
-    "loudness_strategy": "crushed|controlled|open",
-    "notes": "",
-    "confidence": "measured"
-  },
+---
 
-  "bass": {
-    "type": "growl|reese|hybrid|sub_led|other",
-    "type_confidence": "measured|estimated|hypothesis",
-    "archetype": "",
-    "layers": ["sub", "body", "movement", "noise"],
-    "energy": {
-      "sub_rel_db": null,
-      "fundament_rel_db": null,
-      "profile": "sub_dominant|fundament_dominant|balanced",
-      "notes": ""
-    },
-    "modulation": {
-      "primary_hz": null,
-      "grid_match": "1/8|1/16|off_grid|unknown",
-      "secondary_hz": [],
-      "detection": "bandpass 60-300 -> Hilbert envelope -> FFT"
-    },
-    "timbre": { "spectral_centroid_hz": null, "notes": "" },
-    "stereo": { "sub_side_db": null, "fundament_side_db": null, "notes": "" },
-    "reese_vs_growl_test": {
-      "envelope_vs_grid": "",
-      "hi_res_fft_350_900": "",
-      "conclusion": ""
-    },
-    "body_design": {
-      "primary": "fm|wavetable|detune_reese|filter_growl|hybrid|other",
-      "post": [],
-      "confidence": "estimated"
-    },
-    "confidence": "measured"
-  },
+## 7. Měření
 
-  "lead": {
-    "present": true,
-    "roles": [],
-    "register": "mid_high|high|mid",
-    "playing_style": "call_and_response|sparse_ornament|riff|held_pad|continuous_line|unknown",
-    "density": "sparse|medium|busy",
-    "melodic_motion": "static|small_intervals|leaps|chromatic_run|unknown",
-    "rhythm_vs_drums": "answers_space|locks_with|fills_holes|competes|unknown",
-    "rhythm_vs_bass": "fills_holes|answers_space|competes|unknown",
-    "call_and_response": {
-      "active": true,
-      "call": "bass|stab|drums|fx|other",
-      "response": "lead_phrase|overlay_chords|other",
-      "period_bars": 2,
-      "overlap": false,
-      "notes": ""
-    },
-    "timbre_family": "fm_metallic|saw_lead|pluck|other",
-    "confidence": "estimated"
-  },
+**Metody spolehlivé z plného mixu (`measured`):** RMS křivka (okna 20 ms) a časy sekcí (přibližně) · crest faktor v okně dropu · energie pásem sub 20–60 Hz vs. fundament 60–250 Hz · poměr mid/side po pásmech · spektrální centroid.
 
-  "midi_intent": {
-    "bass": {
-      "playing_style": "held_root|simple_riff|sparse_hits|moving_line|unknown",
-      "rhythm": "continuous_with_sidechain|gated|offbeat_bursts|unknown",
-      "note_area": "",
-      "grid_lock": "1/16_mod|1/8_mod|off_grid_detune|none",
-      "silence_on_kick": true
-    },
-    "lead": {
-      "playing_style": "call_and_response",
-      "phrase_length_beats": 2,
-      "enters_on": "after_call|offbeat",
-      "avoids": ["kick", "snare_downbeat"],
-      "register": "above_body"
-    },
-    "buildup": { "type": "held_drone_plus_harmonics|pitch_riser_gesture|other" },
-    "breakdown": { "type": "gated_sub_stutter|atmosphere_no_bass|other", "bass_present": true },
-    "confidence": "estimated"
-  },
+**Metody slabé z plného mixu (nejvýš `estimated`/`hypothesis`):** výška not leadu v husté polyfonii · přesný FM poměr a index · identita bicích samplů · **modulace basy (obálka 60–300 Hz → Hilbert → FFT vs. mřížka)**.
 
-  "drums": { "kick": "", "snare": "", "groove": "", "notes": "", "confidence": "hypothesis" },
+**Proč je modulace basy z plného mixu nespolehlivá.** Hi-haty a kick vyrábějí v basové obálce falešné 16tinové pruhy. Důkaz: u *Don't Play* dala analýza plného mixu „AM 11,5 Hz = 1/16", ale **izolované stemy žádnou 1/16 modulaci nemají** (obálka 0,72 a 2,15 Hz = rytmus not). U *Breach* jsou obálky 2,90 / 1,45 / 0,72 Hz = kick sidechain. Dále: pyin na basu v plném mixu je kvantizovaný model; „střídání F/A/C" v FFT byl artefakt binu 10,8 Hz (energie kicku).
 
-  "stereo_global": {
-    "low_mono_below_hz": 250,
-    "rule": "mono low-end, open higher",
-    "confidence": "measured"
-  },
+**Protokol pro basové pásmo:**
+1. Existují-li oficiální stemy nebo jde bass-mute → měřit na izolovaném pásmu a zapsat `basis: stems`.
+2. Jinak low-pass ~300 Hz před Hilbertem, výsledek ověřit proti spektrogramu a zapsat `basis: full_mix`, `confidence: hypothesis`, `modulation.source: unknown`.
+3. Na izolovaném pásmu měřit: H2/H3 úroveň subu, mono (side dB), HP bod mid basu (H1/H2 vyříznuté?), liché harmonické, stereo pod/nad 300 Hz a 1 kHz, crossover sub/mid (u *Don't Play* ~62 / ~120 Hz).
 
-  "production_decisions": [],
-  "recreate_workflow": [],
-  "lessons": [],
-  "related_archetypes": [],
-  "usable_for": [],
-  "fields_confidence": {
-    "structure": "estimated",
-    "dynamics": "measured",
-    "bass": "measured",
-    "lead": "estimated",
-    "drums": "hypothesis"
-  }
-}
-```
+**Test reese vs. growl** (pro hlubokou analýzu, jen z izolovaného pásma): vrcholy obálky zamčené na 1/8 nebo 1/16 vůči tempu → growl (LFO) · mimo mřížku a nezávislé na tempu → reese (detune beating) · hi-res FFT 350–900 Hz na držené notě: čisté špičky = pár oscilátorů + modulace, „les" špiček s rozestupem ~2–10 Hz = reese.
 
-### 4.3 Preset Analysis (Summary)
+**Nástroj:** `tools/analyze_track.py` (ffmpeg → numpy/scipy), plný mix, `basis: full_mix`.
 
-*Required: id, name, source, archetype, function (layer function enum)*
-*Fields: oscillator_strategy, routing, filter_strategy, distortion_strategy, modulation, fx_chain, macros, mix_role, lessons, confidence, tags*
+---
 
-### 4.4 Session Log (`data/sessions/`)
+## 8. Šablona Ableton
 
-```json
-{
-  "date": "YYYY-MM-DD",
-  "track_id": "",
-  "goal": "",
-  "done": [],
-  "blocked": "",
-  "learned": "",
-  "next": ""
-}
-```
+**Jedna živá šablona:** `NEUROFUNK_TEMPLATE_FINAL` (Live 12.4.3, 174 BPM, 64 tracků, 5 returnů). Kanonická specifikace je ve vaultu (`02 Šablona`), v `core/ableton/README.md` je odkaz a stav.
+**Pravidla:**
+- Šablona se **needituje bez výslovného souhlasu Architekta**; práce na kopii (sandbox).
+- Změny pravidel jdou přes kánon (`02 Šablona` kap. 13–14: dogmata a experimenty), ne přímo do `.als`.
+- **XML `.als` generovat jen routing, klipy a prázdné sloty.** Plugin XML se nepřenáší z cizích setů a nevymýšlí se z disku (pády; viz `02 Šablona` kap. 12).
+- Lint šablony (7 pravidel: `SUB-TO-MASTER`, `RETURN-HP`, `SC-4BAR`, `WARP-BREAK`, `WARP-TONAL`, `GROUP-COLOR`, `MASTER-LIMITER`) je **read-only**; spec je ve vault hubu.
 
-## 5. Measurement Methods (Full Mix)
+---
 
-**Reliable (prefer `measured`)**
-- RMS energy curve / section times (approx)
-- Crest factor in drop window
-- Band energy: sub 20–60 vs fundament 60–250
-- Mid/side ratio per band
-- Spectral centroid
-- Bass envelope modulation rate (60–300 Hz -> Hilbert -> FFT) vs tempo grid
+## 9. Nástroje a blocklist
 
-**Weak (max `estimated` / `hypothesis`)**
-- Note-by-note pitch of leads in dense mix
-- Exact FM ratio/index from master
-- Drum sample identity
+**Hotové:** `tools/analyze_track.py` · `tools/check_repo.py` · `tools/vault-app/` (read-only prohlížeč vaultu v prohlížeči a statický export do sdílené kopie; **nezapisuje** do vaultu ani do dat).
+**Plánované (pořadí v kap. 10):** `rebuild_track_index.py` → `data/corpus/tracks.jsonl` · `query_tracks.py` · `analyze_preset.py` (nebo ruční zápis `data/presets/`) · read-only lint šablony (Producer Pal nebo Extension).
 
-**Reese vs Growl Test (Mandatory for Deep Analysis)**
-1. Envelope FFT on bass band, stable drop hold.
-2. Peaks lock to 1/8 or 1/16 at track BPM -> **growl** / LFO path.
-3. Off-grid, BPM-independent rates -> detune beating -> **reese**.
-4. Hi-res FFT 350–900 Hz on held note:
-   - Clean harmonic spikes -> few oscillators + mod.
-   - Dense peak forest (~2–10 Hz spacing) -> **reese**.
+**`tools/check_repo.py` kontroluje:** frontmatter každého souboru v `knowledge/` (kontrakt v `knowledge/README.md`) · že každý `source_ids` odkaz vede do `sources.jsonl` · platnost `sources.jsonl` proti `core/source.schema.json` · že `data/tracks/<id>` mají `meta.json`.
 
-*Stems are disabled. MIDI intent comes from roles, gaps, and design path.*
+**Blocklist (absolutní nulová tolerance):**
+- UI pro produkční rozhodování, dashboard, druhý frontend (výjimka: `tools/vault-app`, jen čtení).
+- Stem-separation pipeline (použití stemů, které existují, je povolené).
+- Synth engine.
+- **Druhý Ableton MCP most** (jediný je Producer Pal); Pal **nezapisuje vnitřní parametry Serum** (zeď Live API); Serum patche jsou binární stav → offline `.SerumPreset` nebo ruční klik.
+- Úprava `NEUROFUNK_TEMPLATE_FINAL.als` bez souhlasu.
+- Upload nevydaných bounců do cizího cloudu (generátory hudby, stem separátory, sample služby).
+- Oživení `neuroman/` orchestrátoru (legacy, v coding session horší než Producer Pal).
+- Přenos placeného cizího obsahu (videa, přepisy, PDF kurzů) do repa nebo sdíleného exportu.
+- Záznam bez zdroje v `knowledge/` (kap. 2.1).
+- Nové adresáře nejvyšší úrovně bez souhlasu.
 
-## 6. Agent System & Skill Rules
+---
 
-See [`docs/AGENT_RULES.md`](./AGENT_RULES.md).
+## 10. Pořadí implementace (v2)
 
-## 7. The "Skateboard" Implementation Order (v1)
+**Hotovo:** kostra repa · build sheet a první analýza (*First Contact*) · `analyze_track.py` · šablona FINAL · český kánon (vault 00–05) · tento přepis repa (BLUEPRINT, knowledge, schémata, `check_repo.py`).
 
-Do not skip ahead. Prove the value at each step.
+**Další kroky (nepřeskakovat):**
+1. **Datová konverze:** převést už existující naměřené rozbory do `data/tracks/*/analysis.json` s poctivým `confidence` a `basis` (kandidáti: *Breach*, *Unleash The Beast*, *Restless*, *Hands Up*, *Been About This*, *Don't Play*, *Mechanism*, remix *Dirts*; každý musí mít záznam v `sources.jsonl`).
+2. **Presety:** převést ~15 rozborů presetů z próz do `data/presets/*.json`.
+3. **Korpus:** `rebuild_track_index.py` → `tracks.jsonl`, `query_tracks.py`.
+4. **Lint** šablony read-only na kopii setu.
+5. **Dogfooding:** session log a build sheet na *každé* skutečné práci. Znalost se rozšiřuje, jen když se v praxi zasekneš.
 
-1. **The Skeleton:** Repo structure + `BLUEPRINT.md` + `VISION.md` + `AGENT_RULES.md` + Schemas. (1 day)
-2. **The First Decision:** Open Ableton. Start a track. Write a `build-sheet.json` by hand. (1 session)
-3. **The First Analysis:** Write `analyze_track.py` (CLI fill) + 1 gold track analysis (e.g., Prolix). (2 days)
-4. **The Holy Grail:** Write `rebuild_track_index.py` -> generates `data/corpus/tracks.jsonl`. Write `query_tracks.py`. (2 days)
-5. **Daily Dogfooding:** Session log + build sheet on ALL real work. Expand knowledge files (`principles/`, `archetypes/`) only when actually stuck.
-6. **The Vault:** ~30 presets + ~20 tracks with type/crest/grid analyzed. (Ongoing)
+### 10.1 Definition of Done (v2)
+- [ ] Jedna šablona v denním používání.
+- [ ] Build sheet na každém novém tracku, session log na každé session.
+- [ ] ≥ 10 analýz tracků, z nich ≥ 5 s basovým pásmem ze stemů nebo bass-mute (`basis: stems`).
+- [ ] ≥ 15 analýz presetů s `function` a `archetype`.
+- [ ] `tracks.jsonl` dotazovatelný podle typu, crestu a `usable_for`.
+- [ ] `check_repo.py` bez chyb a **nula záznamů bez zdroje**.
+- [ ] Nula UI komponent mimo `vault-app`, nula stem-separation pipeline, nula rozšíření rozsahu.
 
-## 8. Definition of Done (v1)
+---
 
-- [ ] One Ableton template in daily use (physically enforcing layer rules).
-- [ ] Build sheet on every new track.
-- [ ] ≥20 track analyses (mix of quick/deep) with `bass.type` + confidence.
-- [ ] ≥30 preset analyses with function + archetype.
-- [ ] `tracks.jsonl` queryable by type / `usable_for` / C&R.
-- [ ] Zero UI components, zero dual frontends, zero stems pipelines, zero scope creep.
+## 11. Správa změn
+
+- **Architekt** (Domin) schvaluje změny kap. 4, 5, 6 a 9 (principy, slovníky, schémata, blocklist). Agent návrh změny jen navrhne s důkazem.
+- Změna slovníku = změna schématu v `core/`, aktualizace `knowledge/README.md` a poznámka v changelogu.
+- Kánon ve vaultu a v `knowledge/` se mění přes pipeline (`docs/KNOWLEDGE_PIPELINE.md`); degradované pravidlo se nemaže, dostane `status: deprecated` a odkaz na důkaz.
+
+---
+
+## 12. Changelog
+
+**v2 (2026-10-15)** — úplný přepis.
+- Jazyk: próza česky, kontrakt anglicky.
+- Odstraněno: mandát „Scorched Earth" (nahrazen pravidlem pravdivosti a selektivním dědictvím vrstev), profily producentů bez zdroje, odkazy na neexistující tracky, ušmudlané ear-based poznámky *Stink* a *Midnight Runner*, schémata opsaná v dokumentu (jediný zdroj je `core/`).
+- Změněno: principy 3, 7 a 4, slovníky (`layer function`, `texture`), blocklist (`vault-app` povolen jen ke čtení; druhý MCP most, cloudové uploady a oživení `neuroman/` zakázány).
+- Přidáno: pravidlo pravdivosti, registr zdrojů, `check_repo.py`, schémata `source`, `track-analysis`, `preset-analysis`, protokol měření basového pásma, `basis` a `modulation source`, princip 9.
+- Zastaralé v v1: „Current stage: Skateboard step 1" — kroky 2 a 3 byly dávno hotové.
+
+**v1 (2026-08-02)** — skeleton podle původního BLUEPRINTu (viz historie gitu).

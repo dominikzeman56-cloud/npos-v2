@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NPOS Preset Analysis",
+  "description": "Strategie preset (proč je postaven tak), ne výpis parametrů. Hodnota přečtená z UI synthu = measured, důvod návrhu = estimated/hypothesis, pokud nepochází z autorova vysvětlení.",
+  "type": "object",
+  "required": ["id", "name", "synth", "source_id", "archetype", "function"],
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "synth": { "type": "string", "description": "Např. Serum 2, Operator, Current, Diva." },
+    "source_id": { "type": "string", "description": "Záznam v knowledge/sources.jsonl." },
+    "archetype": { "type": "string" },
+    "function": {
+      "type": "string",
+      "enum": ["sub", "body", "movement", "noise", "texture", "lead", "pad", "fx", "other"]
+    },
+    "body_design": {
+      "type": "string",
+      "enum": ["fm", "wavetable", "detune_reese", "filter_growl", "sample", "hybrid", "other"]
+    },
+    "oscillator_strategy": { "type": "string" },
+    "routing": { "type": "string" },
+    "filter_strategy": { "type": "string" },
+    "distortion_strategy": { "type": "string" },
+    "modulation": { "type": "string" },
+    "fx_chain": { "type": "array", "items": { "type": "string" } },
+    "macros": { "type": "array", "items": { "type": "string" } },
+    "mix_role": { "type": "string" },
+    "key_values": {
+      "type": "object",
+      "description": "Jen hodnoty, na kterých princip stojí (např. phase 180°, Overdrive stack 3). Každá s vlastním confidence.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "value": {},
+          "confidence": { "type": "string", "enum": ["measured", "estimated", "hypothesis"] }
+        }
+      }
+    },
+    "lessons": { "type": "array", "maxItems": 5, "items": { "type": "string" } },
+    "confidence": { "type": "string", "enum": ["measured", "estimated", "hypothesis"] },
+    "tags": { "type": "array", "items": { "type": "string" } }
+  }
+}
