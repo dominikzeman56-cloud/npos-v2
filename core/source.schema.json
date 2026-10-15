@@ -8,7 +8,7 @@
     "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
     "kind": {
       "type": "string",
-      "enum": ["course", "video", "track", "podcast", "project", "manual", "memory"]
+      "enum": ["course", "video", "track", "podcast", "project", "manual", "memory", "preset_pack"]
     },
     "title": { "type": "string" },
     "author": { "type": "string" },
@@ -33,7 +33,7 @@
     },
     "basis": {
       "type": "string",
-      "enum": ["full_mix", "stems", "project_file", "course_video", "course_files", "listening", "own_work"]
+      "enum": ["full_mix", "stems", "project_file", "preset_file", "course_video", "course_files", "listening", "own_work"]
     },
     "notes": { "type": "string" }
   },

@@ -1,0 +1,260 @@
+{
+  "id": "pythius-patreon-presets-pyth-comb-wobble",
+  "name": "Pyth Comb Wobble",
+  "synth": "Serum2 2.1.5",
+  "source_id": "pythius-patreon-presets",
+  "archetype": "unclassified",
+  "function": "other",
+  "basis": "preset_file",
+  "confidence": "measured",
+  "modulation": "LFO 1 → WTOsc1 TablePos 35.6788; LFO 1 → WTOsc0 Warp 7.5213; LFO 1 → VoiceFilter0 Freq 55.1141; LFO 1 → VoiceFilter0 Reso 24.4689; LFO 2 → FXEQ2 Freq1 39.4316; source_17 (nezmapováno) → FXEQ5 Freq1 71.7593; source_17 (nezmapováno) → FXEQ5 Gain1 54.6327",
+  "fx_chain": [
+    "HyperD",
+    "Distortion (kAsym)",
+    "EQ",
+    "Utils",
+    "Distortion (kDiode2)",
+    "EQ",
+    "Comp"
+  ],
+  "tags": [
+    "Wavetable",
+    "Mono"
+  ],
+  "reading": {
+    "note": "Hodnoty přečtené ze souboru. Chybějící parametr = výchozí hodnota Serum. Hodnoty jsou normalizované a jednotky nejsou ověřené proti UI. Interpretace (archetyp, funkce, proč) je ruční doplněk.",
+    "file": "Pyth Comb Wobble.SerumPreset",
+    "read_on": "2026-10-15",
+    "format_version": 2,
+    "preset_hash": "a152aa09bedc97dc78734e31408354d7",
+    "author": "Pythius Patreon",
+    "oscillators": [
+      {
+        "slot": 0,
+        "params": {
+          "kParamOctave": -2.0,
+          "kParamVolume": 0.5662
+        },
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamRandomPhase": 0.0,
+          "kParamWarp": 0.3881,
+          "kParamWarpMenu": "kPD_OSC"
+        },
+        "wavetable": "S2 Tables/Default Shapes.wav"
+      },
+      {
+        "slot": 1,
+        "params": {
+          "kParamEnable": 1.0,
+          "kParamOctave": -2.0,
+          "kParamVolume": 0.0
+        },
+        "kind": "WTOsc",
+        "kind_params": {
+          "kParamRandomPhase": 0.0,
+          "kParamTablePos": 69.2543
+        },
+        "wavetable": "Analog/PWM Mini.wav"
+      },
+      {
+        "slot": 2,
+        "params": {},
+        "kind": "WTOsc",
+        "kind_params": {},
+        "wavetable": "S2 Tables/Default Shapes.wav"
+      },
+      {
+        "slot": 4,
+        "params": {
+          "kParamVolume": 0.5625
+        }
+      }
+    ],
+    "voice_filters": [
+      {
+        "slot": 0,
+        "params": {
+          "kParamDrive": 33.0387,
+          "kParamEnable": 1.0,
+          "kParamFreq": 0.3029,
+          "kParamReso": 0.0,
+          "kParamType": "DistComb2LP",
+          "kParamVar": 71.3045
+        }
+      }
+    ],
+    "fx": [
+      {
+        "index": 0,
+        "type_id": 9,
+        "module": "FXHyperD",
+        "params": {
+          "kParamWet": 28.4197
+        },
+        "mix": {
+          "kUIParamMixOrGainDimE": 0.0,
+          "kUIParamMixOrGainHyper": 0.0
+        }
+      },
+      {
+        "index": 1,
+        "type_id": 0,
+        "module": "FXDistortion",
+        "params": {
+          "kParamDrive": 100.0,
+          "kParamMode": "kAsym"
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      },
+      {
+        "index": 2,
+        "type_id": 7,
+        "module": "FXEQ",
+        "params": {
+          "kParamFreq1": 198.7889,
+          "kParamGain1": -24.0,
+          "kParamGain2": 2.685,
+          "kParamType1": 1.0
+        }
+      },
+      {
+        "index": 3,
+        "type_id": 12,
+        "module": "FXUtils",
+        "params": {},
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      },
+      {
+        "index": 4,
+        "type_id": 0,
+        "module": "FXDistortion",
+        "params": {
+          "kParamDrive": 22.7933,
+          "kParamMode": "kDiode2"
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      },
+      {
+        "index": 5,
+        "type_id": 7,
+        "module": "FXEQ",
+        "params": {
+          "kParamEnable": 0.0,
+          "kParamFreq1": 21.5332,
+          "kParamGain1": -24.0,
+          "kParamType1": 1.0
+        }
+      },
+      {
+        "index": 6,
+        "type_id": 5,
+        "module": "FXComp",
+        "params": {
+          "kParamGain0": 6.0044,
+          "kParamGain2": 3.446,
+          "kParamMakeup": 1.7593,
+          "kParamMultiband": 1.0,
+          "kParamThresh": 0.3035,
+          "kParamXoverLow": 180.1805
+        },
+        "mix": {
+          "kUIParamMixOrGain": 0.0
+        }
+      }
+    ],
+    "modulation": [
+      {
+        "slot": 0,
+        "source_id": 6,
+        "source": "LFO 1",
+        "dest_module": "WTOsc",
+        "dest_module_id": 1,
+        "dest_param": "kParamTablePos",
+        "amount": 35.6788
+      },
+      {
+        "slot": 1,
+        "source_id": 6,
+        "source": "LFO 1",
+        "dest_module": "WTOsc",
+        "dest_module_id": 0,
+        "dest_param": "kParamWarp",
+        "amount": 7.5213
+      },
+      {
+        "slot": 2,
+        "source_id": 6,
+        "source": "LFO 1",
+        "dest_module": "VoiceFilter",
+        "dest_module_id": 0,
+        "dest_param": "kParamFreq",
+        "amount": 55.1141
+      },
+      {
+        "slot": 3,
+        "source_id": 6,
+        "source": "LFO 1",
+        "dest_module": "VoiceFilter",
+        "dest_module_id": 0,
+        "dest_param": "kParamReso",
+        "amount": 24.4689
+      },
+      {
+        "slot": 4,
+        "source_id": 7,
+        "source": "LFO 2",
+        "dest_module": "FXEQ",
+        "dest_module_id": 2,
+        "dest_param": "kParamFreq1",
+        "amount": 39.4316
+      },
+      {
+        "slot": 5,
+        "source_id": 17,
+        "source": "source_17 (nezmapováno)",
+        "dest_module": "FXEQ",
+        "dest_module_id": 5,
+        "dest_param": "kParamFreq1",
+        "amount": 71.7593
+      },
+      {
+        "slot": 6,
+        "source_id": 17,
+        "source": "source_17 (nezmapováno)",
+        "dest_module": "FXEQ",
+        "dest_module_id": 5,
+        "dest_param": "kParamGain1",
+        "amount": 54.6327
+      }
+    ],
+    "lfos": [
+      {
+        "index": 0,
+        "params": {},
+        "shape": "Custom",
+        "curve_points": 3
+      },
+      {
+        "index": 1,
+        "params": {
+          "kParamDefaultMode": 0.0,
+          "kParamMode": "Free",
+          "kParamRate": 0.6664
+        }
+      }
+    ],
+    "macros": [],
+    "voice": {
+      "kParamLegato": 1.0,
+      "kParamMonoToggle": 1.0,
+      "kParamPortamentoTime": 0.0362
+    }
+  }
+}

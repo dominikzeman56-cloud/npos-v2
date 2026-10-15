@@ -71,7 +71,8 @@ npos-v2/
 │   ├── analyze_track.py             ← hotové
 │   ├── check_repo.py                ← kontrola kontraktu a zdrojů
 │   ├── vault-app/                   ← read-only prohlížeč a export vaultu (viz kap. 9)
-│   └── (plánováno: analyze_preset.py, rebuild_track_index.py, query_tracks.py)
+│   ├── analyze_preset.py            ← čtečka .SerumPreset (basis: preset_file)
+│   └── (plánováno: rebuild_track_index.py, query_tracks.py)
 ├── neuroman/                        ← legacy, neoživovat (kap. 9)
 └── pyproject.toml
 ```
@@ -102,7 +103,7 @@ Hodnoty jsou **zamčené**. Změna jen se souhlasem Architekta.
 | Slovník | Hodnoty |
 |---|---|
 | `confidence` | `measured` · `estimated` · `hypothesis` |
-| `basis` (z čeho je to změřeno) | `full_mix` · `stems` · `project_file` · `course_video` · `course_files` · `listening` · `own_work` |
+| `basis` (z čeho je to změřeno) | `full_mix` · `stems` · `project_file` · `preset_file` · `course_video` · `course_files` · `listening` · `own_work` |
 | `rule_label` (kánon) | `consensus` · `conditional` · `school` · `dogma_unverified` |
 | `knowledge status` | `canon` · `candidate` · `deprecated` |
 | `bass.type` | `growl` · `reese` · `hybrid` · `sub_led` · `other` |
@@ -117,7 +118,7 @@ Hodnoty jsou **zamčené**. Změna jen se souhlasem Architekta.
 | `breakdown type` | `atmosphere_no_bass` · `gated_sub_stutter` · `glitch_texture` · `other` |
 | `body design primary` | `fm` · `wavetable` · `detune_reese` · `filter_growl` · `sample` · `hybrid` · `other` |
 | `knowledge source type` | `producer_course` · `ableton_project` · `preset_pack` · `interview` · `track_analysis` · `personal_observation` · `other` |
-| `source kind` | `course` · `video` · `track` · `podcast` · `project` · `manual` · `memory` |
+| `source kind` | `course` · `video` · `track` · `podcast` · `project` · `manual` · `memory` · `preset_pack` |
 | **seed archetypů** | `grid-locked-filter-growl` · `slow-grid-growl` · `detuned-unison-reese` · `fm-distorted-body` · `clean-sub-sine` · `serum-overlay-chords` |
 
 **Referenční hodnoty `loudness_strategy`** (crest v okně dropu): `crushed` ≈ 4 dB · `controlled` 5–6 dB · `open` > 6 dB. Naměřeno u hotových tracků: Restless 5 dB, Breach 6,4–7 dB, Hands Up 8,4 dB, First Contact 6,1 dB (`knowledge/archetypes`, vault `03 Zvuk a mix` kap. 12).
@@ -159,6 +160,14 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 
 **Nástroj:** `tools/analyze_track.py` (ffmpeg → numpy/scipy), plný mix, `basis: full_mix`.
 
+### 7.1 Presety Serum 2 (`basis: preset_file`)
+`.SerumPreset` je XferJson → Zstd → CBOR; `tools/analyze_preset.py` ho **čte** (oscilátory, filtry, FX řetěz, modulační matici, voice, LFO, makra) a vyrábí návrh `data/presets/<id>.json`. Pravidla:
+- Soubor ukládá jen hodnoty, které se liší od výchozích. **Chybějící parametr = výchozí, ne nula.**
+- Hodnoty jsou normalizované (např. frekvence filtru 0–1) a **jednotky nejsou ověřené proti UI**. Do Hz/dB se přepočítávají až po A/B ověření v Serum.
+- Zdroje modulace jsou zmapované jen pro doložené rozsahy (Env, LFO, Macro); ostatní ID se **nehádají**.
+- Přečtené hodnoty jsou `measured` s `basis: preset_file`. **Archetyp, funkce vrstvy a „proč“ jsou ruční interpretace** (`estimated`/`hypothesis`), skript je nevyplňuje.
+- Preset pack je zdroj (`kind: preset_pack`) a soubory presetů se do repa nekopírují; do `data/presets` jde jen vlastní analýza.
+
 ---
 
 ## 8. Šablona Ableton
@@ -174,8 +183,8 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 
 ## 9. Nástroje a blocklist
 
-**Hotové:** `tools/analyze_track.py` · `tools/check_repo.py` · `tools/vault-app/` (read-only prohlížeč vaultu v prohlížeči a statický export do sdílené kopie; **nezapisuje** do vaultu ani do dat).
-**Plánované (pořadí v kap. 10):** `rebuild_track_index.py` → `data/corpus/tracks.jsonl` · `query_tracks.py` · `analyze_preset.py` (nebo ruční zápis `data/presets/`) · read-only lint šablony (Producer Pal nebo Extension).
+**Hotové:** `tools/analyze_track.py` · `tools/analyze_preset.py` · `tools/check_repo.py` · `tools/vault-app/` (read-only prohlížeč vaultu v prohlížeči a statický export do sdílené kopie; **nezapisuje** do vaultu ani do dat).
+**Plánované (pořadí v kap. 10):** `rebuild_track_index.py` → `data/corpus/tracks.jsonl` · `query_tracks.py` · read-only lint šablony (Producer Pal nebo Extension).
 
 **`tools/check_repo.py` kontroluje:** frontmatter každého souboru v `knowledge/` (kontrakt v `knowledge/README.md`) · že každý `source_ids` odkaz vede do `sources.jsonl` · platnost `sources.jsonl` proti `core/source.schema.json` · že `data/tracks/<id>` mají `meta.json`.
 
@@ -199,7 +208,7 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 
 **Další kroky (nepřeskakovat):**
 1. **Datová konverze:** převést už existující naměřené rozbory do `data/tracks/*/analysis.json` s poctivým `confidence` a `basis` (kandidáti: *Breach*, *Unleash The Beast*, *Restless*, *Hands Up*, *Been About This*, *Don't Play*, *Mechanism*, remix *Dirts*; každý musí mít záznam v `sources.jsonl`).
-2. **Presety:** převést ~15 rozborů presetů z próz do `data/presets/*.json`.
+2. **Presety:** čtečka je hotová (`analyze_preset.py`). Zbývá převést ~15 rozborů presetů z próz do `data/presets/*.json` a doplnit ruční interpretaci (archetyp, funkce) k přečteným hodnotám; modulační matici a jednotky ověřit proti Serum UI.
 3. **Korpus:** `rebuild_track_index.py` → `tracks.jsonl`, `query_tracks.py`.
 4. **Lint** šablony read-only na kopii setu.
 5. **Dogfooding:** session log a build sheet na *každé* skutečné práci. Znalost se rozšiřuje, jen když se v praxi zasekneš.
@@ -231,5 +240,7 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 - Změněno: principy 3, 7 a 4, slovníky (`layer function`, `texture`), blocklist (`vault-app` povolen jen ke čtení; druhý MCP most, cloudové uploady a oživení `neuroman/` zakázány).
 - Přidáno: pravidlo pravdivosti, registr zdrojů, `check_repo.py`, schémata `source`, `track-analysis`, `preset-analysis`, protokol měření basového pásma, `basis` a `modulation source`, princip 9.
 - Zastaralé v v1: „Current stage: Skateboard step 1" — kroky 2 a 3 byly dávno hotové.
+
+**v2.1 (2026-10-15)** — přidáno `preset_file` do `basis`, `preset_pack` do `source kind`, kap. 7.1 a `tools/analyze_preset.py`; schéma `preset-analysis` má `basis` a `reading`.
 
 **v1 (2026-08-02)** — skeleton podle původního BLUEPRINTu (viz historie gitu).

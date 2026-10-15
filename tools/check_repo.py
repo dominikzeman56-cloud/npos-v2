@@ -6,6 +6,7 @@ Kontroluje:
   * frontmatter každého knowledge/**/*.md (knowledge/README.md)
   * že každé source_ids vede do sources.jsonl
   * že data/tracks/<id> má meta.json a že source_id/track odkazy existují
+  * že data/presets/*.json sedí na preset-analysis.schema.json a mají source_id ze sources.jsonl
   * (volitelně) že vault_note ze sources.jsonl existuje, je-li vault dostupný
     (cesta z env NPOS_VAULT, výchozí D:\\ObsidianVault\\Hudební produkce)
 
@@ -197,6 +198,20 @@ def main() -> int:
                         json.loads(p.read_text(encoding="utf-8"))
                     except json.JSONDecodeError as e:
                         errors.append(f"data/tracks/{d.name}/{js}: neplatný JSON ({e})")
+
+    # --- data/presets
+    presets_dir = ROOT / "data" / "presets"
+    if presets_dir.is_dir():
+        pschema = json.loads((ROOT / "core" / "preset-analysis.schema.json").read_text(encoding="utf-8"))
+        for p in sorted(presets_dir.glob("*.json")):
+            try:
+                d = json.loads(p.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as e:
+                errors.append(f"data/presets/{p.name}: neplatný JSON ({e})")
+                continue
+            check_object(d, pschema, f"data/presets/{p.name}", errors)
+            if d.get("source_id") not in source_ids:
+                errors.append(f"data/presets/{p.name}: source_id {d.get('source_id')!r} není ve sources.jsonl")
 
     # --- schémata jsou platný JSON
     for s in sorted((ROOT / "core").glob("*.schema.json")):

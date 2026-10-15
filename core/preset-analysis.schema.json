@@ -39,6 +39,15 @@
     },
     "lessons": { "type": "array", "maxItems": 5, "items": { "type": "string" } },
     "confidence": { "type": "string", "enum": ["measured", "estimated", "hypothesis"] },
+    "basis": {
+      "type": "string",
+      "enum": ["preset_file", "course_video", "project_file", "listening", "own_work"],
+      "description": "Z čeho jsou hodnoty: preset_file = přečteno ze souboru (tools/analyze_preset.py), course_video = z videa kurzu."
+    },
+    "reading": {
+      "type": "object",
+      "description": "Strojově přečtený obsah souboru (oscilátory, filtry, FX, modulační matice). Chybějící parametr = výchozí hodnota; hodnoty jsou normalizované, jednotky neověřené proti UI."
+    },
     "tags": { "type": "array", "items": { "type": "string" } }
   }
 }

@@ -8,7 +8,7 @@
     "confidence": { "type": "string", "enum": ["measured", "estimated", "hypothesis", "mixed", ""] },
     "basis": {
       "type": "string",
-      "enum": ["full_mix", "stems", "project_file", "course_video", "course_files", "listening", "own_work"]
+      "enum": ["full_mix", "stems", "project_file", "preset_file", "course_video", "course_files", "listening", "own_work"]
     }
   },
   "properties": {
