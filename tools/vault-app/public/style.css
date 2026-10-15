@@ -165,4 +165,44 @@ mark { background: rgba(255, 208, 0, .35); color: inherit; border-radius: 2px; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 6px; border: 2px solid transparent; background-clip: content-box; }
 ::-webkit-scrollbar-thumb:hover { background: var(--hover); background-clip: content-box; border: 2px solid transparent; }
-@media (max-width: 900px) { #app { grid-template-columns: 44px 0 0 1fr 0 0 !important; } #left, #right, .resizer { display: none; } }
+#graph-wrap canvas { touch-action: none; }
+@media (hover: none) { .tab .x { opacity: .7; } }
+
+/* mobil / úzké okno: spodní lišta, postranní panely jako výsuvné šuplíky */
+@media (max-width: 900px) {
+  html, body { height: 100dvh; }
+  #app, #app.no-left, #app.no-right, #app.no-left.no-right {
+    height: 100dvh; grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: minmax(0, 1fr) calc(52px + env(safe-area-inset-bottom));
+  }
+  #main { grid-row: 1; grid-column: 1; }
+  #ribbon {
+    grid-row: 2; grid-column: 1; flex-direction: row; justify-content: space-around; align-items: center;
+    padding: 0 6px env(safe-area-inset-bottom); gap: 0; border-right: 0; border-top: 1px solid var(--border);
+  }
+  #ribbon .sp { display: none; }
+  #ribbon .rb { width: 48px; height: 44px; }
+  .resizer { display: none; }
+  #left, #right {
+    position: fixed; top: 0; bottom: calc(52px + env(safe-area-inset-bottom)); z-index: 15;
+    width: min(88vw, 380px); box-shadow: 0 0 30px rgba(0, 0, 0, .55);
+  }
+  #left { left: 0; }
+  #right { right: 0; }
+  #app.no-left #left, #app.no-right #right { display: none; }
+  .side-head button { padding: 8px 12px; font-size: 14px; }
+  .tree-row { padding: 9px 8px; }
+  .tagrow, .link-item, .outline-item { padding-top: 8px; padding-bottom: 8px; }
+  .res { padding: 10px; }
+  .searchbox input, .modal input { font-size: 16px; padding: 10px 12px; }
+  #tabbar { height: 42px; }
+  .tab { max-width: 170px; min-width: 70px; }
+  .note { padding: 18px 16px 90px; }
+  .note h1.inline-title { font-size: 1.6em; }
+  .markdown-rendered { font-size: 16px; }
+  .markdown-rendered pre { font-size: 13px; }
+  .prop .k { width: 90px; }
+  #statusbar { display: none; }
+  #modal-root .scrim { padding-top: 6vh; }
+  .modal .list { max-height: 60dvh; }
+  .graph-ctl { top: 6px; right: 6px; padding: 6px 10px; }
+}

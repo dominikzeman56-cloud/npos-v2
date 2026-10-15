@@ -206,6 +206,7 @@ function sliceSection(body, heading) {
 }
 
 /* ---------- tabs / navigation ---------- */
+const isMobile = () => matchMedia('(max-width: 900px)').matches;
 const saveTabs = () => { lsSet('tabs', S.tabs); lsSet('active', S.active); };
 const tabById = (id) => S.tabs.find((t) => t.id === id);
 const tabTitle = (t) => (t.kind === 'graph' ? 'Graf' : nameOf(t.path));
@@ -223,12 +224,14 @@ function openNote(path, { newTab = false, heading = null } = {}) {
   const parts = path.split('/'); parts.pop();
   parts.forEach((_, i) => S.expanded.add(parts.slice(0, i + 1).join('/')));
   lsSet('expanded', [...S.expanded]);
+  if (isMobile()) { S.noLeft = true; S.noRight = true; applyLayout(); }
   saveTabs(); renderAll();
 }
 function openGraph() {
   let t = S.tabs.find((x) => x.kind === 'graph');
   if (!t) { t = { id: 'graph', kind: 'graph' }; S.tabs.push(t); }
-  S.active = t.id; saveTabs(); renderAll();
+  S.active = t.id; if (isMobile()) { S.noLeft = true; S.noRight = true; applyLayout(); }
+  saveTabs(); renderAll();
 }
 function closeTab(id) {
   const i = S.tabs.findIndex((t) => t.id === id);
@@ -645,7 +648,16 @@ addEventListener('keydown', (e) => {
 
 function renderAll() { renderRibbon(); renderTabs(); renderLeft(); renderPane(); }
 
+// mobil: šuplíky zavřít klepnutím mimo; ať se stav šuplíků neukládá do localStorage
+addEventListener('click', (e) => {
+  if (!isMobile()) return;
+  const inSide = e.target.closest?.('#left, #right, #ribbon, #tabbar .tb, #modal-root');
+  if (inSide) return;
+  if (!S.noLeft || !S.noRight) { S.noLeft = true; S.noRight = true; applyLayout(); renderRibbon(); }
+}, true);
+
 async function init() {
+  if (isMobile()) { S.noRight = true; S.noLeft = !!S.active; }
   applyTheme(); applyLayout(); initResizers();
   try {
     const r = await fetch('/data/vault.json');
