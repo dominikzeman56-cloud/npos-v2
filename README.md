@@ -23,4 +23,4 @@ Rozhodovací systém a datový stroj pro produkci neurofunku/DnB v Ableton Live.
 
 **Kontrola:** `python tools/check_repo.py`
 
-**Stav (2026-10-15):** kánon v češtině hotový, šablona `NEUROFUNK_TEMPLATE_FINAL` hotová, datová vrstva se teprve plní (BLUEPRINT kap. 10).
+**Stav (2026-10-15):** kánon v češtině hotový, šablona Ableton mimo kánon, datová vrstva se teprve plní (BLUEPRINT kap. 10).

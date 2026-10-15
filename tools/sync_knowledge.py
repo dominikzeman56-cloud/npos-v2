@@ -67,7 +67,7 @@ P = [
     ("p6-every-claim-carries-confidence", "P6", "canon", "measured", "consensus", "track_analysis", ["dont-play-skeleton", "grok-memory-dogma-critique"]),
     ("p7-measure-where-measurement-holds", "P7", "canon", "measured", "consensus", "track_analysis", ["dont-play-skeleton", "breach-balron-audio", "sinister-souls-raido-restless"]),
     ("p8-intent-over-transcription", "P8", "canon", "measured", "consensus", "track_analysis", ["dont-play-skeleton", "dirts-remix-skeleton", "sinister-souls-raido-restless", "triamer-nagato-hands-up", "prolix-been-about-this"]),
-    ("p9-template-holds-wires-not-spectrum", "P9", "canon", "measured", "consensus", "producer_course", ["audio-headroom-2013", "ableton-template-final", "grok-memory-dogma-critique"]),
+    ("p9-values-are-starting-points", "P9", "canon", "measured", "consensus", "producer_course", ["audio-headroom-2013", "ableton-template-final", "grok-memory-dogma-critique"]),
 ]
 secs = {t.split(" · ")[0]: (t, b) for t, b in sections(pr, 3) if re.match(r"P\d ·", t)}
 for slug, pid, status, conf, label, stype, srcs in P:

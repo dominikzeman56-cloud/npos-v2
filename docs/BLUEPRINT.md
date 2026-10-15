@@ -11,10 +11,10 @@
 
 **Měřítko úspěchu:** lepší rozhodnutí za kratší čas v každé session. Ne počet souborů, ne objem znalostí.
 
-**NPOS je:** kánon znalostí s důkazy a mírou jistoty · jedna Ableton šablona, která fyzicky vynucuje rozhodnutí · datová vrstva (analýzy tracků a presetů se schématem) · sada nástrojů nad tím.
+**NPOS je:** kánon znalostí s důkazy a mírou jistoty · datová vrstva (analýzy tracků a presetů se schématem) · sada nástrojů nad tím.
 **NPOS není:** encyklopedie · web/dashboard pro produkční rozhodování · chatbot · generátor celých tracků · náhrada sound designu.
 
-**Stav (2026-10-15):** kánon v češtině je napsaný (vault `Hudební produkce`, kap. 00–08); šablona `NEUROFUNK_TEMPLATE_FINAL` hotová; `analyze_track.py` funguje; datová vrstva je téměř prázdná (1 analýza ve schématu) a **je to další práce** (kap. 10).
+**Stav (2026-10-15):** kánon v češtině je napsaný (vault `Hudební produkce`, kap. 00–08); šablona Ableton mimo kánon (kap. 8); `analyze_track.py` funguje; datová vrstva je téměř prázdná (1 analýza ve schématu) a **je to další práce** (kap. 10).
 
 ---
 
@@ -50,7 +50,7 @@ npos-v2/
 │   ├── AGENT_RULES.md
 │   └── KNOWLEDGE_PIPELINE.md        ← jak se znalost povyšuje do kánonu
 ├── core/
-│   ├── ableton/                     ← JEDNA živá šablona (FINAL), README s odkazem na spec
+│   ├── ableton/                     ← poznámka: šablona mimo kánon
 │   ├── source.schema.json
 │   ├── build-sheet.schema.json
 │   ├── track-analysis.schema.json
@@ -94,7 +94,7 @@ Plné znění s důkazy a mezemi: `knowledge/principles/` (lidská podoba: vault
 6. **Každé tvrzení nese jistotu a zdroj.** `measured` · `estimated` · `hypothesis` + odkaz na zdroj (kap. 2.1).
 7. **Měřit tam, kde měření platí.** Výchozí je plný mix (dynamika, spektrum, struktura). **Basové pásmo (modulace, harmonické) se zapisuje ze stemů nebo bass-mute; z plného mixu je to nejvýš `hypothesis`** (hi-haty kontaminují obálku, kap. 7). Zakázáno je budování stem-separation pipeline, ne analýza stemů, které existují.
 8. **Záměr v MIDI má přednost před přepisem not.** Z mastera se berou role, mezery a design.
-9. **Šablona drží dráty, ne spektrum.** Pevné jsou skupiny, routing, sub mimo bass bus, dva MIDI spouštěče sidechainu, lokátory, limiter na masteru. Hodnoty EQ, OTT, šířky a hloubky ducku jsou startovní body.
+9. **Hodnoty jsou startovní body, ne zákon.** EQ, OTT, šířky a hloubky ducku z jednoho zdroje nebo z jiného žánru se nepřenášejí jako pravidlo; platí jen s důkazem a rule labelem (konsenzus / podmíněné / škola / dogma k ověření).
 
 ---
 
@@ -172,21 +172,17 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 
 ---
 
-## 8. Šablona Ableton
+## 8. Šablona Ableton — mimo kánon
 
-**Jedna živá šablona:** `NEUROFUNK_TEMPLATE_FINAL` (Live 12.4.3, 174 BPM, 64 tracků, 5 returnů). Kanonická specifikace je ve vaultu (`02 Šablona`), v `core/ableton/README.md` je odkaz a stav.
-**Pravidla:**
-- Šablona se **needituje bez výslovného souhlasu Architekta**; práce na kopii (sandbox).
-- Změny pravidel jdou přes kánon (`02 Šablona` kap. 13–14: dogmata a experimenty), ne přímo do `.als`.
-- **XML `.als` generovat jen routing, klipy a prázdné sloty.** Plugin XML se nepřenáší z cizích setů a nevymýšlí se z disku (pády; viz `02 Šablona` kap. 12).
-- Lint šablony (7 pravidel: `SUB-TO-MASTER`, `RETURN-HP`, `SC-4BAR`, `WARP-BREAK`, `WARP-TONAL`, `GROUP-COLOR`, `MASTER-LIMITER`) je **read-only**; spec je ve vault hubu.
+**Stav (2026-10-15):** šablona `NEUROFUNK_TEMPLATE_FINAL` byla uživatelem označena za nedobrou a **není součástí kánonu NPOS**. Poznámky o šabloně byly smazány; vault `02 Šablona` zůstává jako **archivní poznámka** (kritika dogmat v10 a pasti sestavování `.als` v ní jsou užitečné, ale nejsou závazné). Nová šablona vznikne až z ověřených rozhodnutí (rozbory, `data/`), ne obráceně.
+Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XML se nepřenáší z cizích setů (pády).
 
 ---
 
 ## 9. Nástroje a blocklist
 
 **Hotové:** `tools/analyze_track.py` · `tools/analyze_preset.py` · `tools/check_repo.py` · `tools/sync_knowledge.py` (generuje `knowledge/` z vaultu, vault z env `NPOS_VAULT`) · `tools/vault-app/` (read-only prohlížeč vaultu v prohlížeči a statický export do sdílené kopie; **nezapisuje** do vaultu ani do dat).
-**Plánované (pořadí v kap. 10):** `rebuild_track_index.py` → `data/corpus/tracks.jsonl` · `query_tracks.py` · read-only lint šablony (Producer Pal nebo Extension).
+**Plánované (pořadí v kap. 10):** `rebuild_track_index.py` → `data/corpus/tracks.jsonl` · `query_tracks.py`.
 
 **`tools/check_repo.py` kontroluje:** frontmatter každého souboru v `knowledge/` (kontrakt v `knowledge/README.md`) · že každý `source_ids` odkaz vede do `sources.jsonl` · platnost `sources.jsonl` proti `core/source.schema.json` · že `data/tracks/<id>` mají `meta.json`.
 
@@ -195,7 +191,6 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 - Stem-separation pipeline (použití stemů, které existují, je povolené).
 - Synth engine.
 - **Druhý Ableton MCP most** (jediný je Producer Pal); Pal **nezapisuje vnitřní parametry Serum** (zeď Live API); Serum patche jsou binární stav → offline `.SerumPreset` nebo ruční klik.
-- Úprava `NEUROFUNK_TEMPLATE_FINAL.als` bez souhlasu.
 - Upload nevydaných bounců do cizího cloudu (generátory hudby, stem separátory, sample služby).
 - Oživení `neuroman/` orchestrátoru (legacy, v coding session horší než Producer Pal).
 - Přenos placeného cizího obsahu (videa, přepisy, PDF kurzů) do repa nebo sdíleného exportu.
@@ -206,17 +201,15 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 
 ## 10. Pořadí implementace (v2)
 
-**Hotovo:** kostra repa · build sheet a první analýza (*First Contact*) · `analyze_track.py` · šablona FINAL · český kánon (vault 00–05) · tento přepis repa (BLUEPRINT, knowledge, schémata, `check_repo.py`).
+**Hotovo:** kostra repa · build sheet a první analýza (*First Contact*) · `analyze_track.py` · český kánon (vault 00–05) · tento přepis repa (BLUEPRINT, knowledge, schémata, `check_repo.py`).
 
 **Další kroky (nepřeskakovat):**
 1. **Datová konverze:** převést už existující naměřené rozbory do `data/tracks/*/analysis.json` s poctivým `confidence` a `basis` (kandidáti: *Breach*, *Unleash The Beast*, *Restless*, *Hands Up*, *Been About This*, *Don't Play*, *Mechanism*, remix *Dirts*; každý musí mít záznam v `sources.jsonl`).
 2. **Presety:** čtečka je hotová (`analyze_preset.py`). Zbývá převést ~15 rozborů presetů z próz do `data/presets/*.json` a doplnit ruční interpretaci (archetyp, funkce) k přečteným hodnotám; modulační matici a jednotky ověřit proti Serum UI.
 3. **Korpus:** `rebuild_track_index.py` → `tracks.jsonl`, `query_tracks.py`.
-4. **Lint** šablony read-only na kopii setu.
 5. **Dogfooding:** session log a build sheet na *každé* skutečné práci. Znalost se rozšiřuje, jen když se v praxi zasekneš.
 
 ### 10.1 Definition of Done (v2)
-- [ ] Jedna šablona v denním používání.
 - [ ] Build sheet na každém novém tracku, session log na každé session.
 - [ ] ≥ 10 analýz tracků, z nich ≥ 5 s basovým pásmem ze stemů nebo bass-mute (`basis: stems`).
 - [ ] ≥ 15 analýz presetů s `function` a `archetype`.
