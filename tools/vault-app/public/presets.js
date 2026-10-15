@@ -199,11 +199,69 @@ function fxModule(e, i) {
   }).join('');
   return `<div class="slot"><span class="no">${i + 1}</span>${mod(FXN[e.module] || e.module, e.on, (e.mode ? lcd(String(e.mode).replace(/^k/, '')) : '') + (knobs ? `<div class="knobs">${knobs}</div>` : '<div class="dim" style="font-size:12px">bez nastavených parametrů</div>'), 'fx')}</div>`;
 }
+/* ---------- LFO curve, envelopes, everything else stored in the file ---------- */
+const pname = (k) => k.replace(/^kParam/, '');
+const chip = (k, v) => `<span class="chip">${esc(pname(k))} <b>${esc(typeof v === 'number' ? f2(v) : String(v))}</b></span>`;
+const chips = (obj, skip = []) => { const e = Object.entries(obj || {}).filter(([k, v]) => !skip.includes(k) && v != null && typeof v !== 'object'); return e.length ? `<div class="chips">${e.map(([k, v]) => chip(k, v)).join('')}</div>` : ''; };
+
+// Point positions are from the file (x,y 0–1; y is screen-style, 0 = top, inferred from the default triangle, unverified).
+// The segment curvature `c` (0.5 = straight) is drawn as a power curve: an estimate of the shape, not Serum's exact formula.
+function lfoSvg(curve, loopback) {
+  const W = 240, H = 96, P = 6, X = (x) => P + x * (W - 2 * P), Y = (y) => P + y * (H - 2 * P);
+  const xs = curve.x, ys = curve.y, cs = curve.c || [];
+  let d = `M${X(xs[0]).toFixed(1)} ${Y(ys[0]).toFixed(1)}`;
+  for (let i = 1; i < xs.length; i++) {
+    const c = cs[i] != null ? cs[i] : 0.5, pw = Math.pow(4, (c - 0.5) * 2);
+    if (Math.abs(c - 0.5) < 0.01 || xs[i] === xs[i - 1]) { d += `L${X(xs[i]).toFixed(1)} ${Y(ys[i]).toFixed(1)}`; continue; }
+    for (let s = 1; s <= 12; s++) { const t = s / 12, u = Math.pow(t, pw); d += `L${X(xs[i - 1] + (xs[i] - xs[i - 1]) * t).toFixed(1)} ${Y(ys[i - 1] + (ys[i] - ys[i - 1]) * u).toFixed(1)}`; }
+  }
+  const grid = [0.25, 0.5, 0.75].map((g) => `<line class="grid" x1="${X(g)}" y1="${P}" x2="${X(g)}" y2="${H - P}"/>`).join('')
+    + [0, 0.5, 1].map((g) => `<line class="grid" x1="${P}" y1="${Y(g)}" x2="${W - P}" y2="${Y(g)}"/>`).join('');
+  const lp = loopback != null && loopback >= 0 && loopback < xs.length ? `<line class="lp" x1="${X(xs[loopback])}" y1="${P}" x2="${X(xs[loopback])}" y2="${H - P}"/>` : '';
+  const dots = xs.map((x, i) => `<circle class="pt" cx="${X(x).toFixed(1)}" cy="${Y(ys[i]).toFixed(1)}" r="2"/>`).join('');
+  return `<svg class="lfog" viewBox="0 0 ${W} ${H}" role="img" aria-label="Křivka LFO">${grid}<path class="fl" d="${d}L${X(xs[xs.length - 1])} ${H - P}L${X(xs[0])} ${H - P}Z"/><path class="cv" d="${d}"/>${lp}${dots}</svg>`;
+}
+const DEFAULT_TRI = { x: [0, 0.5, 1], y: [1, 0, 1], c: [0.5, 0.5, 0.5] };
+function lfoModule(l, b) {
+  const dests = b.modulation.filter((m) => m.source === `LFO ${l.index + 1}`);
+  const t = l.type || 'Normal';
+  let screen;
+  if (t === 'Lorenz' || t === 'Rossler') screen = `<div class="lcd"><span>chaos: ${esc(t)}</span><small>generuje se, křivka se neukládá</small></div>`;
+  else if (t === 'RandomSH') screen = `<div class="lcd"><span>S&amp;H (náhodné hodnoty)</span><small>křivka se neukládá</small></div>`;
+  else if (t === 'Path' && l.path) screen = lfoSvg(l.path) + `<div class="lcd"><span>Path${l.path.name ? ' · ' + esc(l.path.name) : ''}</span><small>dráha ve 2D, kreslená jako X/Y body</small></div>`;
+  else if (l.curve) screen = lfoSvg(l.curve, l.curve.loopback) + `<div class="lcd"><span>${esc(l.shape && l.shape !== 'Custom' ? l.shape : 'vlastní křivka')} · ${l.points} bodů</span><small>${l.curve.c ? 'zakřivení segmentů ze souboru (tvar odhad)' : 'rovné segmenty'}</small></div>`;
+  else screen = lfoSvg(DEFAULT_TRI) + `<div class="lcd"><span>${esc(l.shape || 'Default')}</span><small>křivka v souboru není = výchozí trojúhelník</small></div>`;
+  const dtxt = dests.length ? `<div class="dests">Řídí: ${dests.map((m) => `<b>${esc(m.dest)}</b> ${esc(m.param)} <em>${f2(m.amount)}</em>`).join(' · ')}</div>` : '<div class="dests">Bez cíle v matici (cíl může být přiřazen jinde, např. bod jiné LFO).</div>';
+  return mod(`LFO ${l.index + 1}`, true, screen + chips(l.params, ['kParamDefaultMode']) + dtxt, 'lfom');
+}
+function envModule(e, b) {
+  const dests = b.modulation.filter((m) => m.source === `Env ${e.index + 1}`);
+  const p = e.params, nm = { kParamAttack: 'ATK', kParamHold: 'HOLD', kParamDecay: 'DEC', kParamSustain: 'SUS', kParamRelease: 'REL' };
+  const knobs = Object.entries(nm).map(([k, lab]) => knob(lab, p[k], { max: 1 })).join('');
+  const rest = chips(p, [...Object.keys(nm)]);
+  const dtxt = dests.length ? `<div class="dests">Řídí: ${dests.map((m) => `<b>${esc(m.dest)}</b> ${esc(m.param)} <em>${f2(m.amount)}</em>`).join(' · ')}</div>` : '';
+  return mod(`ENV ${e.index + 1}`, true, `<div class="knobs">${knobs}</div>${rest}${dtxt}`, 'small');
+}
+function allParams(b) {
+  const tab = (title, obj) => { const e = Object.entries(obj || {}).filter(([, v]) => v != null && typeof v !== 'object'); return e.length ? `<div><h5>${esc(title)}</h5><table>${e.map(([k, v]) => `<tr><td>${esc(pname(k))}</td><td>${esc(typeof v === 'number' ? f2(v) : String(v))}</td></tr>`).join('')}</table></div>` : ''; };
+  const OSC = ['OSC A', 'OSC B', 'OSC C', 'NOISE', 'SUB'];
+  const parts = [];
+  for (const o of b.raw.oscillators) { parts.push(tab(`${OSC[o.slot] || 'OSC ' + o.slot}`, o.params)); parts.push(tab(`${OSC[o.slot] || 'OSC'} · ${o.kind || 'modul'}`, o.kind_params)); }
+  for (const f of b.raw.filters) parts.push(tab(`FILTR ${f.slot + 1}`, f.params));
+  for (const e of b.raw.fx) parts.push(tab(`FX ${e.index + 1} · ${FXN[e.module] || e.module}`, { ...e.params, ...e.mix }));
+  for (const e of b.envs) parts.push(tab(`ENV ${e.index + 1}`, e.params));
+  for (const l of b.lfos) parts.push(tab(`LFO ${l.index + 1}`, l.params));
+  for (const r of b.routing) parts.push(tab(`Routing ${r.slot + 1}`, r.params));
+  parts.push(tab('Globál / hlas', b.voice), tab('Voice panel', b.voice_panel), tab('Arp', b.arp));
+  const n = parts.filter(Boolean).reduce((a, h) => a + (h.match(/<tr>/g) || []).length, 0);
+  return `<details class="all"><summary>Všechny uložené parametry (${n})</summary><div class="tb">${parts.join('')}</div></details>`;
+}
 function modMatrix(b) {
   const rows = b.modulation.map((m) => {
     const t = Math.max(-1, Math.min(1, m.amount / 100));
     const fill = t >= 0 ? `left:50%;width:${(t * 50).toFixed(1)}%` : `left:${(50 + t * 50).toFixed(1)}%;width:${(-t * 50).toFixed(1)}%`;
-    return `<div class="mrow"><span class="src">${esc(m.source)}</span><span class="arr">→</span><span class="dst">${esc(m.dest)} <em>${esc(m.param)}</em></span>
+    const ex = Object.entries(m.extra || {}).map(([k, v]) => `<u title="${esc(pname(k))}">${esc(pname(k).replace(/^Smooth/, 'Sm'))} ${esc(typeof v === 'number' ? f2(v) : String(v))}</u>`).join('') + (m.has_curve ? '<u title="vlastní křivka mapování">křivka</u>' : '');
+    return `<div class="mrow"><span class="src">${esc(m.source)}</span><span class="arr">→</span><span class="dst">${esc(m.dest)} <em>${esc(m.param)}</em>${ex ? `<span class="mx">${ex}</span>` : ''}</span>
       <span class="amt"><i class="bip"><b style="${fill}"></b></i><u>${f2(m.amount)}</u></span></div>`;
   }).join('');
   return rows || '<div class="dim">matice je prázdná</div>';
@@ -214,18 +272,29 @@ function renderBuild(b) {
   const flt = b.filters.length ? b.filters.map(filterModule).join('') : mod('FILTR', false, lcd('bez filtru'), 'small');
   const aux = noiseModule(b.noise) + subModule(b.sub) + flt;
   const fx = b.fx.length ? `<div class="chain">${b.fx.map(fxModule).join('')}</div>` : '<div class="dim">bez FX</div>';
-  const lfo = b.lfos.map((l) => `<span class="pill">LFO ${l.index + 1} · ${esc(l.type || l.mode || 'výchozí')}${l.rate != null ? ' · rate ' + f2(l.rate) : ''}${l.points ? ' · ' + l.points + ' bodů' : ''}</span>`).join('');
-  const macros = b.macros.length ? `<div class="macros">${b.macros.map((m) => knob('M' + (m.index + 1), m.value, { max: 100 })).join('')}</div>` : '';
+  // LFOs with no curve, no type and no destination are untouched defaults: one line instead of a card each.
+  const used = (l) => l.curve || l.path || l.type || b.modulation.some((m) => m.source === `LFO ${l.index + 1}`);
+  const idle = b.lfos.filter((l) => !used(l)).map((l) => l.index + 1);
+  const lfos = b.lfos.filter(used).map((l) => lfoModule(l, b)).join('')
+    + (idle.length ? `<div class="dim" style="grid-column:1/-1;font-size:12px">LFO ${idle.join(', ')}: výchozí nastavení, nic neřídí.</div>` : '');
+  const envs = b.envs.map((e) => envModule(e, b)).join('');
+  const macros = b.macros.length ? `<div class="macros">${b.macros.map((m) => knob(m.name ? m.name.slice(0, 8) : 'M' + (m.index + 1), m.value, { max: 100 })).join('')}</div>` : '';
   const v = b.voice;
   const voice = `<div class="voice">${led(v.kParamMonoToggle === 1)}<b>MONO</b>${led(v.kParamLegato === 1)}<b>LEGATO</b>${v.kParamPortamentoTime != null ? `<b>PORTA</b><i>${f2(v.kParamPortamentoTime)}</i>` : ''}</div>`;
+  const glob = chips(v, ['kParamMonoToggle', 'kParamLegato', 'kParamPortamentoTime']) + chips(b.voice_panel) + (b.arp.kParamEnabled ? chips(b.arp) : '');
+  const route = b.routing.length ? `<div class="chips">${b.routing.map((r) => `<span class="chip">routing ${r.slot + 1} ${Object.entries(r.params).map(([k, x]) => `${esc(pname(k).replace(/^Routing|^FX/, ''))} <b>${esc(typeof x === 'number' ? f2(x) : String(x))}</b>`).join(' · ')}</span>`).join('')}</div>` : '';
   return `<div class="panel">
     <div class="flow" aria-label="Signálový tok">${flow}</div>
     <div class="sect"><h3>Oscilátory</h3><div class="g-osc">${oscs}</div></div>
     <div class="sect"><h3>Noise, sub, filtry a hlas</h3><div class="g-aux">${aux}${mod('HLAS', true, voice, 'small')}</div></div>
     <div class="sect"><h3>FX řetěz</h3>${fx}</div>
-    <div class="sect"><h3>Modulace</h3><div class="matrix">${modMatrix(b)}</div>${lfo ? `<div class="pills">${lfo}</div>` : ''}${macros}</div>
+    ${lfos ? `<div class="sect"><h3>LFO</h3><div class="g-lfo">${lfos}</div></div>` : ''}
+    ${envs ? `<div class="sect"><h3>Obálky</h3><div class="g-aux">${envs}</div></div>` : ''}
+    <div class="sect"><h3>Modulační matice</h3><div class="matrix">${modMatrix(b)}</div>${macros}</div>
+    ${glob || route ? `<div class="sect"><h3>Hlas, routing a globál</h3>${glob}${route}</div>` : ''}
+    ${allParams(b)}
   </div>
-  <div class="pnote">Serum 2 má tři wavetable oscilátory (A–C) a k nim Noise a Sub; v souboru se jmenují <code>NoiseOsc3</code> a <code>SubOsc4</code>. Čísla pod knoby jsou přímo ze souboru (normalizované, jednotky neověřené proti Serum UI); poloha knobu je jen orientační. „výchozí“ = v souboru chybí. Zdroje modulace mimo LFO, obálky a makra zatím nejsou pojmenované.</div>`;
+  <div class="pnote">Serum 2 má tři wavetable oscilátory (A–C) a k nim Noise a Sub; v souboru se jmenují <code>NoiseOsc3</code> a <code>SubOsc4</code>. Čísla jsou přímo ze souboru (normalizované, jednotky neověřené proti Serum UI); poloha knobu je jen orientační. „výchozí“ = v souboru chybí. <b>Křivka LFO:</b> pozice bodů je ze souboru, zakřivení segmentů je odhad a směr osy Y (0 = nahoře) je odvozený z výchozího trojúhelníku, nepotvrzený v Serum. Chaos (Lorenz, Rossler) a S&amp;H se jako křivka neukládají. Zdroje modulace mimo LFO, obálky a makra zatím nejsou pojmenované. Úplný výpis všeho uloženého je dole v „Všechny uložené parametry“.</div>`;
 }
 async function loadBuildFor(id) {
   if (BUILDS.has(id)) return BUILDS.get(id);

@@ -163,6 +163,10 @@ def read_modulation(cb: dict[str, Any]) -> list[dict[str, Any]]:
             "dest_module_id": s.get("destModuleID"),
             "dest_param": s.get("destModuleParamName"),
             "amount": _round(_params(s).get("kParamAmount")),
+            # zbytek parametrů slotu (bipolár, bypass, vyhlazení, křivky) — bez interpretace
+            "extra": {k: v for k, v in _round_params(_params(s)).items()
+                      if k != "kParamAmount" and not isinstance(v, (dict, list, bytes))},
+            "has_curve": any(k in _params(s) for k in ("kParamMainCurveData", "kParamAuxCurveData")),
         })
     return out
 
@@ -176,13 +180,54 @@ def read_lfos(cb: dict[str, Any]) -> list[dict[str, Any]]:
         pp = _params(lfo)
         curve = lfo.get("curveData") if isinstance(lfo.get("curveData"), dict) else {}
         name = lfo.get("curveDisplayName")
-        if pp or curve.get("numPoints") or (name and name != "Custom"):
+        path = lfo.get("pathData") if isinstance(lfo.get("pathData"), dict) else {}
+        if pp or curve.get("numPoints") or path.get("numPoints") or (name and name != "Custom"):
             e: dict[str, Any] = {"index": int(key[3:]), "params": _round_params(pp)}
             if name:
                 e["shape"] = name
             if curve.get("numPoints"):
                 e["curve_points"] = curve["numPoints"]
+            c = _curve(curve)
+            if c:
+                e["curve"] = c
+            p = _curve(path)
+            if p:
+                e["path"] = dict(p, open=path.get("isOpen"), name=lfo.get("pathDisplayName"))
             out.append(e)
+    return out
+
+
+def _curve(cd: dict[str, Any]) -> dict[str, Any] | None:
+    """Body křivky LFO/dráhy: x, y (0–1) a `c` = zakřivení segmentu k tomuto bodu (0.5 = rovně).
+    Pozice bodů jsou ze souboru; mapování `c` na tvar křivky je odhad (neověřeno proti Serum UI).
+    `numPoints` je počet segmentů, bodů je o jeden víc."""
+    xs, ys = cd.get("xVals"), cd.get("yVals")
+    if not (isinstance(xs, list) and isinstance(ys, list) and xs and len(xs) == len(ys)):
+        return None
+    out: dict[str, Any] = {"x": [_round(v) for v in xs], "y": [_round(v) for v in ys]}
+    cv = cd.get("curveVals")
+    if isinstance(cv, list):
+        out["c"] = [_round(v) for v in cv]
+    if cd.get("loopbackPointNum") is not None:
+        out["loopback"] = cd["loopbackPointNum"]
+    return out
+
+
+def read_envs(cb: dict[str, Any]) -> list[dict[str, Any]]:
+    out = []
+    for key in sorted((k for k in cb if re.fullmatch(r"Env\d+", k)), key=lambda s: int(s[3:])):
+        pp = _params(cb[key])
+        if pp:
+            out.append({"index": int(key[3:]), "params": _round_params(pp)})
+    return out
+
+
+def read_routing(cb: dict[str, Any]) -> list[dict[str, Any]]:
+    out = []
+    for key in sorted((k for k in cb if re.fullmatch(r"RoutingSlot\d+", k)), key=lambda s: int(s[11:])):
+        pp = _params(cb[key])
+        if pp:
+            out.append({"slot": int(key[11:]), "params": _round_params(pp)})
     return out
 
 
@@ -252,8 +297,12 @@ def analyze(path: Path, *, source_id: str, archetype: str = "unclassified", func
             "fx": fx,
             "modulation": mods,
             "lfos": read_lfos(cb),
+            "envs": read_envs(cb),
+            "routing": read_routing(cb),
             "macros": read_macros(cb),
             "voice": read_voice(cb),
+            "voice_panel": _round_params(_params(cb.get("VoicePanel0"))),
+            "arp": _round_params(_params(cb.get("Arp0"))),
         },
     }
 

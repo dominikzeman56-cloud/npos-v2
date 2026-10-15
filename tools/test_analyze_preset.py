@@ -94,3 +94,9 @@ def test_cli_requires_source_id(tmp_path, capsys):
     with pytest.raises(SystemExit):
         ap.main([str(f)])
     assert ap.main([str(f), "--summary"]) == 0
+
+
+def test_curve_points_and_segments():
+    c = ap._curve({"numPoints": 3, "xVals": [0.0, 0.0, 0.66, 1.0], "yVals": [1.0, 0.0, 1.0, 1.0], "curveVals": [0.5, 0.574, 0.5, 0.5]})
+    assert len(c["x"]) == 4 and c["c"][1] == 0.574 and "loopback" not in c
+    assert ap._curve({}) is None and ap._curve({"xVals": [0.0], "yVals": []}) is None

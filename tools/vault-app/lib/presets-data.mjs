@@ -83,9 +83,27 @@ export function buildView(d) {
       params: Object.fromEntries(Object.entries(e.params || {})
         .filter(([k, v]) => !['kParamEnable', 'kParamMode', 'kParamType'].includes(k) && typeof v === 'number')),
     })),
-    modulation: (r.modulation || []).map((m) => ({ source: m.source, dest: `${m.dest_module}${m.dest_module_id ?? ''}`, param: (m.dest_param || '').replace(/^kParam/, ''), amount: m.amount })),
-    lfos: (r.lfos || []).map((l) => ({ index: l.index, mode: l.params?.kParamMode || null, rate: num(l.params?.kParamRate), shape: l.shape || null, points: l.curve_points ?? null, type: l.params?.kParamType || null })),
-    macros: (r.macros || []).map((m) => ({ index: m.index, value: num(m.params?.kParamValue) })),
+    modulation: (r.modulation || []).map((m) => ({
+      source: m.source, dest: `${m.dest_module}${m.dest_module_id ?? ''}`, param: (m.dest_param || '').replace(/^kParam/, ''), amount: m.amount,
+      extra: m.extra || {}, has_curve: !!m.has_curve,
+    })),
+    // Full LFO data: `params` = everything the file stores, `curve` = points (x, y 0–1, c = segment curvature, 0.5 straight).
+    lfos: (r.lfos || []).map((l) => ({
+      index: l.index, params: l.params || {}, mode: l.params?.kParamMode || null, rate: num(l.params?.kParamRate), shape: l.shape || null,
+      points: l.curve?.x ? l.curve.x.length : null, segments: l.curve_points ?? null, type: l.params?.kParamType || null,
+      curve: l.curve || null, path: l.path || null,
+    })),
+    envs: (r.envs || []).map((e) => ({ index: e.index, params: e.params || {} })),
+    routing: (r.routing || []).map((x) => ({ slot: x.slot, params: x.params || {} })),
+    macros: (r.macros || []).map((m) => ({ index: m.index, name: m.name || null, value: num(m.params?.kParamValue) })),
     voice: r.voice || {},
+    voice_panel: r.voice_panel || {},
+    arp: r.arp || {},
+    // Everything stored per module, untouched, for the "all parameters" table.
+    raw: {
+      oscillators: (r.oscillators || []).map((o) => ({ slot: o.slot, kind: o.kind || null, params: o.params || {}, kind_params: o.kind_params || {} })),
+      filters: (r.voice_filters || []).map((f) => ({ slot: f.slot, params: f.params || {} })),
+      fx: (r.fx || []).map((e) => ({ index: e.index, module: e.module, params: e.params || {}, mix: e.mix || {} })),
+    },
   };
 }
