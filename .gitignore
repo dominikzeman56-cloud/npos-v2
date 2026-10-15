@@ -20,3 +20,6 @@ data/presets/_local/
 
 # Lokální kopie zdrojů (placené kurzy, presety, projekty): jen na tomhle počítači, viz tools/collect_local_sources.py
 _sources/
+
+# Plné analýzy presetů z placených packů (redistribution: none) zůstávají jen lokálně
+data/presets/analyzed/
