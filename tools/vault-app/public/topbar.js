@@ -27,7 +27,7 @@
   bar.id = 'topbar';
   bar.innerHTML =
     '<a class="tb-brand" href="/dashboard.html" aria-label="NPOS/CTRL, Dashboard"><i></i><span>NPOS/CTRL</span></a>' +
-    '<nav aria-label="Hlavní navigace">' + TABS.map(function (t) { return '<a href="' + t[0] + '"' + (t[1] === cur ? ' aria-current="page"' : '') + '>' + t[1] + '</a>'; }).join('') + '</nav>' +
+    '<nav aria-label="Hlavní navigace">' + TABS.map(function (t) { return '<a href="' + (t[0] === '/' ? '/#00%20Start.md' : t[0]) + '"' + (t[1] === cur ? ' aria-current="page"' : '') + '>' + t[1] + '</a>'; }).join('') + '</nav>' +
     '<div class="tb-end"><span class="tb-mod">MODULE // ' + (cur || 'VAULT').toUpperCase() + '</span>' +
     '<select id="skin" aria-label="Vzhled (skin)"><option value="samurai">Samurai</option><option value="dark">Tmavý</option><option value="light">Světlý</option></select></div>';
   document.body.insertBefore(bar, document.body.firstChild);

@@ -105,3 +105,11 @@
 :root[data-theme="samurai"] .prop .k { color: var(--sam-red-muted); }
 :root[data-theme="samurai"] #ribbon .rl { font-family: var(--font-ui); font-weight: 600; }
 :root[data-theme="samurai"] .graph-ctl { background: rgba(19, 25, 34, .92); border-color: rgba(226, 61, 61, .4); }
+
+/* HUD rohové značky na kartách a panelech (Dashboard, Build Sheet, Presety, Co dál?) */
+:root[data-theme="samurai"] .card, :root[data-theme="samurai"] .panel, :root[data-theme="samurai"] .answer, :root[data-theme="samurai"] .dh { position: relative; }
+:root[data-theme="samurai"] .card::before, :root[data-theme="samurai"] .panel::before, :root[data-theme="samurai"] .answer::before, :root[data-theme="samurai"] .dh::before,
+:root[data-theme="samurai"] .card::after, :root[data-theme="samurai"] .panel::after, :root[data-theme="samurai"] .answer::after, :root[data-theme="samurai"] .dh::after {
+  content: ""; position: absolute; width: 12px; height: 12px; pointer-events: none; border: 2px solid var(--sam-green); opacity: .85; }
+:root[data-theme="samurai"] .card::before, :root[data-theme="samurai"] .panel::before, :root[data-theme="samurai"] .answer::before, :root[data-theme="samurai"] .dh::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; border-top-left-radius: 3px; }
+:root[data-theme="samurai"] .card::after, :root[data-theme="samurai"] .panel::after, :root[data-theme="samurai"] .answer::after, :root[data-theme="samurai"] .dh::after { right: -1px; bottom: -1px; border-left: 0; border-top: 0; border-bottom-right-radius: 3px; }

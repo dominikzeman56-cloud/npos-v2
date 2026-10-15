@@ -45,12 +45,10 @@ function renderSess() {
   $('#sess').innerHTML = D.sessions.length ? D.sessions.map((s, i) => `<div class="it"><span class="tx"><b>${esc(s.title)}</b>${s.sum ? '<br><span class="muted">' + esc(s.sum) + '</span>' : ''}</span><span class="when">${esc(s.when)}</span><button class="x" data-del="${i}" aria-label="Smazat">×</button></div>`).join('') : '<div class="empty-l">zatím nic</div>';
 }
 
-// Advisor: simple keyword match over the Co dál? items (situation, steps, sources), best hits first.
+// Co dál? advisor on the Dashboard: the same search as the Co dál? page (advisor.js), biased to the current phase.
 function ask(q) {
-  const words = q.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length > 2);
-  if (!words.length) { $('#ans').innerHTML = ''; return; }
-  const score = (it) => { const hay = (it.situation + ' ' + it.steps.join(' ') + ' ' + it.sources.join(' ')).toLowerCase(); const base = words.reduce((a, w) => a + (it.situation.toLowerCase().includes(w) ? 3 : 0) + (hay.includes(w) ? 1 : 0), 0); return base > 0 && it.phase === D.stage ? base + 2 : base; }; // current phase wins ties
-  const hits = NS.items.map((it) => [score(it), it]).filter(([s]) => s > 0).sort((a, b) => b[0] - a[0]).slice(0, 3).map(([, it]) => it);
+  const hits = NposAdvisor.search(NS.items, q, D.stage, 3);
+  if (!q.trim()) { $('#ans').innerHTML = ''; return; }
   $('#ans').innerHTML = hits.length ? hits.map((it) => `<div class="hit"><b>${esc(it.situation)}</b><ol>${it.steps.slice(0, 3).map((s) => `<li>${esc(s).replace(/`([^`]+)`/g, '<code>$1</code>')}</li>`).join('')}</ol><a href="/dal.html?p=${esc(it.phase)}&s=${esc(it.id)}">Celý postup →</a> <span class="muted">· ${esc(it.confidence === 'estimated' ? 'odhad' : it.confidence)}</span></div>`).join('')
     : '<div class="hit"><b>Nic nenalezeno</b><span class="muted">Zkus kratší slovo, nebo projdi fáze v <a href="/dal.html">Co dál?</a>.</span></div>';
 }

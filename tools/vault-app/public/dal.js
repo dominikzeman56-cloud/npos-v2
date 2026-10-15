@@ -57,8 +57,7 @@ function render() {
   crumbs();
   const v = $('#view');
   if (S.q) {
-    const q = S.q.toLowerCase();
-    const hits = D.items.filter((i) => (i.situation + ' ' + i.steps.join(' ') + ' ' + i.sources.join(' ')).toLowerCase().includes(q));
+    const hits = window.NposAdvisor ? NposAdvisor.search(D.items, S.q, S.p) : [];
     v.innerHTML = hits.length ? `<div class="step-h">${hits.length} nalezeno</div><div class="sits">${hits.map((i) => sitButton(i, true)).join('')}</div>` : '<div class="none">Nic nenalezeno. Zkus kratší slovo.</div>';
     return;
   }
