@@ -25,7 +25,7 @@ DEFAULT_VAULT = r"D:\ObsidianVault\Hudební produkce"
 
 STATUS = {"canon", "candidate", "conditional", "deprecated"}
 CONFIDENCE = {"measured", "estimated", "hypothesis"}
-TYPES = {"principle", "method", "candidate", "archetype", "producer", "index"}
+TYPES = {"principle", "method", "candidate", "archetype", "producer", "guide", "index"}
 SOURCE_TYPES = {"producer_course", "ableton_project", "preset_pack", "interview",
                 "track_analysis", "personal_observation", "other"}
 RULE_LABELS = {"consensus", "conditional", "school", "dogma_unverified"}

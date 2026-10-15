@@ -61,7 +61,8 @@ npos-v2/
 │   ├── sources.jsonl                ← registr ověřených zdrojů
 │   ├── principles/                  ← principy (P1–P9 + šest z vrstvy 1 + kandidáti)
 │   ├── archetypes/                  ← slovník archetypů s důkazy
-│   └── producers/                   ← filozofie, jen se zdrojem
+│   ├── producers/                   ← filozofie, jen se zdrojem
+│   └── guides/                      ← návody vytěžené z rozborů (aranž)
 ├── data/
 │   ├── tracks/<id>/{meta.json, analysis.json, notes.md}
 │   ├── presets/<id>.json
@@ -70,6 +71,7 @@ npos-v2/
 ├── tools/
 │   ├── analyze_track.py             ← hotové
 │   ├── check_repo.py                ← kontrola kontraktu a zdrojů
+│   ├── sync_knowledge.py            ← vygeneruje knowledge/ z kánonu ve vaultu
 │   ├── vault-app/                   ← read-only prohlížeč a export vaultu (viz kap. 9)
 │   ├── analyze_preset.py            ← čtečka .SerumPreset (basis: preset_file)
 │   └── (plánováno: rebuild_track_index.py, query_tracks.py)
@@ -183,7 +185,7 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 
 ## 9. Nástroje a blocklist
 
-**Hotové:** `tools/analyze_track.py` · `tools/analyze_preset.py` · `tools/check_repo.py` · `tools/vault-app/` (read-only prohlížeč vaultu v prohlížeči a statický export do sdílené kopie; **nezapisuje** do vaultu ani do dat).
+**Hotové:** `tools/analyze_track.py` · `tools/analyze_preset.py` · `tools/check_repo.py` · `tools/sync_knowledge.py` (generuje `knowledge/` z vaultu, vault z env `NPOS_VAULT`) · `tools/vault-app/` (read-only prohlížeč vaultu v prohlížeči a statický export do sdílené kopie; **nezapisuje** do vaultu ani do dat).
 **Plánované (pořadí v kap. 10):** `rebuild_track_index.py` → `data/corpus/tracks.jsonl` · `query_tracks.py` · read-only lint šablony (Producer Pal nebo Extension).
 
 **`tools/check_repo.py` kontroluje:** frontmatter každého souboru v `knowledge/` (kontrakt v `knowledge/README.md`) · že každý `source_ids` odkaz vede do `sources.jsonl` · platnost `sources.jsonl` proti `core/source.schema.json` · že `data/tracks/<id>` mají `meta.json`.
@@ -240,6 +242,8 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 - Změněno: principy 3, 7 a 4, slovníky (`layer function`, `texture`), blocklist (`vault-app` povolen jen ke čtení; druhý MCP most, cloudové uploady a oživení `neuroman/` zakázány).
 - Přidáno: pravidlo pravdivosti, registr zdrojů, `check_repo.py`, schémata `source`, `track-analysis`, `preset-analysis`, protokol měření basového pásma, `basis` a `modulation source`, princip 9.
 - Zastaralé v v1: „Current stage: Skateboard step 1" — kroky 2 a 3 byly dávno hotové.
+
+**v2.2 (2026-10-15)** — `knowledge/guides/` (návod na aranž z rozborů), `tools/sync_knowledge.py`, typ `guide` ve frontmatteru. Šablona Ableton: uživatel smazal poznámky o šabloně a označil ji za nedobrou; kap. 8 čeká na rozhodnutí (viz vault `06 Návod na aranž` a `02 Šablona`).
 
 **v2.1 (2026-10-15)** — přidáno `preset_file` do `basis`, `preset_pack` do `source kind`, kap. 7.1 a `tools/analyze_preset.py`; schéma `preset-analysis` má `basis` a `reading`.
 
