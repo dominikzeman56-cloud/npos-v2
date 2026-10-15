@@ -46,7 +46,8 @@ const S = {
   leftMode: lsGet('leftMode', 'files'), rightMode: lsGet('rightMode', 'backlinks'),
   expanded: new Set(lsGet('expanded', [])), theme: lsGet('theme', 'dark'),
   noLeft: lsGet('noLeft', false), noRight: lsGet('noRight', false),
-  graphLocal: false, graphSim: null, current: null, scroll: {}, query: '', pendingHeading: null,
+  graphLocal: false, graphSim: null, current: null, scroll: lsGet('scroll', {}), query: '', pendingHeading: null,
+  layer: null, hl: null, // layer: 'left' | 'right' | 'modal' | null (mobile drawers + quick switcher)
 };
 const CTX = { note: null };
 
@@ -211,8 +212,69 @@ const saveTabs = () => { lsSet('tabs', S.tabs); lsSet('active', S.active); };
 const tabById = (id) => S.tabs.find((t) => t.id === id);
 const tabTitle = (t) => (t.kind === 'graph' ? 'Graf' : nameOf(t.path));
 
-function openNote(path, { newTab = false, heading = null } = {}) {
+/* Browser history: every note/graph navigation is a history entry (state {path|g, i}); an open drawer/modal is a
+   transient entry (state {ui, i}) so that Back closes it instead of leaving the app. */
+const NAV = { max: 0 };
+const curI = () => history.state?.i ?? 0;
+function navState() {
+  const t = tabById(S.active);
+  return t ? (t.kind === 'graph' ? { g: 1 } : { path: t.path }) : {};
+}
+const hashFor = (st) => (st.g ? '#:graph' : st.path ? '#' + st.path.split('/').map(enc).join('/') : location.pathname + location.search);
+function syncHistory(mode) { // mode: 'push' | 'replace'
+  try {
+    const st = navState(), hs = history.state || {};
+    const same = !hs.ui && (hs.path || null) === (st.path || null) && !!hs.g === !!st.g;
+    let i = hs.i ?? 0;
+    const url = hashFor(st);
+    if (mode === 'push' && !same) {
+      i += 1;
+      if (hs.ui) history.replaceState({ ...st, i }, '', url); // the layer entry becomes the new page entry
+      else history.pushState({ ...st, i }, '', url);
+      NAV.max = i;
+    } else history.replaceState({ ...st, i }, '', url);
+  } catch { /* history unavailable (sandboxed iframe etc.) */ }
+  updateNavButtons();
+}
+function updateNavButtons() {
+  const b = $('#nav-back'), f = $('#nav-fwd');
+  if (b) b.disabled = !(S.layer || curI() > 0);
+  if (f) f.disabled = !!S.layer || !(curI() < NAV.max);
+}
+function openLayer(name, fromPop) {
+  if (S.layer === name) return;
+  S.layer = name;
+  if (!fromPop) {
+    try {
+      if (history.state?.ui) history.replaceState({ ui: name, i: curI() }, '', location.href);
+      else history.pushState({ ui: name, i: curI() }, '', location.href);
+      NAV.max = curI();
+    } catch { /* ignore */ }
+  }
+  applyLayerUI();
+}
+function closeLayer() {
+  if (!S.layer) return;
+  const had = history.state?.ui;
+  S.layer = null; applyLayerUI();
+  if (had) { try { history.back(); } catch { /* ignore */ } }
+}
+const dropLayer = () => { if (S.layer) { S.layer = null; applyLayerUI(); } }; // for navigations: the history entry is reused by syncHistory
+function applyLayerUI() {
+  const d = S.layer === 'left' || S.layer === 'right' ? S.layer : '';
+  $('#app').dataset.drawer = d;
+  if (S.layer !== 'modal') $('#modal-root').innerHTML = '';
+  renderRibbon(); updateNavButtons();
+}
+function goBack() { if (S.layer) closeLayer(); else if (curI() > 0) history.back(); }
+function goFwd() { if (!S.layer && curI() < NAV.max) history.forward(); }
+
+function openNote(path, { newTab = false, heading = null, hist = 'push' } = {}) {
   if (!path) return;
+  const cur0 = tabById(S.active);
+  if (hist === 'push' && S.layer && !newTab && cur0?.kind === 'note' && cur0.path === path) { // already showing it: just close the layer
+    closeLayer(); if (heading) scrollToHeading(heading); return;
+  }
   S.pendingHeading = heading;
   const ex = S.tabs.find((t) => t.kind === 'note' && t.path === path);
   if (ex) S.active = ex.id;
@@ -224,74 +286,131 @@ function openNote(path, { newTab = false, heading = null } = {}) {
   const parts = path.split('/'); parts.pop();
   parts.forEach((_, i) => S.expanded.add(parts.slice(0, i + 1).join('/')));
   lsSet('expanded', [...S.expanded]);
-  if (isMobile()) { S.noLeft = true; S.noRight = true; applyLayout(); }
+  dropLayer();
+  if (hist) syncHistory(hist);
   saveTabs(); renderAll();
 }
-function openGraph() {
+function openGraph({ hist = 'push' } = {}) {
   let t = S.tabs.find((x) => x.kind === 'graph');
   if (!t) { t = { id: 'graph', kind: 'graph' }; S.tabs.push(t); }
-  S.active = t.id; if (isMobile()) { S.noLeft = true; S.noRight = true; applyLayout(); }
+  S.active = t.id;
+  dropLayer();
+  if (hist) syncHistory(hist);
   saveTabs(); renderAll();
+}
+function activateTab(id) {
+  if (S.active === id && !S.layer) return;
+  S.active = id; dropLayer(); syncHistory('push'); saveTabs(); renderAll();
 }
 function closeTab(id) {
   const i = S.tabs.findIndex((t) => t.id === id);
   if (i < 0) return;
   S.tabs.splice(i, 1);
-  if (S.active === id) S.active = S.tabs[Math.min(i, S.tabs.length - 1)]?.id || null;
+  if (S.active === id) { S.active = S.tabs[Math.min(i, S.tabs.length - 1)]?.id || null; syncHistory('replace'); }
   saveTabs(); renderAll();
 }
+function showState(st) { // history navigation (popstate): no new history entries
+  if (!st) return;
+  if (st.g) openGraph({ hist: null });
+  else if (st.path && S.noteSet.has(st.path)) openNote(st.path, { hist: null });
+  updateNavButtons();
+}
+addEventListener('popstate', (e) => {
+  let st = e.state;
+  if (st?.ui) { // moved onto a layer entry (browser Forward): reopen it
+    if (S.layer !== st.ui) { S.layer = st.ui; applyLayerUI(); if (st.ui === 'modal') quickSwitcher(true); }
+    return;
+  }
+  dropLayer();
+  if (!st) { // manual hash edit / entry without state
+    const h = decodeURIComponent(location.hash.slice(1));
+    st = h === ':graph' ? { g: 1 } : { path: h };
+  }
+  const cur = navState();
+  if ((st.path || null) !== (cur.path || null) || !!st.g !== !!cur.g) showState(st);
+  else updateNavButtons();
+  if (!e.state) syncHistory('replace'); // give a stateless entry (typed hash) a state so Back/Forward counters work
+});
 
 /* ---------- layout pieces ---------- */
 function renderRibbon() {
+  const mob = isMobile();
   const items = [
     ['files', 'files', 'Soubory', () => setLeft('files')],
     ['search', 'search', 'Hledat (Ctrl+Shift+F)', () => setLeft('search')],
     ['tags', 'tags', 'Tagy', () => setLeft('tags')],
-    ['graph', 'graph', 'Graf (Ctrl+G)', openGraph],
-    ['switcher', 'switcher', 'Rychlé otevření (Ctrl+O)', quickSwitcher],
+    ['graph', 'graph', 'Graf (Ctrl+G)', () => openGraph()],
+    ['switcher', 'switcher', 'Rychlé otevření (Ctrl+O)', () => quickSwitcher()],
+    ['panel', 'panel', 'Osnova a odkazy', toggleRight, 'mob-only'],
   ];
   const r = $('#ribbon'); r.innerHTML = '';
-  for (const [id, ic, title, fn] of items) {
+  for (const [id, ic, title, fn, cls] of items) {
     const b = document.createElement('button');
-    b.className = 'rb' + (S.leftMode === id && !S.noLeft && ['files', 'search', 'tags'].includes(id) ? ' on' : '');
-    b.title = title; b.innerHTML = icon(ic); b.onclick = fn; r.append(b);
+    const on = id === 'panel' ? mob && S.layer === 'right'
+      : ['files', 'search', 'tags'].includes(id) && S.leftMode === id && (mob ? S.layer === 'left' : !S.noLeft);
+    b.className = 'rb' + (cls ? ' ' + cls : '') + (on ? ' on' : '');
+    b.title = title; b.setAttribute('aria-label', title); b.innerHTML = icon(ic); b.onclick = fn; r.append(b);
   }
   r.insertAdjacentHTML('beforeend', '<div class="sp"></div>');
   const t = document.createElement('button');
-  t.className = 'rb'; t.title = 'Světlý / tmavý režim'; t.innerHTML = icon('moon');
+  t.className = 'rb'; t.title = 'Světlý / tmavý režim'; t.setAttribute('aria-label', 'Světlý / tmavý režim'); t.innerHTML = icon('moon');
   t.onclick = () => { S.theme = S.theme === 'dark' ? 'light' : 'dark'; lsSet('theme', S.theme); applyTheme(); renderAll(); };
   r.append(t);
 }
 function setLeft(mode) {
-  if (S.leftMode === mode && !S.noLeft) S.noLeft = true; else { S.leftMode = mode; S.noLeft = false; }
-  lsSet('leftMode', S.leftMode); lsSet('noLeft', S.noLeft);
-  applyLayout(); renderRibbon(); renderLeft();
-  if (mode === 'search') setTimeout(() => $('#left .searchbox input')?.focus(), 0);
+  if (isMobile()) {
+    if (S.layer === 'left' && S.leftMode === mode) return closeLayer();
+    S.leftMode = mode; lsSet('leftMode', mode);
+    renderLeft(); openLayer('left'); renderRibbon();
+  } else {
+    if (S.leftMode === mode && !S.noLeft) S.noLeft = true; else { S.leftMode = mode; S.noLeft = false; }
+    lsSet('leftMode', S.leftMode); lsSet('noLeft', S.noLeft);
+    applyLayout(); renderRibbon(); renderLeft();
+  }
+  if (mode === 'search' && (!isMobile() || S.layer === 'left')) setTimeout(() => $('#left .searchbox input')?.focus(), 0);
+}
+function toggleRight() {
+  if (isMobile()) {
+    if (S.layer === 'right') return closeLayer();
+    renderRight(); openLayer('right');
+  } else { S.noRight = !S.noRight; lsSet('noRight', S.noRight); applyLayout(); }
 }
 function applyLayout() {
   $('#app').classList.toggle('no-left', S.noLeft);
   $('#app').classList.toggle('no-right', S.noRight);
 }
-function applyTheme() { document.documentElement.dataset.theme = S.theme; }
+function applyTheme() {
+  document.documentElement.dataset.theme = S.theme;
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = S.theme === 'dark' ? '#1e1e1e' : '#ffffff';
+}
 
 function renderTabs() {
-  const bar = $('#tabbar'); bar.innerHTML = '<div id="tabs"></div>';
-  const wrap = $('#tabs', bar);
+  const bar = $('#tabbar'); bar.innerHTML = '';
+  const mk = (id, label, txt, fn) => { const b = document.createElement('button'); b.className = 'nb'; b.id = id; b.title = label; b.setAttribute('aria-label', label); b.textContent = txt; b.onclick = fn; return b; };
+  bar.append(mk('nav-back', 'Zpět', '‹', goBack), mk('nav-fwd', 'Vpřed', '›', goFwd));
+  const wrap = document.createElement('div'); wrap.id = 'tabs'; bar.append(wrap);
   for (const t of S.tabs) {
     const d = document.createElement('div');
     d.className = 'tab' + (t.id === S.active ? ' on' : '');
-    d.innerHTML = `<span class="nm">${esc(tabTitle(t))}</span><span class="x">×</span>`;
-    d.onclick = (e) => { if (e.target.classList.contains('x')) return closeTab(t.id); S.active = t.id; saveTabs(); renderAll(); };
+    d.innerHTML = `<span class="nm">${esc(tabTitle(t))}</span><span class="x" aria-label="Zavřít">×</span>`;
+    d.onclick = (e) => { if (e.target.classList.contains('x')) return closeTab(t.id); activateTab(t.id); };
     d.onauxclick = (e) => { if (e.button === 1) closeTab(t.id); };
     wrap.append(d);
   }
+  wrap.querySelector('.tab.on')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   const tb = document.createElement('button');
-  tb.className = 'tb'; tb.title = 'Pravý panel'; tb.innerHTML = icon('panel');
-  tb.onclick = () => { S.noRight = !S.noRight; lsSet('noRight', S.noRight); applyLayout(); };
+  tb.className = 'tb'; tb.title = 'Pravý panel'; tb.setAttribute('aria-label', 'Pravý panel'); tb.innerHTML = icon('panel');
+  tb.onclick = toggleRight;
   bar.append(tb);
+  updateNavButtons();
 }
 
 /* left sidebar */
+function closeBtn() {
+  const c = document.createElement('button');
+  c.className = 'side-close'; c.title = 'Zavřít'; c.setAttribute('aria-label', 'Zavřít panel'); c.textContent = '✕'; c.onclick = closeLayer;
+  return c;
+}
 function renderLeft() {
   const head = $('#left .side-head'), body = $('#left .side-body');
   head.innerHTML = '';
@@ -301,6 +420,7 @@ function renderLeft() {
     b.onclick = () => { S.leftMode = id; lsSet('leftMode', id); renderLeft(); renderRibbon(); };
     head.append(b);
   }
+  head.append(closeBtn());
   body.innerHTML = '';
   if (S.leftMode === 'files') renderTree(body);
   else if (S.leftMode === 'search') renderSearch(body);
@@ -364,7 +484,7 @@ function renderSearch(body) {
       const d = document.createElement('div'); d.className = 'res';
       const sn = re ? esc(x.snippet).replace(re, '<mark>$1</mark>') : esc(x.snippet);
       d.innerHTML = `<div class="t">${esc(nameOf(x.path))}</div><div class="pth">${esc(dirOf(x.path))}</div><div class="sn">${sn}</div>`;
-      d.onclick = (e) => openNote(x.path, { newTab: e.ctrlKey || e.metaKey });
+      d.onclick = (e) => { S.hl = r.terms.length ? { path: x.path, terms: r.terms } : null; openNote(x.path, { newTab: e.ctrlKey || e.metaKey }); };
       box.append(d);
     }
   };
@@ -383,9 +503,9 @@ async function renderTags(body) {
   }
 }
 function searchTag(tag) {
-  S.query = 'tag:' + tag; S.leftMode = 'search'; S.noLeft = false;
-  lsSet('leftMode', 'search'); lsSet('noLeft', false);
-  applyLayout(); renderLeft(); renderRibbon();
+  S.query = 'tag:' + tag; S.leftMode = 'search'; lsSet('leftMode', 'search');
+  if (isMobile()) { renderLeft(); openLayer('left'); }
+  else { S.noLeft = false; lsSet('noLeft', false); applyLayout(); renderLeft(); renderRibbon(); }
 }
 
 /* right sidebar */
@@ -398,6 +518,7 @@ function renderRight() {
     b.onclick = () => { S.rightMode = id; lsSet('rightMode', id); renderRight(); };
     head.append(b);
   }
+  head.append(closeBtn());
   body.innerHTML = '';
   const n = S.current;
   if (!n) { body.innerHTML = '<div class="hint">Žádná poznámka.</div>'; return; }
@@ -424,7 +545,7 @@ function renderRight() {
     for (const h of hs) {
       const d = document.createElement('div'); d.className = 'outline-item';
       d.style.paddingLeft = 8 + (Number(h.tagName[1]) - 1) * 12 + 'px'; d.textContent = h.textContent;
-      d.onclick = () => h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      d.onclick = () => { if (S.layer === 'right') closeLayer(); h.scrollIntoView({ block: 'start' }); };
       body.append(d);
     }
   }
@@ -436,6 +557,7 @@ async function renderPane() {
   if (S.graphSim) { S.graphSim.stop(); S.graphSim = null; }
   const prev = S.current?.path;
   if (prev) S.scroll[prev] = pane.scrollTop;
+  $('#totop').classList.remove('show');
   const t = tabById(S.active);
   S.current = null;
   $('#statusbar').textContent = '';
@@ -458,9 +580,37 @@ async function renderPane() {
   wireLinks(wrap);
   const words = (n.body.match(/\S+/g) || []).length;
   $('#statusbar').textContent = `${n.backlinks.length} zpětných odkazů · ${words} slov · ${n.body.length} znaků`;
+  let hit = null;
+  if (S.hl && S.hl.path === n.path) hit = highlightTerms(wrap.querySelector('.markdown-rendered'), S.hl.terms);
+  S.hl = null;
   if (S.pendingHeading) { scrollToHeading(S.pendingHeading); S.pendingHeading = null; }
+  else if (hit) hit.scrollIntoView({ block: 'center' });
   else pane.scrollTop = S.scroll[n.path] || 0;
+  updateToTop();
   renderRight();
+}
+
+function highlightTerms(root, terms) {
+  const ts = terms.filter((t) => t && t.length > 1);
+  if (!root || !ts.length) return null;
+  const src = '(' + ts.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')';
+  const test = new RegExp(src, 'i'), split = new RegExp(src, 'ig');
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: (n) => (n.parentElement.closest('mark, script, style, .embed-title') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+  });
+  const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+  let first = null;
+  for (const n of nodes) {
+    if (!test.test(n.nodeValue)) continue;
+    const frag = document.createDocumentFragment();
+    n.nodeValue.split(split).forEach((part, i) => {
+      if (!part) return;
+      if (i % 2) { const m = document.createElement('mark'); m.className = 'hl'; m.textContent = part; frag.append(m); first = first || m; }
+      else frag.append(document.createTextNode(part));
+    });
+    n.replaceWith(frag);
+  }
+  return first;
 }
 
 function renderProps(n) {
@@ -502,8 +652,9 @@ function wireLinks(root) {
 /* ---------- graph ---------- */
 async function renderGraph(pane) {
   pane.innerHTML = `<div id="graph-wrap"><canvas></canvas>
-    <div class="graph-ctl"><label><input type="checkbox" id="g-local"> Jen okolí aktivní poznámky</label>
-    <label><input type="checkbox" id="g-labels" checked> Popisky</label></div></div>`;
+    <div class="graph-ctl${isMobile() ? ' collapsed' : ''}"><button class="gc-toggle" aria-label="Nastavení grafu" title="Nastavení grafu">⚙</button><div class="gc-opts"><label><input type="checkbox" id="g-local"> Jen okolí aktivní poznámky</label>
+    <label><input type="checkbox" id="g-labels" checked> Popisky</label></div></div></div>`;
+  $('.gc-toggle', pane).onclick = () => $('.graph-ctl', pane).classList.toggle('collapsed');
   const wrap = $('#graph-wrap'), canvas = $('canvas', wrap), ctx = canvas.getContext('2d');
   const g = await api('/api/graph');
   const lastNote = [...S.tabs].reverse().find((t) => t.kind === 'note')?.path;
@@ -561,21 +712,21 @@ async function renderGraph(pane) {
     }
     ctx.restore();
   }
-  const pt = (e) => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  const pt = (e) => { const r = canvas.getBoundingClientRect(), p = e.changedTouches?.[0] || e.touches?.[0] || e; return [p.clientX - r.left, p.clientY - r.top]; };
   const world = ([x, y]) => [(x - T.x - canvas.clientWidth / 2) / T.k, (y - T.y - canvas.clientHeight / 2) / T.k];
-  const hit = (e) => { const [wx, wy] = world(pt(e)); return sim.find(wx, wy, 12 / T.k); };
+  const hit = (e, r = 12) => { const [wx, wy] = world(pt(e)); return sim.find(wx, wy, r / T.k); };
 
   const zoom = d3.zoom().scaleExtent([0.15, 8])
-    .filter((e) => (e.type === 'wheel' || (e.type !== 'dblclick' && !hit(e))))
+    .filter((e) => (e.type === 'wheel' || e.type.startsWith('touch') || (e.type !== 'dblclick' && !hit(e))))
     .on('zoom', (e) => { T = e.transform; draw(); });
   d3.select(canvas).call(zoom);
-  d3.select(canvas).call(d3.drag().container(canvas)
+  d3.select(canvas).call(d3.drag().container(canvas).filter((e) => e.type === 'mousedown' && !e.button && !e.ctrlKey)
     .subject((e) => { const n = hit(e.sourceEvent); return n || null; })
     .on('start', (e) => { if (!e.active) sim.alphaTarget(0.3).restart(); e.subject.fx = e.subject.x; e.subject.fy = e.subject.y; })
     .on('drag', (e) => { const [wx, wy] = world(pt(e.sourceEvent)); e.subject.fx = wx; e.subject.fy = wy; })
     .on('end', (e) => { if (!e.active) sim.alphaTarget(0); e.subject.fx = null; e.subject.fy = null; }));
   canvas.addEventListener('mousemove', (e) => { const n = hit(e) || null; if (n !== hover) { hover = n; canvas.style.cursor = n ? 'pointer' : 'default'; draw(); } });
-  canvas.addEventListener('click', (e) => { const n = hit(e); if (n) openNote(n.id, { newTab: e.ctrlKey || e.metaKey }); });
+  canvas.addEventListener('click', (e) => { const n = hit(e, matchMedia('(pointer: coarse)').matches ? 24 : 12); if (n) openNote(n.id, { newTab: e.ctrlKey || e.metaKey }); });
   $('#g-local').onchange = (e) => { S.graphLocal = e.target.checked; build(); };
   $('#g-labels').onchange = draw;
   new ResizeObserver(resize).observe(wrap);
@@ -589,18 +740,19 @@ function fuzzy(q, s) {
   for (const ch of q) { const j = s.indexOf(ch, i); if (j < 0) return -1; score += (j === last + 1 ? 3 : 1) - j * 0.01; last = j; i = j + 1; }
   return score + (s.includes(q) ? 20 : 0);
 }
-function quickSwitcher() {
+function quickSwitcher(fromPop) {
   const root = $('#modal-root');
+  openLayer('modal', fromPop);
   root.innerHTML = '<div class="scrim"><div class="modal"><input placeholder="Najít poznámku…" spellcheck="false"><div class="list"></div><div class="foot"><span>↑↓ vybrat</span><span>↵ otevřít</span><span>Ctrl+↵ nový tab</span><span>Esc zavřít</span></div></div></div>';
   const inp = $('input', root), list = $('.list', root);
   let items = [], sel = 0;
-  const close = () => { root.innerHTML = ''; };
+  const close = () => closeLayer();
   const draw = () => {
     list.innerHTML = '';
     items.forEach((p, i) => {
       const d = document.createElement('div'); d.className = 'it' + (i === sel ? ' sel' : '');
       d.innerHTML = `<span>${esc(nameOf(p))}</span><span class="p">${esc(dirOf(p))}</span>`;
-      d.onclick = (e) => { close(); openNote(p, { newTab: e.ctrlKey }); };
+      d.onclick = (e) => openNote(p, { newTab: e.ctrlKey });
       list.append(d);
     });
     list.querySelector('.sel')?.scrollIntoView({ block: 'nearest' });
@@ -617,9 +769,9 @@ function quickSwitcher() {
     if (e.key === 'Escape') close();
     else if (e.key === 'ArrowDown') { e.preventDefault(); sel = Math.min(sel + 1, items.length - 1); draw(); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(sel - 1, 0); draw(); }
-    else if (e.key === 'Enter' && items[sel]) { const p = items[sel]; close(); openNote(p, { newTab: e.ctrlKey || e.metaKey }); }
+    else if (e.key === 'Enter' && items[sel]) openNote(items[sel], { newTab: e.ctrlKey || e.metaKey });
   };
-  $('.scrim', root).onmousedown = (e) => { if (e.target.classList.contains('scrim')) close(); };
+  $('.scrim', root).onclick = (e) => { if (e.target.classList.contains('scrim')) close(); };
   refresh(); inp.focus();
 }
 
@@ -642,22 +794,67 @@ addEventListener('keydown', (e) => {
   const mod = e.ctrlKey || e.metaKey;
   if (mod && e.key.toLowerCase() === 'o') { e.preventDefault(); quickSwitcher(); }
   else if (mod && e.key.toLowerCase() === 'g') { e.preventDefault(); openGraph(); }
-  else if (mod && e.shiftKey && e.key.toLowerCase() === 'f') { e.preventDefault(); S.leftMode = 'search'; S.noLeft = false; applyLayout(); renderLeft(); renderRibbon(); setTimeout(() => $('#left .searchbox input')?.focus(), 0); }
+  else if (mod && e.shiftKey && e.key.toLowerCase() === 'f') { e.preventDefault(); if (isMobile()) { if (!(S.layer === 'left' && S.leftMode === 'search')) setLeft('search'); } else { S.leftMode = 'search'; S.noLeft = false; lsSet('noLeft', false); applyLayout(); renderLeft(); renderRibbon(); setTimeout(() => $('#left .searchbox input')?.focus(), 0); } }
+  else if (e.key === 'Escape' && S.layer) { e.preventDefault(); closeLayer(); }
+  else if (e.altKey && e.key === 'ArrowLeft') { e.preventDefault(); goBack(); }
+  else if (e.altKey && e.key === 'ArrowRight') { e.preventDefault(); goFwd(); }
   else if (mod && e.key.toLowerCase() === 'w') { if (S.active) { e.preventDefault(); closeTab(S.active); } }
 });
 
 function renderAll() { renderRibbon(); renderTabs(); renderLeft(); renderPane(); }
 
-// mobil: šuplíky zavřít klepnutím mimo; ať se stav šuplíků neukládá do localStorage
-addEventListener('click', (e) => {
-  if (!isMobile()) return;
-  const inSide = e.target.closest?.('#left, #right, #ribbon, #tabbar .tb, #modal-root');
-  if (inSide) return;
-  if (!S.noLeft || !S.noRight) { S.noLeft = true; S.noRight = true; applyLayout(); renderRibbon(); }
-}, true);
+/* ---------- mobile helpers ---------- */
+$('#scrim').addEventListener('click', closeLayer);
+matchMedia('(max-width: 900px)').addEventListener('change', () => { dropLayer(); applyLayout(); renderRibbon(); });
+
+// keyboard up (input focused) on mobile: hide the bottom bar so it doesn't eat space above the keyboard
+const isTextInput = (el) => !!el?.matches?.('input:not([type=checkbox]), textarea');
+addEventListener('focusin', (e) => { if (isMobile() && isTextInput(e.target)) $('#app').classList.add('kb'); });
+addEventListener('focusout', () => setTimeout(() => { if (!isTextInput(document.activeElement)) $('#app').classList.remove('kb'); }, 60));
+
+// swipe: from the left edge opens the tree, swipe left closes it, swipe down closes the bottom sheet
+(function gestures() {
+  let sx = 0, sy = 0, mode = null;
+  addEventListener('touchstart', (e) => {
+    mode = null;
+    if (!isMobile() || e.touches.length !== 1 || S.layer === 'modal') return;
+    const t = e.touches[0], el = e.target; sx = t.clientX; sy = t.clientY;
+    if (!S.layer && sx < 22 && !el.closest?.('canvas')) mode = 'open-left';
+    else if (S.layer === 'left' && el.closest?.('#left')) mode = 'close-left';
+    else if (S.layer === 'right' && el.closest?.('#right') && !el.closest('.side-body')) mode = 'close-right';
+  }, { passive: true });
+  addEventListener('touchend', (e) => {
+    if (!mode) return;
+    const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy, m = mode; mode = null;
+    if (m === 'open-left' && dx > 60 && Math.abs(dy) < dx * 0.6) setLeft(S.leftMode);
+    else if (m === 'close-left' && dx < -60 && Math.abs(dy) < -dx * 0.6) closeLayer();
+    else if (m === 'close-right' && dy > 50 && Math.abs(dx) < dy * 0.6) closeLayer();
+  }, { passive: true });
+})();
+
+// back-to-top button + persisted scroll position
+let scrollTimer = null;
+function updateToTop() { $('#totop').classList.toggle('show', !!S.current && $('#pane').scrollTop > 500); }
+function initPaneScroll() {
+  const main = $('#main'), btn = document.createElement('button');
+  btn.id = 'totop'; btn.title = 'Zpět nahoru'; btn.setAttribute('aria-label', 'Zpět nahoru'); btn.textContent = '↑';
+  btn.onclick = () => $('#pane').scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  main.append(btn);
+  $('#pane').addEventListener('scroll', () => {
+    updateToTop();
+    if (!S.current) return;
+    { const k = S.current.path, v = $("#pane").scrollTop; delete S.scroll[k]; S.scroll[k] = v; } // re-insert = most recent
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      const keys = Object.keys(S.scroll);
+      if (keys.length > 60) keys.slice(0, keys.length - 60).forEach((k) => delete S.scroll[k]);
+      lsSet('scroll', S.scroll);
+    }, 300);
+  }, { passive: true });
+}
 
 async function init() {
-  if (isMobile()) { S.noRight = true; S.noLeft = !!S.active; }
+  initPaneScroll();
   applyTheme(); applyLayout(); initResizers();
   try {
     const r = await fetch('/data/vault.json');
@@ -672,7 +869,10 @@ async function init() {
   S.tabs = S.tabs.filter((t) => t.kind === 'graph' || S.noteSet.has(t.path));
   if (!tabById(S.active)) S.active = S.tabs[0]?.id || null;
   const hash = decodeURIComponent(location.hash.slice(1));
-  if (hash && S.noteSet.has(hash)) { openNote(hash); return; }
+  NAV.max = curI();
+  if (hash === ':graph') { openGraph({ hist: 'replace' }); return; }
+  if (hash && S.noteSet.has(hash)) { openNote(hash, { hist: 'replace' }); return; }
+  syncHistory('replace');
   renderAll();
 }
 init().catch((e) => { document.body.innerHTML = `<pre style="padding:20px;color:#e93147">Chyba: ${esc(e.message)}</pre>`; });
