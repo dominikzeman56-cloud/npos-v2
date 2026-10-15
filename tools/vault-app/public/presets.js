@@ -77,6 +77,59 @@ function renderFacets() {
     .map((k) => `<button type="button" class="chip${F.arch.has(k) ? ' on' : ''}" data-arch="${esc(k)}" aria-pressed="${F.arch.has(k)}" title="${esc(ARCH[k]?.[0] || '')}">${esc(k)}<span class="n">${ar.get(k) || 0}</span></button>`).join('');
 }
 
+const SLOT = ['OSC A', 'OSC B', 'OSC C', 'slot 4', 'slot 5'];
+const f2 = (v) => (Math.abs(v) >= 100 ? Math.round(v) : Math.round(v * 100) / 100);
+const dflt = '<span class="dim">výchozí</span>';
+const val = (v, fmt = f2) => (v == null ? dflt : fmt(v));
+const bar = (v) => (v == null ? '' : `<i class="bar"><b style="width:${Math.max(0, Math.min(100, v * 100))}%"></b></i>`);
+const kind = (k) => (k ? k.replace(/Osc$/, '').replace('MultiSample', 'Multisample') : '');
+const FXN = { FXDistortion: 'Distortion', FXFilter: 'Filter', FXEQ: 'EQ', FXComp: 'Comp', FXReverb: 'Reverb', FXHyperD: 'Hyper/Dimension', FXChorus: 'Chorus',
+  FXPhaser: 'Phaser', FXFlanger: 'Flanger', FXDelay: 'Delay', FXUtils: 'Utility', FXConv: 'Convolve', FXBode: 'Bode', FXSplit: 'Split' };
+const KEYP = ['Drive', 'Freq', 'Reso', 'Wet', 'Thresh', 'Ratio', 'Makeup', 'Rate', 'Depth', 'Feedback', 'Size', 'Decay', 'Gain1', 'Freq1', 'Gain2', 'Freq2', 'Width', 'Shift'];
+
+function renderBuild(b) {
+  const osc = b.oscillators.map((o) => {
+    const wt = [kind(o.kind), o.table].filter(Boolean).join(' · ');
+    const w1 = o.warp ? warpName(o.warp) + (o.warp_amt != null ? ' ' + f2(o.warp_amt) : '') : '';
+    const w2 = o.warp2 ? warpName(o.warp2) + (o.warp2_amt != null ? ' ' + f2(o.warp2_amt) : '') : '';
+    const warp = [w1, w2].filter(Boolean).join(' + ');
+    return `<div class="osc${o.enabled ? '' : ' off'}">
+      <div class="oh"><b>${SLOT[o.slot] || 'slot ' + (o.slot + 1)}</b><span class="st">${o.enabled ? 'zapnuto' : 'vypnuto'}</span></div>
+      ${wt ? `<div class="wt">${esc(wt)}</div>` : ''}
+      <dl><dt>Oktáva</dt><dd>${val(o.octave)}</dd>
+      ${o.pitch != null ? `<dt>Půltóny</dt><dd>${f2(o.pitch)}</dd>` : ''}${o.fine != null ? `<dt>Fine</dt><dd>${f2(o.fine)}</dd>` : ''}
+      <dt>Warp</dt><dd>${warp ? esc(warp) : dflt}</dd>
+      <dt>Unison</dt><dd>${o.unison}</dd><dt>Detune</dt><dd>${val(o.detune)} ${bar(o.detune)}</dd>
+      <dt>Level</dt><dd>${val(o.level)} ${bar(o.level)}</dd>${o.pan != null ? `<dt>Pan</dt><dd>${f2(o.pan)}</dd>` : ''}</dl></div>`;
+  }).join('');
+  const flt = b.filters.length
+    ? b.filters.map((f) => `<div class="row${f.on ? '' : ' off'}"><b>Filtr ${f.slot + 1}</b> ${esc(f.type || 'výchozí typ')} · cutoff ${val(f.freq)} · reso ${val(f.reso)} · drive ${val(f.drive)}${f.wet != null ? ' · wet ' + f2(f.wet) : ''}</div>`).join('')
+    : '<div class="dim">bez filtru</div>';
+  const fxItems = b.fx.map((e) => {
+    const ps = Object.entries(e.params).filter(([k]) => KEYP.some((x) => k.endsWith(x))).slice(0, 5).map(([k, v]) => `${k.replace(/^kParam/, '')} ${f2(v)}`).join(' · ');
+    const mode = e.mode ? ' <span class="m">' + esc(String(e.mode).replace(/^k/, '')) + '</span>' : '';
+    return `<li${e.on ? '' : ' class="off"'}><b>${esc(FXN[e.module] || e.module)}</b>${mode}${e.on ? '' : ' <span class="dim">vypnuto</span>'}${ps ? `<div class="dim">${esc(ps)}</div>` : ''}</li>`;
+  }).join('');
+  const fx = b.fx.length ? `<ol class="fxl">${fxItems}</ol>` : '<div class="dim">bez FX</div>';
+  const modItems = b.modulation.map((m) => `<li>${esc(m.source)} → ${esc(m.dest)} ${esc(m.param)} <span class="dim">${f2(m.amount)}</span></li>`).join('');
+  const mod = b.modulation.length ? `<ul class="modl">${modItems}</ul>` : '<div class="dim">matice je prázdná</div>';
+  const lfo = b.lfos.map((l) => `LFO ${l.index + 1}: ${esc(l.type || l.mode || 'výchozí')}${l.rate != null ? ' · rate ' + f2(l.rate) : ''}${l.points ? ' · ' + l.points + ' bodů' : ''}`).join(' · ');
+  const mac = b.macros.map((m) => `M${m.index + 1} ${val(m.value)}`).join(' · ');
+  const v = b.voice;
+  const vo = [v.kParamMonoToggle === 1 ? 'mono' : 'poly', v.kParamLegato === 1 ? 'legato' : null, v.kParamPortamentoTime != null ? 'porta ' + f2(v.kParamPortamentoTime) : null].filter(Boolean).join(' · ');
+  return `<div class="oscs">${osc}</div>
+    <h4>Filtry</h4>${flt}<h4>FX řetěz (v pořadí)</h4>${fx}
+    <h4>Modulace</h4>${mod}${lfo ? `<div class="dim lfo">${lfo}</div>` : ''}${mac ? `<div class="dim">Makra: ${mac}</div>` : ''}
+    <h4>Hlas</h4><div>${vo}</div>
+    <div class="note">Hodnoty jsou přímo ze souboru (normalizované, jednotky neověřené proti Serum UI); „výchozí“ = v souboru chybí. Zdroje modulace mimo LFO, obálky a makra zatím nejsou pojmenované.</div>`;
+}
+async function loadBuildFor(id) {
+  for (const url of [`/api/preset?id=${encodeURIComponent(id)}`, `/data/builds/${encodeURIComponent(id)}.json`]) {
+    try { const r = await fetch(url); if (r.ok && (r.headers.get('content-type') || '').includes('json')) return r.json(); } catch { /* next */ }
+  }
+  return null;
+}
+
 function card(p) {
   const c = p.cues;
   const pack = DATA.packs.find((x) => x.id === p.source_id);
@@ -100,6 +153,7 @@ function card(p) {
     <div class="src">${esc(pack?.title || p.source_id)}${p.group ? ' · ' + esc(p.group) : ''}</div>
     <div class="tags"><span class="tag">${esc(FN[p.function] || p.function)}</span>${arch}<span class="tag hyp" title="Funkce a archetyp jsou návrh z heuristiky (jméno + stopy v souboru)">hypotéza</span></div>
     <div class="cues">${cues}</div>
+    <details class="build" data-id="${esc(p.id)}"><summary>Stavba presetu</summary><div class="bd">Načítám…</div></details>
     <details><summary>FX řetěz a proč</summary>${fx}<div class="why">${esc((p.why || []).join('; '))}</div>
       <div class="why">${esc(p.synth || '')}${(p.tags || []).length ? ' · tagy: ' + esc(p.tags.join(', ')) : ''}</div></details>
   </article>`;
@@ -124,6 +178,14 @@ function bind() {
   for (const k of ['pack', 'xw', 'uni', 'mono']) $('#' + k).addEventListener('change', (e) => { F[k] = e.target.value; render(); });
   $('#fn').addEventListener('click', (e) => { const b = e.target.closest('[data-fn]'); if (!b) return; const k = b.dataset.fn; F.fn.has(k) ? F.fn.delete(k) : F.fn.add(k); render(); });
   $('#arch').addEventListener('click', (e) => { const b = e.target.closest('[data-arch]'); if (!b) return; const k = b.dataset.arch; F.arch.has(k) ? F.arch.delete(k) : F.arch.add(k); render(); });
+  $('#list').addEventListener('toggle', async (e) => {
+    const d = e.target;
+    if (!d.matches || !d.matches('details.build') || !d.open || d.dataset.done) return;
+    d.dataset.done = '1';
+    const b = await loadBuildFor(d.dataset.id);
+    d.querySelector('.bd').innerHTML = b ? renderBuild(b)
+      : '<div class="dim">Stavba presetu je jen v lokálním režimu (<code>node server.mjs</code>): preset je z placeného packu a na sdílený web se nedává.</div>';
+  }, true);
   $('#reset').addEventListener('click', () => { Object.assign(F, { q: '', pack: '', xw: '', uni: '', mono: '', fn: new Set(), arch: new Set() }); $('#q').value = ''; render(); });
   $('#theme').addEventListener('click', () => { const t = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'; lsSet('theme', t); applyTheme(); });
   $('#filters').open = !matchMedia('(max-width: 700px)').matches;

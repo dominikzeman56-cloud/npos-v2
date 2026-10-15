@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildIndex, DEFAULT_IGNORE, indexPayload, notePayload, tagsPayload, graphPayload } from './lib/vault-index.mjs';
 import { scrubDeep } from './lib/scrub-paths.mjs';
-import { loadPresets } from './lib/presets-data.mjs';
+import { loadPresets, loadBuild } from './lib/presets-data.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const arg = (name, def) => { const i = process.argv.indexOf('--' + name); return i > 0 ? process.argv[i + 1] : def; };
@@ -45,6 +45,15 @@ await fs.writeFile(path.join(OUT, 'data', 'vault.json'), JSON.stringify(db));
 // preset index (compact index only; full dumps in data/presets/_local are never read)
 const presets = await loadPresets(path.resolve(HERE, '..', '..'));
 await fs.writeFile(path.join(OUT, 'data', 'presets.json'), JSON.stringify(presets));
+// Builds (full parameter detail of paid packs) stay local unless explicitly requested: node export-static.mjs --builds
+let builds = 0;
+if (process.argv.includes('--builds')) {
+  await fs.mkdir(path.join(OUT, 'data', 'builds'), { recursive: true });
+  for (const p of presets.presets) {
+    const b = await loadBuild(path.resolve(HERE, '..', '..'), p.id);
+    if (b) { await fs.writeFile(path.join(OUT, 'data', 'builds', `${p.id}.json`), JSON.stringify(b)); builds++; }
+  }
+}
 
 // UI + vendor libs
 for (const f of ['index.html', 'style.css', 'app.js', 'search-core.js', 'presets.html', 'presets.js']) await copy(path.join(HERE, 'public', f), path.join(OUT, f));
@@ -72,6 +81,7 @@ for (const n of idx.notes.values()) {
 const size = (await fs.stat(path.join(OUT, 'data', 'vault.json'))).size;
 console.log(`Exported from: ${VAULT}`);
 console.log(`Excluded dirs: ${EXCLUDE.join(', ') || '-'}   (share:false notes honored)`);
+console.log(`Preset builds in export: ${builds}${builds ? '  (!! paid-pack detail, shared behind the password)' : ' (local only)'}`);
 console.log(`Notes: ${idx.notes.size}, images: ${assets.length}, vault.json: ${(size / 1024).toFixed(0)} KB`);
 console.log(`Links to anything outside the export (shown as dead links): ${brokenOut} (${excludedTargets.size} distinct targets)`);
 console.log(`Output: ${OUT}`);

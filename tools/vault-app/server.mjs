@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildIndex, DEFAULT_IGNORE, indexPayload, notePayload, tagsPayload, graphPayload } from './lib/vault-index.mjs';
 import { search } from './public/search-core.js';
-import { loadPresets } from './lib/presets-data.mjs';
+import { loadPresets, loadBuild } from './lib/presets-data.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const VAULT = path.resolve(process.env.VAULT_PATH || 'D:\\ObsidianVault');
@@ -61,6 +61,7 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/tags') return json(res, tagsPayload(idx));
     if (p === '/api/graph') return json(res, graphPayload(idx));
     if (p === '/api/presets') return json(res, await loadPresets(path.resolve(HERE, '..', '..')));
+    if (p === '/api/preset') { const b = await loadBuild(path.resolve(HERE, '..', '..'), q.get('id')); return b ? json(res, b) : json(res, { error: 'not found' }, 404); }
     if (p === '/asset') {
       const rel = (q.get('path') || '').replace(/\\/g, '/');
       const abs = path.resolve(VAULT, rel);
