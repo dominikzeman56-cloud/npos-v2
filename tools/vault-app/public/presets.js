@@ -205,14 +205,20 @@ const chip = (k, v) => `<span class="chip">${esc(pname(k))} <b>${esc(typeof v ==
 const chips = (obj, skip = []) => { const e = Object.entries(obj || {}).filter(([k, v]) => !skip.includes(k) && v != null && typeof v !== 'object'); return e.length ? `<div class="chips">${e.map(([k, v]) => chip(k, v)).join('')}</div>` : ''; };
 
 // Point positions are from the file (x,y 0–1; y is screen-style, 0 = top, inferred from the default triangle, unverified).
-// The segment curvature `c` (0.5 = straight) is drawn as a power curve: an estimate of the shape, not Serum's exact formula.
+// Segment shape: `c[i]` belongs to the segment from point i to point i+1 (0.5 = straight). Fitted to a Serum 2 screenshot of one preset
+// (3 curved segments, 2026-10-16): u(t) = (e^(kt)-1)/(e^k-1) with k = 21 (c - 0.5); positions of the points and the Y axis (0 = top) match Serum.
+// The constant 21 is a fit, not Serum's documented formula: ~1-2 % off on the measured segments.
+function curveU(t, c) {
+  const k = 21 * (c - 0.5);
+  return Math.abs(k) < 0.05 ? t : (Math.exp(k * t) - 1) / (Math.exp(k) - 1);
+}
 function lfoY(curve, fx) { // value of the (estimated) curve at cycle position fx
   const xs = curve.x, ys = curve.y, cs = curve.c || [];
   for (let i = 1; i < xs.length; i++) {
     if (fx <= xs[i] || i === xs.length - 1) {
       if (xs[i] === xs[i - 1]) return ys[i];
-      const c = cs[i] != null ? cs[i] : 0.5, tt = Math.max(0, Math.min(1, (fx - xs[i - 1]) / (xs[i] - xs[i - 1])));
-      return ys[i - 1] + (ys[i] - ys[i - 1]) * Math.pow(tt, Math.pow(4, (c - 0.5) * 2));
+      const c = cs[i - 1] != null ? cs[i - 1] : 0.5, tt = Math.max(0, Math.min(1, (fx - xs[i - 1]) / (xs[i] - xs[i - 1])));
+      return ys[i - 1] + (ys[i] - ys[i - 1]) * curveU(tt, c);
     }
   }
   return ys[0];
@@ -222,9 +228,9 @@ function lfoSvg(curve, loopback) {
   const xs = curve.x, ys = curve.y, cs = curve.c || [];
   let d = `M${X(xs[0]).toFixed(1)} ${Y(ys[0]).toFixed(1)}`;
   for (let i = 1; i < xs.length; i++) {
-    const c = cs[i] != null ? cs[i] : 0.5, pw = Math.pow(4, (c - 0.5) * 2);
+    const c = cs[i - 1] != null ? cs[i - 1] : 0.5;
     if (Math.abs(c - 0.5) < 0.01 || xs[i] === xs[i - 1]) { d += `L${X(xs[i]).toFixed(1)} ${Y(ys[i]).toFixed(1)}`; continue; }
-    for (let s = 1; s <= 12; s++) { const t = s / 12, u = Math.pow(t, pw); d += `L${X(xs[i - 1] + (xs[i] - xs[i - 1]) * t).toFixed(1)} ${Y(ys[i - 1] + (ys[i] - ys[i - 1]) * u).toFixed(1)}`; }
+    for (let s = 1; s <= 12; s++) { const t = s / 12, u = curveU(t, c); d += `L${X(xs[i - 1] + (xs[i] - xs[i - 1]) * t).toFixed(1)} ${Y(ys[i - 1] + (ys[i] - ys[i - 1]) * u).toFixed(1)}`; }
   }
   const bot = H - B;
   const grid = [0.25, 0.5, 0.75].map((g) => `<line class="grid" x1="${X(g)}" y1="${P}" x2="${X(g)}" y2="${bot}"/>`).join('')
@@ -260,7 +266,7 @@ function lfoModule(l, b) {
   if (t === 'Lorenz' || t === 'Rossler') screen = `<div class="lcd"><span>chaos: ${esc(t)}</span><small>generuje se, křivka se neukládá</small></div>`;
   else if (t === 'RandomSH') screen = `<div class="lcd"><span>S&amp;H (náhodné hodnoty)</span><small>křivka se neukládá</small></div>`;
   else if (t === 'Path' && l.path) screen = lfoSvg(l.path) + `<div class="lcd"><span>Path${l.path.name ? ' · ' + esc(l.path.name) : ''}</span><small>dráha ve 2D, kreslená jako X/Y body</small></div>`;
-  else if (l.curve) screen = lfoSvg(l.curve, l.curve.loopback) + `<div class="lcd"><span>${esc(l.shape && l.shape !== 'Custom' ? l.shape : 'vlastní křivka')} · ${l.points} bodů</span><small>${l.curve.c ? 'zakřivení segmentů ze souboru (tvar odhad)' : 'rovné segmenty'}</small></div>`;
+  else if (l.curve) screen = lfoSvg(l.curve, l.curve.loopback) + `<div class="lcd"><span>${esc(l.shape && l.shape !== 'Custom' ? l.shape : 'vlastní křivka')} · ${l.points} bodů</span><small>${l.curve.c ? 'zakřivení segmentů ze souboru (tvar proložen podle Serum)' : 'rovné segmenty'}</small></div>`;
   else screen = lfoSvg(DEFAULT_TRI) + `<div class="lcd"><span>${esc(l.shape || 'Default')}</span><small>křivka v souboru není = výchozí trojúhelník</small></div>`;
   const dtxt = dests.length ? `<div class="dests">Řídí: ${dests.map((m) => `<b>${esc(m.dest)}</b> ${esc(m.param)} <em>${f2(m.amount)}</em>`).join(' · ')}</div>` : '<div class="dests">Bez cíle v matici (cíl může být přiřazen jinde, např. bod jiné LFO).</div>';
   return mod(`LFO ${l.index + 1}`, true, screen + chips(l.params, ['kParamDefaultMode']) + dtxt, 'lfom');
@@ -325,7 +331,7 @@ function renderBuild(b) {
     ${glob || route ? `<div class="sect"><h3>Hlas, routing a globál</h3>${glob}${route}</div>` : ''}
     ${allParams(b)}
   </div>
-  <div class="pnote">Serum 2 má tři wavetable oscilátory (A–C) a k nim Noise a Sub; v souboru se jmenují <code>NoiseOsc3</code> a <code>SubOsc4</code>. Čísla jsou přímo ze souboru (normalizované, jednotky neověřené proti Serum UI); poloha knobu je jen orientační. „výchozí“ = v souboru chybí. <b>Křivka LFO:</b> pozice bodů je ze souboru, zakřivení segmentů je odhad a směr osy Y (0 = nahoře) je odvozený z výchozího trojúhelníku, nepotvrzený v Serum. Chaos (Lorenz, Rossler) a S&amp;H se jako křivka neukládají. Zdroje modulace mimo LFO, obálky a makra zatím nejsou pojmenované. Úplný výpis všeho uloženého je dole v „Všechny uložené parametry“.</div>`;
+  <div class="pnote">Serum 2 má tři wavetable oscilátory (A–C) a k nim Noise a Sub; v souboru se jmenují <code>NoiseOsc3</code> a <code>SubOsc4</code>. Čísla jsou přímo ze souboru (normalizované, jednotky neověřené proti Serum UI); poloha knobu je jen orientační. „výchozí“ = v souboru chybí. <b>Křivka LFO:</b> pozice bodů je ze souboru a odpovídá Serum 2 (včetně osy Y, 0 = nahoře). Zakřivení segmentu c patří segmentu od tohoto bodu k dalšímu; tvar mezi body je proložený podle jednoho screenshotu ze Sera (3 zakřivené segmenty, odchylka asi 1–2 %), ne podle dokumentovaného vzorce. Další ověření: LFO 1 stejného presetu má extrémní zakřivení. Chaos (Lorenz, Rossler) a S&amp;H se jako křivka neukládají. Zdroje modulace mimo LFO, obálky a makra zatím nejsou pojmenované. Úplný výpis všeho uloženého je dole v „Všechny uložené parametry“.</div>`;
 }
 async function loadBuildFor(id) {
   if (BUILDS.has(id)) return BUILDS.get(id);

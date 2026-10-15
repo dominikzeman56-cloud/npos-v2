@@ -198,8 +198,8 @@ def read_lfos(cb: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _curve(cd: dict[str, Any]) -> dict[str, Any] | None:
-    """Body křivky LFO/dráhy: x, y (0–1) a `c` = zakřivení segmentu k tomuto bodu (0.5 = rovně).
-    Pozice bodů jsou ze souboru; mapování `c` na tvar křivky je odhad (neověřeno proti Serum UI).
+    """Body křivky LFO/dráhy: x, y (0–1) a `c[i]` = zakřivení segmentu od bodu i k bodu i+1 (0.5 = rovně; ověřeno na screenshotu ze Serum 2).
+    Pozice bodů jsou ze souboru (osa Y: 0 = nahoře, ověřeno); tvar mezi body viz `curveU` v presets.js (proložení, ne dokumentovaný vzorec).
     `numPoints` je počet segmentů, bodů je o jeden víc."""
     xs, ys = cd.get("xVals"), cd.get("yVals")
     if not (isinstance(xs, list) and isinstance(ys, list) and xs and len(xs) == len(ys)):
