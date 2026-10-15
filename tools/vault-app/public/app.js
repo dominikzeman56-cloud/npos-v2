@@ -36,6 +36,7 @@ const ICONS = {
   switcher: '<path d="m13 2-9 12h7l-1 8 9-12h-7Z"/>',
   moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
   panel: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/>',
+  presets: '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
 };
 const icon = (n) => `<svg class="i" viewBox="0 0 24 24">${ICONS[n]}</svg>`;
 const CALLOUT_ICON = { note: '✎', info: 'ⓘ', todo: '☑', abstract: '☰', summary: '☰', tldr: '☰', tip: '✦', hint: '✦', success: '✓', check: '✓', done: '✓', question: '?', help: '?', faq: '?', warning: '⚠', caution: '⚠', attention: '⚠', failure: '✕', fail: '✕', missing: '✕', danger: '⚡', error: '⚡', bug: '✱', example: '≡', quote: '❝', cite: '❝' };
@@ -341,6 +342,7 @@ function renderRibbon() {
     ['tags', 'tags', 'Tagy', () => setLeft('tags')],
     ['graph', 'graph', 'Graf (Ctrl+G)', () => openGraph()],
     ['switcher', 'switcher', 'Rychlé otevření (Ctrl+O)', () => quickSwitcher()],
+    ['presets', 'presets', 'Presety (index Serum presetů)', () => { location.href = '/presets.html'; }],
     ['panel', 'panel', 'Osnova a odkazy', toggleRight, 'mob-only'],
   ];
   const r = $('#ribbon'); r.innerHTML = '';
@@ -868,10 +870,10 @@ async function init() {
   document.title = idx.vault + ' – Vault';
   S.tabs = S.tabs.filter((t) => t.kind === 'graph' || S.noteSet.has(t.path));
   if (!tabById(S.active)) S.active = S.tabs[0]?.id || null;
-  const hash = decodeURIComponent(location.hash.slice(1));
+  const [hash, headHash] = decodeURIComponent(location.hash.slice(1)).split('::'); // #path::heading (deep link, e.g. from Presety)
   NAV.max = curI();
   if (hash === ':graph') { openGraph({ hist: 'replace' }); return; }
-  if (hash && S.noteSet.has(hash)) { openNote(hash, { hist: 'replace' }); return; }
+  if (hash && S.noteSet.has(hash)) { openNote(hash, { hist: 'replace', heading: headHash || null }); return; }
   const start = idx.notes.find((n) => /^00 Start\.md$/i.test(n.path))?.path;
   if (!S.tabs.length && start) { openNote(start, { hist: 'replace' }); return; } // first visit: vault entry point
   syncHistory('replace');

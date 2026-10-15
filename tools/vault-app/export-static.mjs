@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildIndex, DEFAULT_IGNORE, indexPayload, notePayload, tagsPayload, graphPayload } from './lib/vault-index.mjs';
 import { scrubDeep } from './lib/scrub-paths.mjs';
+import { loadPresets } from './lib/presets-data.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const arg = (name, def) => { const i = process.argv.indexOf('--' + name); return i > 0 ? process.argv[i + 1] : def; };
@@ -41,8 +42,12 @@ const db = scrubDeep({ index: indexPayload(idx), notes, tags: tagsPayload(idx), 
 await fs.mkdir(path.join(OUT, 'data'), { recursive: true });
 await fs.writeFile(path.join(OUT, 'data', 'vault.json'), JSON.stringify(db));
 
+// preset index (compact index only; full dumps in data/presets/_local are never read)
+const presets = await loadPresets(path.resolve(HERE, '..', '..'));
+await fs.writeFile(path.join(OUT, 'data', 'presets.json'), JSON.stringify(presets));
+
 // UI + vendor libs
-for (const f of ['index.html', 'style.css', 'app.js', 'search-core.js']) await copy(path.join(HERE, 'public', f), path.join(OUT, f));
+for (const f of ['index.html', 'style.css', 'app.js', 'search-core.js', 'presets.html', 'presets.js']) await copy(path.join(HERE, 'public', f), path.join(OUT, f));
 await copy(path.join(HERE, 'node_modules/markdown-it/dist/markdown-it.min.js'), path.join(OUT, 'vendor/markdown-it.min.js'));
 await copy(path.join(HERE, 'node_modules/d3/dist/d3.min.js'), path.join(OUT, 'vendor/d3.min.js'));
 
