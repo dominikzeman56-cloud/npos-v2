@@ -35,6 +35,7 @@ const ICONS = {
   tags: '<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
   switcher: '<path d="m13 2-9 12h7l-1 8 9-12h-7Z"/>',
   moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  palette: '<circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-4.9-4.5-9-10-9Z"/>',
   panel: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/>',
   presets: '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
 };
@@ -45,7 +46,7 @@ const S = {
   notes: [], noteSet: new Set(), vault: '',
   tabs: lsGet('tabs', []), active: lsGet('active', null),
   leftMode: lsGet('leftMode', 'files'), rightMode: lsGet('rightMode', 'backlinks'),
-  expanded: new Set(lsGet('expanded', [])), theme: lsGet('theme', 'dark'),
+  expanded: new Set(lsGet('expanded', [])), theme: lsGet('skin', 'samurai'),
   noLeft: lsGet('noLeft', false), noRight: lsGet('noRight', false),
   graphLocal: false, graphSim: null, current: null, scroll: lsGet('scroll', {}), query: '', pendingHeading: null,
   layer: null, hl: null, // layer: 'left' | 'right' | 'modal' | null (mobile drawers + quick switcher)
@@ -355,8 +356,8 @@ function renderRibbon() {
   }
   r.insertAdjacentHTML('beforeend', '<div class="sp"></div>');
   const t = document.createElement('button');
-  t.className = 'rb'; t.title = 'Tmavý / světlý / samurai'; t.setAttribute('aria-label', 'Přepnout vzhled: tmavý, světlý, samurai'); t.innerHTML = icon('moon');
-  t.onclick = () => { S.theme = ({ dark: 'light', light: 'samurai' })[S.theme] || 'dark'; lsSet('theme', S.theme); applyTheme(); renderAll(); };
+  t.className = 'rb'; t.title = 'Vzhled (skin)'; t.setAttribute('aria-label', 'Změnit vzhled'); t.setAttribute('aria-haspopup', 'menu'); t.innerHTML = icon('palette');
+  t.onclick = (e) => { e.stopPropagation(); skinMenu(t); };
   r.append(t);
 }
 function setLeft(mode) {
@@ -380,6 +381,26 @@ function toggleRight() {
 function applyLayout() {
   $('#app').classList.toggle('no-left', S.noLeft);
   $('#app').classList.toggle('no-right', S.noRight);
+}
+const SKINS = [['samurai', 'Samurai', '#e23d3d'], ['dark', 'Tmavý', '#8700b8'], ['light', 'Světlý', '#dddddd']];
+function skinMenu(anchor) {
+  const old = document.getElementById('skin-menu'); if (old) { old.remove(); return; }
+  const m = document.createElement('div'); m.id = 'skin-menu'; m.setAttribute('role', 'menu');
+  for (const [id, label, sw] of SKINS) {
+    const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'menuitemradio'); b.setAttribute('aria-checked', String(S.theme === id));
+    b.innerHTML = `<i style="background:${sw}"></i><span>${label}</span>${S.theme === id ? '<b>✓</b>' : ''}`;
+    b.onclick = () => { S.theme = id; lsSet('skin', id); applyTheme(); m.remove(); renderAll(); };
+    m.append(b);
+  }
+  document.body.append(m);
+  const r = anchor.getBoundingClientRect(), w = m.offsetWidth, h = m.offsetHeight;
+  const left = innerWidth <= 900 ? Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8) : r.right + 8;
+  const top = innerWidth <= 900 ? r.top - h - 8 : Math.min(r.bottom - h, innerHeight - h - 8);
+  m.style.left = left + 'px'; m.style.top = Math.max(8, top) + 'px';
+  const close = (ev) => { if (!m.contains(ev.target)) { m.remove(); document.removeEventListener('click', close, true); document.removeEventListener('keydown', esc, true); } };
+  const esc = (ev) => { if (ev.key === 'Escape') { m.remove(); document.removeEventListener('click', close, true); document.removeEventListener('keydown', esc, true); anchor.focus(); } };
+  setTimeout(() => { document.addEventListener('click', close, true); document.addEventListener('keydown', esc, true); }, 0);
+  m.querySelector('[aria-checked="true"]')?.focus();
 }
 function applyTheme() {
   document.documentElement.dataset.theme = S.theme;

@@ -5,100 +5,129 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1e1e1e">
 <title>Presety – Vault</title>
+<script>try{var s=JSON.parse(localStorage.getItem("vault.skin"));document.documentElement.dataset.theme=["samurai","dark","light"].indexOf(s)<0?"samurai":s}catch(e){document.documentElement.dataset.theme="samurai"}</script>
 <link rel="stylesheet" href="/style.css">
 <link rel="stylesheet" href="/skin-samurai.css">
 <style>
   html, body { height: auto; min-height: 100%; overflow: auto; }
   body { padding: 0 0 calc(24px + env(safe-area-inset-bottom)); }
-  .pz-top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 10px 16px; padding-top: calc(10px + env(safe-area-inset-top));
+  .pz-top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 12px; padding: 10px 16px; padding-top: calc(10px + env(safe-area-inset-top));
     background: var(--bg2); border-bottom: 1px solid var(--border); }
   .pz-top a.back { color: var(--link); text-decoration: none; font-weight: 600; white-space: nowrap; }
-  .pz-top h1 { font-size: 16px; margin: 0; flex: 1; min-width: 0; }
+  .pz-top h1 { font-family: var(--font-display, var(--font-ui)); font-size: 18px; margin: 0; flex: 1; min-width: 0; }
   .pz-top button { background: none; border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 6px 10px; cursor: pointer; font: inherit; }
-  .pz-wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }
-  .pz-intro { color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
+  .pz-wrap { max-width: 1280px; margin: 0 auto; padding: 14px 16px 0; }
+  .pz-intro { color: var(--muted); margin: 0 0 14px; line-height: 1.5; font-size: 13px; max-width: 900px; }
   .pz-intro b { color: var(--text); }
-  details.pz-filters { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
-  details.pz-filters > summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 8px; }
-  details.pz-filters > summary::-webkit-details-marker { display: none; }
-  .pz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 18px; margin-top: 12px; }
-  .pz-f label.t { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 6px; }
-  .pz-f select, .pz-f input[type=search] { width: 100%; background: var(--bg1); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px; font: inherit; min-height: 40px; }
+
+  /* master – detail */
+  .pz-main { display: grid; grid-template-columns: minmax(320px, 400px) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .pz-side { position: sticky; top: 62px; max-height: calc(100dvh - 76px); overflow: auto; display: flex; flex-direction: column; min-width: 0; }
+  .pz-detail { min-width: 0; }
+  .pz-filters { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; }
+  .pz-filters > summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 8px; min-height: 32px; align-items: center; }
+  .pz-filters > summary::-webkit-details-marker { display: none; }
+  .pz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px 12px; margin-top: 10px; }
+  .pz-f .t { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 5px; }
+  .pz-f select, .pz-f input[type=search] { width: 100%; background: var(--bg1); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 7px 8px; font: inherit; min-height: 38px; }
+  .pz-f.wide { grid-column: 1 / -1; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip { border: 1px solid var(--border); background: var(--bg1); color: var(--text); border-radius: 999px; padding: 5px 10px; font: inherit; font-size: 13px; cursor: pointer; min-height: 32px; }
+  .chip { border: 1px solid var(--border); background: var(--bg1); color: var(--text); border-radius: 999px; padding: 4px 10px; font: inherit; font-size: 13px; cursor: pointer; min-height: 32px; }
   .chip.on { background: var(--accent-bg); border-color: var(--accent); }
   .chip .n { color: var(--muted); margin-left: 4px; font-size: 12px; }
-  .pz-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 4px 0 12px; color: var(--muted); }
+  .pz-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin: 0 2px 8px; color: var(--muted); font-size: 13px; }
   .pz-bar .reset { background: none; border: none; color: var(--link); cursor: pointer; font: inherit; padding: 4px 0; }
-  .pz-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
-  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; min-width: 0; }
-  .card h3 { margin: 0 0 2px; font-size: 15px; overflow-wrap: anywhere; }
-  .card .src { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
-  .card .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
-  .tag { font-size: 12px; border-radius: 4px; padding: 2px 7px; background: var(--bg3); color: var(--text); text-decoration: none; }
+
+  .pz-list { display: flex; flex-direction: column; gap: 6px; }
+  .row { display: block; width: 100%; text-align: left; background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-left: 3px solid transparent;
+    border-radius: 6px; padding: 8px 10px; font: inherit; cursor: pointer; min-width: 0; }
+  .row:hover { background: var(--bg3); }
+  .row[aria-current="true"] { border-left-color: var(--accent); background: var(--accent-bg); }
+  .row .nm { font-weight: 600; overflow-wrap: anywhere; display: block; }
+  .row .mt { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 4px; align-items: center; font-size: 12px; color: var(--muted); }
+  .empty { color: var(--muted); padding: 24px 0; text-align: center; }
+
+  .tag { font-size: 12px; border-radius: 4px; padding: 1px 6px; background: var(--bg3); color: var(--text); text-decoration: none; white-space: nowrap; }
   a.tag.arch { background: var(--accent-bg); color: var(--link); }
   a.tag.arch:hover { color: var(--link-hover); }
   .tag.hyp { background: none; border: 1px dashed var(--faint); color: var(--muted); }
-  .cues { font-size: 13px; color: var(--text); line-height: 1.6; }
-  .cues span { white-space: nowrap; }
-  .cues .sep { color: var(--faint); margin: 0 4px; }
-  .card details { margin-top: 8px; font-size: 13px; }
-  .card details summary { cursor: pointer; color: var(--link); }
-  .card ol { margin: 6px 0 4px; padding-left: 20px; }
-  .card .why { color: var(--muted); margin-top: 6px; }
-  .legend { margin-top: 18px; color: var(--muted); font-size: 13px; line-height: 1.6; }
-  .legend a { color: var(--link); }
-  .empty { color: var(--muted); padding: 30px 0; text-align: center; }
   .dim { color: var(--muted); }
-  details.build { margin-top: 8px; font-size: 13px; }
-  details.build > summary { cursor: pointer; color: var(--link); font-weight: 600; }
-  .bd h4 { margin: 12px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
-  .oscs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 8px; }
-  .osc { background: var(--bg1); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; min-width: 0; }
-  .osc.off { opacity: .55; }
-  .osc .oh { display: flex; justify-content: space-between; gap: 6px; }
-  .osc .st { font-size: 11px; color: var(--muted); }
-  .osc .wt { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; margin: 2px 0 4px; }
-  .osc dl { display: grid; grid-template-columns: auto 1fr; gap: 1px 8px; margin: 0; }
+
+  /* detail */
+  .dh { margin-bottom: 14px; }
+  .dh h2 { font-family: var(--font-display, var(--font-ui)); font-size: 26px; line-height: 1.1; margin: 0 0 8px; overflow-wrap: anywhere; }
+  .dh .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .dh .cues { font-size: 14px; line-height: 1.6; }
+  .dh .why { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .dh .meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .back-list { display: none; background: none; border: 1px solid var(--border); color: var(--link); border-radius: 6px; padding: 8px 12px; font: inherit; cursor: pointer; margin-bottom: 12px; min-height: 40px; }
+  .sec { margin-top: 18px; }
+  .sec > h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  .oscs { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+  .osc { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+  .osc.off { opacity: .5; }
+  .osc .oh { display: flex; justify-content: space-between; gap: 6px; align-items: baseline; }
+  .osc .oh b { font-size: 15px; }
+  .osc .st { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .osc .wt { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; margin: 2px 0 6px; }
+  .osc dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 0; font-size: 14px; }
   .osc dt { color: var(--muted); }
   .osc dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
-  i.bar { display: block; height: 4px; background: var(--bg3); border-radius: 2px; margin-top: 2px; }
+  .osc.small { background: var(--bg1); }
+  .osc .about { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  i.bar { display: block; height: 4px; background: var(--bg3); border-radius: 2px; margin-top: 3px; }
   i.bar b { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
-  .bd .row.off, .bd li.off { opacity: .55; }
-  .fxl { padding-left: 20px; margin: 4px 0; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 24px; }
+  .fxl { padding-left: 22px; margin: 0; }
+  .fxl li { margin-bottom: 5px; overflow-wrap: anywhere; }
+  .fxl li.off, .frow.off { opacity: .5; }
   .fxl .m { color: var(--link); }
-  .fxl li { margin-bottom: 3px; overflow-wrap: anywhere; }
-  .modl { list-style: none; padding: 0; margin: 4px 0; }
-  .modl li { padding: 1px 0; overflow-wrap: anywhere; }
-  .bd .lfo { margin-top: 4px; }
-  .bd .note { margin-top: 12px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
-  @media (max-width: 600px) { .pz-list { grid-template-columns: 1fr; } .pz-wrap { padding: 12px 16px; } }
+  .frow { padding: 3px 0; }
+  .modl { list-style: none; padding: 0; margin: 0; }
+  .modl li { padding: 2px 0; overflow-wrap: anywhere; }
+  .note { margin-top: 20px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); padding-top: 10px; line-height: 1.5; }
+  .legend { margin: 28px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; max-width: 900px; }
+  .legend a { color: var(--link); }
+  .pick { color: var(--muted); padding: 60px 0; text-align: center; }
+
+  @media (max-width: 899px) {
+    .pz-main { display: block; }
+    .pz-side { position: static; max-height: none; overflow: visible; }
+    .pz-main:not(.show-detail) .pz-detail { display: none; }
+    .pz-main.show-detail .pz-side { display: none; }
+    .back-list { display: inline-block; }
+    .dh h2 { font-size: 22px; }
+    .pz-wrap { padding: 12px 14px 0; }
+  }
 </style>
 </head>
 <body>
 <header class="pz-top">
   <a class="back" href="/">← Vault</a>
   <h1>Presety</h1>
-  <button id="theme" type="button" aria-label="Přepnout vzhled: tmavý, světlý, samurai">◐</button>
+  <select id="skin" aria-label="Vzhled (skin)"><option value="samurai">Samurai</option><option value="dark">Tmavý</option><option value="light">Světlý</option></select>
 </header>
 <div class="pz-wrap">
   <p class="pz-intro" id="intro">Načítám…</p>
-  <details class="pz-filters" id="filters">
-    <summary><span>Filtry</span><span id="fsum"></span></summary>
-    <div class="pz-grid">
-      <div class="pz-f"><label class="t" for="q">Hledat v názvu</label><input type="search" id="q" placeholder="reese, bass, lead…"></div>
-      <div class="pz-f"><label class="t" for="pack">Pack</label><select id="pack"></select></div>
-      <div class="pz-f"><label class="t" for="xw">Cross-warp</label><select id="xw"></select></div>
-      <div class="pz-f"><label class="t" for="uni">Unison</label><select id="uni"></select></div>
-      <div class="pz-f"><label class="t" for="mono">Hlas</label><select id="mono"></select></div>
-    </div>
-    <div class="pz-grid">
-      <div class="pz-f"><span class="t" style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:6px">Funkce</span><div class="chips" id="fn"></div></div>
-      <div class="pz-f"><span class="t" style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:6px">Archetyp</span><div class="chips" id="arch"></div></div>
-    </div>
-  </details>
-  <div class="pz-bar"><span id="count"></span><button class="reset" id="reset" type="button">Zrušit filtry</button></div>
-  <div class="pz-list" id="list"></div>
+  <div class="pz-main" id="main">
+    <aside class="pz-side" id="side">
+      <details class="pz-filters" id="filters">
+        <summary><span>Filtry</span><span id="fsum"></span></summary>
+        <div class="pz-grid">
+          <div class="pz-f wide"><label class="t" for="q">Hledat v názvu</label><input type="search" id="q" placeholder="reese, bass, lead…"></div>
+          <div class="pz-f"><label class="t" for="pack">Pack</label><select id="pack"></select></div>
+          <div class="pz-f"><label class="t" for="xw">Cross-warp</label><select id="xw"></select></div>
+          <div class="pz-f"><label class="t" for="uni">Unison</label><select id="uni"></select></div>
+          <div class="pz-f"><label class="t" for="mono">Hlas</label><select id="mono"></select></div>
+          <div class="pz-f wide"><span class="t">Funkce</span><div class="chips" id="fn"></div></div>
+          <div class="pz-f wide"><span class="t">Archetyp</span><div class="chips" id="arch"></div></div>
+        </div>
+      </details>
+      <div class="pz-bar"><span id="count"></span><button class="reset" id="reset" type="button">Zrušit filtry</button></div>
+      <div class="pz-list" id="list"></div>
+    </aside>
+    <section class="pz-detail" id="detail" aria-live="polite"><div class="pick">Vyber preset ze seznamu.</div></section>
+  </div>
   <div class="legend" id="legend"></div>
 </div>
 <script src="/presets.js"></script>
