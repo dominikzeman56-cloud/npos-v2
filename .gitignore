@@ -17,3 +17,6 @@ transcripts/
 
 # Full preset dumps from paid packs stay local (index in data/presets/index/ is the shareable part)
 data/presets/_local/
+
+# Lokální kopie zdrojů (placené kurzy, presety, projekty): jen na tomhle počítači, viz tools/collect_local_sources.py
+_sources/

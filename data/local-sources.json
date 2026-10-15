@@ -1,0 +1,135 @@
+{
+ "generated": "2026-10-15",
+ "note": "Kde fyzicky leží zdroje, ze kterých NPOS vychází. Generuje tools/collect_local_sources.py. Placený obsah se do gitu nedostane, `_sources/` je gitignored.",
+ "sections": [
+  {
+   "id": "workshop-videos",
+   "label": "Videa workshopů a kurzů",
+   "path": "D:\\ObsidianVault\\Hudební produkce\\workshop videos",
+   "exists": true,
+   "files": 13,
+   "size_mb": 3218.5,
+   "copied_to": null,
+   "note": "Placené/stažené videa. Zůstávají na místě (velká), v manifestu jen cesta a velikost.",
+   "items": [
+    {
+     "file": "Abis dnb academy bass 01.mp4",
+     "size_mb": 385.7
+    },
+    {
+     "file": "Abis dnb academy bass 02.mp4",
+     "size_mb": 72.8
+    },
+    {
+     "file": "Abis drop 01.mp4",
+     "size_mb": 278.5
+    },
+    {
+     "file": "Abis drop 02.mp4",
+     "size_mb": 361.4
+    },
+    {
+     "file": "abis intro vocal.mp4",
+     "size_mb": 50.6
+    },
+    {
+     "file": "abis melodies.mp4",
+     "size_mb": 72.8
+    },
+    {
+     "file": "How to do a remix Also Hypocrisy - Fearless Remix Walkthrough Py.mp4",
+     "size_mb": 239.5
+    },
+    {
+     "file": "Inquisition Track Breakdown Pythius.mp4",
+     "size_mb": 435.2
+    },
+    {
+     "file": "Mefjus Studio Insights Break - Another Life (Mefjus RMX).mp4",
+     "size_mb": 53.1
+    },
+    {
+     "file": "Mefjus Studio Insights Spiralling with James French.mp4",
+     "size_mb": 98.0
+    },
+    {
+     "file": "Pythius Tutorial Reese.mkv",
+     "size_mb": 506.3
+    },
+    {
+     "file": "TRACK INSIGHTS  Mefjus ft. flowanastasia - Zenith.mp4",
+     "size_mb": 148.4
+    },
+    {
+     "file": "Tutorial Setting your songs up for succes Templates workflow tri.mp4",
+     "size_mb": 516.3
+    }
+   ]
+  },
+  {
+   "id": "transcripts",
+   "label": "Přepisy videí (txt/srt/json)",
+   "path": "D:\\ObsidianVault\\Hudební produkce\\workshop videos\\transcripts",
+   "exists": true,
+   "files": 136,
+   "size_mb": 3.3,
+   "copied_to": "_sources/transcripts",
+   "note": "Přepisy (faster-whisper). Základ pro rozbory s časovými značkami.",
+   "copied_files": 136
+  },
+  {
+   "id": "manuals",
+   "label": "Manuály (Serum 2, Live 12)",
+   "path": "D:\\ObsidianVault\\Hudební produkce",
+   "exists": true,
+   "files": 2,
+   "size_mb": 113.0,
+   "copied_to": "_sources/manuals",
+   "note": "PDF, ze kterých se čerpá terminologie a popis parametrů.",
+   "copied_files": 2
+  },
+  {
+   "id": "projects-learning",
+   "label": "Projekty z kurzů (.als, bez Backup)",
+   "path": "D:\\Ableton\\10_Projects\\04_Learning",
+   "exists": true,
+   "files": 123,
+   "size_mb": 364.7,
+   "copied_to": "_sources/projects/04_Learning",
+   "note": "Letsynthesize, Joe Ford a další. Jen .als, samply se nekopírují.",
+   "copied_files": 123
+  },
+  {
+   "id": "projects-own",
+   "label": "Vlastní projekty a šablona (.als)",
+   "path": "D:\\Ableton\\10_Projects",
+   "exists": true,
+   "files": 22,
+   "size_mb": 73.9,
+   "copied_to": "_sources/projects/own",
+   "note": "Vlastní tvorba není důkaz v kánonu (pravidlo pravdivosti), jen archiv.",
+   "copied_files": 22
+  },
+  {
+   "id": "serum-presets-used",
+   "label": "Serum 2 presety použité v indexech",
+   "path": "D:\\VST\\Xfer, D:\\Ableton\\20_Samples\\01_New, D:\\Ableton\\10_Projects",
+   "exists": true,
+   "files": 114,
+   "size_mb": 22.8,
+   "copied_to": "_sources/presets",
+   "note": "Nalezeno 114 z 114 (shoda podle hash). Plné balíky (4,8 GB) zůstávají na místě.",
+   "copied_files": 114
+  },
+  {
+   "id": "vault",
+   "label": "Vault Hudební produkce (kánon)",
+   "path": "D:\\ObsidianVault\\Hudební produkce",
+   "exists": true,
+   "files": null,
+   "size_mb": null,
+   "copied_to": "mimo git, záloha v D:\\_Backups",
+   "note": "Kánon 10–80, rozbory 60, archiv 90. Není v gitu."
+  }
+ ]
+}
