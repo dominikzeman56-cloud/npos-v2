@@ -1,0 +1,87 @@
+/* Skin „Samurai“ — cyberpunk HUD (inspirace: Obsidian téma Wake Up Samurai, Chris Durham).
+   Jen proměnné + pár povrchových úprav nad style.css; aktivní při <html data-theme="samurai">.
+   Fonty Rajdhani a Teko (SIL OFL 1.1) jsou self-hostované včetně latin-ext (česká diakritika). */
+
+@font-face { font-family: "Rajdhani"; font-weight: 500; font-display: swap; src: url(/fonts/rajdhani-latin-ext-500-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Rajdhani"; font-weight: 500; font-display: swap; src: url(/fonts/rajdhani-latin-500-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Rajdhani"; font-weight: 600; font-display: swap; src: url(/fonts/rajdhani-latin-ext-600-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Rajdhani"; font-weight: 600; font-display: swap; src: url(/fonts/rajdhani-latin-600-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Rajdhani"; font-weight: 700; font-display: swap; src: url(/fonts/rajdhani-latin-ext-700-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Rajdhani"; font-weight: 700; font-display: swap; src: url(/fonts/rajdhani-latin-700-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Teko"; font-weight: 500; font-display: swap; src: url(/fonts/teko-latin-ext-500-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Teko"; font-weight: 500; font-display: swap; src: url(/fonts/teko-latin-500-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Teko"; font-weight: 600; font-display: swap; src: url(/fonts/teko-latin-ext-600-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Teko"; font-weight: 600; font-display: swap; src: url(/fonts/teko-latin-600-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Teko"; font-weight: 700; font-display: swap; src: url(/fonts/teko-latin-ext-700-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Teko"; font-weight: 700; font-display: swap; src: url(/fonts/teko-latin-700-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+:root[data-theme="samurai"] {
+  --sam-red: #e23d3d; --sam-red-soft: #e66a6a; --sam-red-muted: #b86c6c; --sam-red-faint: #7a4747;
+  --sam-blue: #6ec6ff; --sam-blue-hover: #9ad9ff; --sam-green: #3eea9a; --sam-gold: #f6da63; --sam-gold-dim: #caa94a;
+  /* barva těla textu: změň tady (např. var(--sam-red-soft) pro původní „červený“ vzhled) */
+  --sam-body: #ecd9d9;
+
+  --bg1: #0b0f14; --bg2: #131922; --bg3: #1d2531; --hover: #1d2531; --border: rgba(226, 61, 61, .22);
+  --text: var(--sam-body); --muted: var(--sam-red-muted); --faint: #8a5a5a;
+  --accent: var(--sam-red); --link: var(--sam-blue); --link-hover: var(--sam-blue-hover); --accent-bg: rgba(226, 61, 61, .2);
+  --code-bg: #1d2531; --graph-line: rgba(226, 61, 61, .3);
+  --font-ui: "Rajdhani", Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Teko", "Rajdhani", Inter, sans-serif;
+  color-scheme: dark;
+}
+
+/* pozadí: oxblood → uhlová čerň; animace jen pro uživatele bez reduced-motion */
+:root[data-theme="samurai"] body { background: #0b0f14; font-size: 15px; font-weight: 500; }
+:root[data-theme="samurai"] body::before {
+  content: ""; position: fixed; inset: -20%; z-index: 0; pointer-events: none; will-change: transform;
+  background: linear-gradient(135deg, #3a1217 0%, #1b0f12 38%, #0b0f14 100%);
+}
+:root[data-theme="samurai"] body::after {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(65% 65% at 50% 45%, rgba(0, 0, 0, 0) 58%, rgba(58, 18, 23, .26) 85%, rgba(0, 0, 0, .32) 100%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-theme="samurai"] body::before { animation: samDrift 90s ease-in-out infinite alternate; }
+}
+@keyframes samDrift { from { transform: translate3d(-6%, -4%, 0); } to { transform: translate3d(6%, 4%, 0); } }
+:root[data-theme="samurai"] #app, :root[data-theme="samurai"] #modal-root { position: relative; z-index: 1; }
+
+/* panely: poloprůhledné desky, hlavní plocha propouští gradient */
+:root[data-theme="samurai"] #main, :root[data-theme="samurai"] #statusbar { background: rgba(11, 15, 20, .55); }
+:root[data-theme="samurai"] #ribbon, :root[data-theme="samurai"] aside, :root[data-theme="samurai"] #tabbar { background: rgba(19, 25, 34, .9); }
+:root[data-theme="samurai"] #ribbon { box-shadow: inset -1px 0 0 rgba(226, 61, 61, .35); }
+:root[data-theme="samurai"] .tab.on { background: rgba(11, 15, 20, .6); box-shadow: inset 0 -2px 0 var(--sam-red), 0 0 10px rgba(226, 61, 61, .25); }
+:root[data-theme="samurai"] .tree-row.active, :root[data-theme="samurai"] .modal .it.sel { box-shadow: inset 2px 0 0 var(--sam-red); }
+:root[data-theme="samurai"] .tree-row.folder { color: var(--sam-gold-dim); }
+:root[data-theme="samurai"] .side-head button.on, :root[data-theme="samurai"] #ribbon .rb.on { color: var(--sam-gold); }
+:root[data-theme="samurai"] #ribbon .rb:hover, :root[data-theme="samurai"] .tab:hover { color: var(--sam-blue); }
+:root[data-theme="samurai"] .modal { background: #131922; border-color: rgba(226, 61, 61, .5); box-shadow: 0 0 24px rgba(226, 61, 61, .3), 0 12px 40px rgba(0, 0, 0, .6); }
+:root[data-theme="samurai"] .searchbox input:focus, :root[data-theme="samurai"] .modal input:focus { border-color: var(--sam-red); box-shadow: 0 0 0 1px rgba(226, 61, 61, .5); }
+:root[data-theme="samurai"] ::-webkit-scrollbar-thumb { background: rgba(226, 61, 61, .35); background-clip: content-box; }
+:root[data-theme="samurai"] ::-webkit-scrollbar-thumb:hover { background: rgba(226, 61, 61, .6); background-clip: content-box; }
+:root[data-theme="samurai"] mark, :root[data-theme="samurai"] mark.hl { background: rgba(110, 198, 255, .28); }
+:root[data-theme="samurai"] .resizer:hover, :root[data-theme="samurai"] .resizer.drag { background: var(--sam-red); }
+
+/* typografie */
+:root[data-theme="samurai"] .markdown-rendered { font-family: var(--font-ui); font-size: 17.5px; line-height: 1.55; font-weight: 500; }
+:root[data-theme="samurai"] .markdown-rendered h1, :root[data-theme="samurai"] .note h1.inline-title { font-family: var(--font-display); font-weight: 600; color: var(--sam-blue); font-size: 2.4em; letter-spacing: .02em; text-transform: none; line-height: 1.05; }
+:root[data-theme="samurai"] .markdown-rendered h2 { font-family: var(--font-display); font-weight: 600; color: var(--sam-blue); font-size: 1.9em; line-height: 1.1; }
+:root[data-theme="samurai"] .markdown-rendered h3 { font-family: var(--font-ui); font-weight: 700; color: var(--sam-green); font-size: 1.3em; }
+:root[data-theme="samurai"] .markdown-rendered h4 { font-family: var(--font-ui); font-weight: 600; color: rgba(62, 234, 154, .8); }
+:root[data-theme="samurai"] .markdown-rendered h5 { color: var(--sam-gold-dim); }
+:root[data-theme="samurai"] .markdown-rendered h6 { color: var(--sam-red-muted); }
+:root[data-theme="samurai"] .markdown-rendered strong, :root[data-theme="samurai"] .markdown-rendered b { color: var(--sam-gold); font-weight: 700; }
+:root[data-theme="samurai"] .markdown-rendered li::marker { color: var(--sam-gold-dim); }
+:root[data-theme="samurai"] .markdown-rendered a.tag, :root[data-theme="samurai"] .chip { background: rgba(246, 218, 99, .14); color: var(--sam-gold); border: 1px solid rgba(246, 218, 99, .55); }
+:root[data-theme="samurai"] .markdown-rendered code { color: #bfeeff; }
+:root[data-theme="samurai"] .markdown-rendered pre { border-color: rgba(226, 61, 61, .3); }
+:root[data-theme="samurai"] .markdown-rendered blockquote { border-left-color: var(--sam-red); background: rgba(17, 26, 36, .7); color: var(--text); padding: 6px 14px; }
+:root[data-theme="samurai"] .markdown-rendered th { background: rgba(226, 61, 61, .14); color: var(--sam-gold); font-family: var(--font-ui); font-weight: 700; }
+:root[data-theme="samurai"] .markdown-rendered hr { border-top-color: rgba(226, 61, 61, .45); }
+:root[data-theme="samurai"] .embed-block { background: rgba(19, 25, 34, .8); border-left-color: var(--sam-red); }
+:root[data-theme="samurai"] .prop .k, :root[data-theme="samurai"] .props .ph { font-family: var(--font-ui); letter-spacing: .03em; }
+:root[data-theme="samurai"] kbd { color: var(--sam-gold-dim); }
+:root[data-theme="samurai"] #totop { box-shadow: 0 0 12px rgba(226, 61, 61, .45); border-color: rgba(226, 61, 61, .5); }
+
+/* přístupnost: viditelný focus */
+:root[data-theme="samurai"] :focus-visible { outline: 2px solid var(--sam-blue); outline-offset: 2px; }

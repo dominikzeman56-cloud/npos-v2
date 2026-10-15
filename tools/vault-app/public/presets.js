@@ -187,13 +187,13 @@ function bind() {
       : '<div class="dim">Stavba presetu je jen v lokálním režimu (<code>node server.mjs</code>): preset je z placeného packu a na sdílený web se nedává.</div>';
   }, true);
   $('#reset').addEventListener('click', () => { Object.assign(F, { q: '', pack: '', xw: '', uni: '', mono: '', fn: new Set(), arch: new Set() }); $('#q').value = ''; render(); });
-  $('#theme').addEventListener('click', () => { const t = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'; lsSet('theme', t); applyTheme(); });
+  $('#theme').addEventListener('click', () => { const t = ({ dark: 'light', light: 'samurai' })[document.documentElement.dataset.theme] || 'dark'; lsSet('theme', t); applyTheme(); });
   $('#filters').open = !matchMedia('(max-width: 700px)').matches;
 }
 function applyTheme() {
   const t = lsGet('theme', 'dark');
   document.documentElement.dataset.theme = t;
-  document.querySelector('meta[name=theme-color]')?.setAttribute('content', t === 'light' ? '#ffffff' : '#1e1e1e');
+  document.querySelector('meta[name=theme-color]')?.setAttribute('content', ({ light: '#ffffff', samurai: '#0b0f14' })[t] || '#1e1e1e');
 }
 
 async function load() {

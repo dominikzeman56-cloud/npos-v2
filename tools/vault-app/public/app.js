@@ -355,8 +355,8 @@ function renderRibbon() {
   }
   r.insertAdjacentHTML('beforeend', '<div class="sp"></div>');
   const t = document.createElement('button');
-  t.className = 'rb'; t.title = 'Světlý / tmavý režim'; t.setAttribute('aria-label', 'Světlý / tmavý režim'); t.innerHTML = icon('moon');
-  t.onclick = () => { S.theme = S.theme === 'dark' ? 'light' : 'dark'; lsSet('theme', S.theme); applyTheme(); renderAll(); };
+  t.className = 'rb'; t.title = 'Tmavý / světlý / samurai'; t.setAttribute('aria-label', 'Přepnout vzhled: tmavý, světlý, samurai'); t.innerHTML = icon('moon');
+  t.onclick = () => { S.theme = ({ dark: 'light', light: 'samurai' })[S.theme] || 'dark'; lsSet('theme', S.theme); applyTheme(); renderAll(); };
   r.append(t);
 }
 function setLeft(mode) {
@@ -383,7 +383,7 @@ function applyLayout() {
 }
 function applyTheme() {
   document.documentElement.dataset.theme = S.theme;
-  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = S.theme === 'dark' ? '#1e1e1e' : '#ffffff';
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = ({ light: '#ffffff', samurai: '#0b0f14' })[S.theme] || '#1e1e1e';
 }
 
 function renderTabs() {
@@ -700,7 +700,7 @@ async function renderGraph(pane) {
     for (const l of links) { ctx.moveTo(l.source.x, l.source.y); ctx.lineTo(l.target.x, l.target.y); }
     ctx.stroke();
     const showLabels = $('#g-labels')?.checked;
-    const acc = css('--accent'), txt = css('--text'), dark = S.theme === 'dark';
+    const acc = css('--accent'), txt = css('--text'), dark = S.theme !== 'light';
     ctx.font = `${11 / Math.sqrt(T.k)}px sans-serif`; ctx.textAlign = 'center';
     for (const d of nodes) {
       const isA = d.id === lastNote, isH = d === hover;
