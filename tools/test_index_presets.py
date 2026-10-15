@@ -34,3 +34,29 @@ def test_index_proposals_and_local_dump(tmp_path):
     assert all(r["confidence"] == "hypothesis" and "reading" not in r for r in rows)  # index bez parametrů
     assert sorted(p.stem for p in dump.glob("*.json")) == sorted(r["id"] for r in rows)
     assert "reading" in json.loads((dump / f"{by['Reese']['id']}.json").read_text(encoding="utf-8"))
+
+
+def test_volume_modulated_osc_is_not_silent_and_fine_spread_reese(tmp_path):
+    lead = {  # všechny osc na hlasitosti 0, ale LFO jim hlasitost otevírá → hrají
+        "Oscillator0": {"plainParams": {"kParamVolume": 0.0}, "WTOsc0": {"plainParams": {"kParamWarpMenu": "kPD_OSC"}}},
+        "Oscillator1": {"plainParams": {"kParamEnable": 1.0, "kParamVolume": 0.0}},
+        "ModSlot0": {"source": [6, 0], "destModuleTypeString": "Oscillator", "destModuleID": 1,
+                     "destModuleParamName": "kParamVolume", "plainParams": {"kParamAmount": 100.0}},
+    }
+    reese = {  # dva osc ve stejné oktávě, makro je rozlaďuje protisměrně
+        "Oscillator0": {"plainParams": {"kParamOctave": -2.0}},
+        "Oscillator1": {"plainParams": {"kParamEnable": 1.0, "kParamOctave": -2.0}},
+        "ModSlot0": {"source": [25, 0], "destModuleTypeString": "Oscillator", "destModuleID": 0,
+                     "destModuleParamName": "kParamFine", "plainParams": {"kParamAmount": -100.0}},
+        "ModSlot1": {"source": [25, 0], "destModuleTypeString": "Oscillator", "destModuleID": 1,
+                     "destModuleParamName": "kParamFine", "plainParams": {"kParamAmount": 100.0}},
+    }
+    a = tmp_path / "LD Pew.SerumPreset"
+    b = tmp_path / "BS_Reese 2.SerumPreset"
+    a.write_bytes(make_blob(lead, {"presetName": "LD Pew", "product": "Serum2"}))
+    b.write_bytes(make_blob(reese, {"presetName": "BS_Reese 2", "product": "Serum2"}))
+    rows, bad = ip.index([a, b], "s-1", None)
+    by = {r["name"]: r for r in rows}
+    assert by["LD Pew"]["function"] == "lead" and by["LD Pew"]["cues"]["silent_mod_osc"] == 1  # jen osc0
+    assert by["BS_Reese 2"]["function"] == "body" and by["BS_Reese 2"]["archetype"] == "detuned-unison-reese"
+    assert by["BS_Reese 2"]["group"] == tmp_path.name

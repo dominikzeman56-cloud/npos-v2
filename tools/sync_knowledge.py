@@ -102,7 +102,7 @@ write("principles/candidates.md",
        "source_ids": ["pythius-inquisition", "joe-ford-bassgorilla-course", "letsynthesize-noisia-course", "abis-start-to-finish",
                       "audio-headroom-2013", "phenom-layering", "dont-play-skeleton", "prolix-been-about-this", "breach-balron-audio",
                       "redpill-manual", "ed-rush-killbox-valkyrie-podcast", "ekwols-reese-layering", "mefjus-masterclass", "sequence-rebuild",
-                      "letsynthesize-preset-files"],
+                      "letsynthesize-preset-files", "pythius-patreon-presets", "enta-serum-presets", "notequal-serum-presets"],
        "vault_note": "01 Principy", "updated": DATE},
       "# Kandidáti na nové principy\n\n" + unlink(cand.replace("## 3. Kandidáti na nové principy", "").strip()) + NOTE)
 
@@ -175,7 +175,7 @@ write("archetypes/bass.md",
        "confidence": "measured", "source_type": "track_analysis",
        "source_ids": ["abis-reese-fm-masterclass", "pythius-reese-tutorial", "pythius-fearless-remix", "phenom-roar", "letsynthesize-noisia-course",
                       "magnetude-neuro-basses", "burr-oak-harmonic-growl", "ekwols-reese-layering", "prolix-been-about-this",
-                      "letsynthesize-preset-files"],
+                      "letsynthesize-preset-files", "pythius-patreon-presets", "enta-serum-presets", "notequal-serum-presets"],
        "vault_note": "03 Zvuk a mix", "updated": DATE},
       "# Archetypy basů\n\nSeed (řádky 1–5) je v kontraktu BLUEPRINT kap. 5; řádky 6–16 jsou **kandidáti** — do slovníku se povyšují až po opakování v datech.\n\n" + unlink(a) + NOTE)
 

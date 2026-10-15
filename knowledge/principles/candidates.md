@@ -5,7 +5,7 @@ title: Kandidáti na nové principy
 status: candidate
 confidence: estimated
 source_type: producer_course
-source_ids: [pythius-inquisition, joe-ford-bassgorilla-course, letsynthesize-noisia-course, abis-start-to-finish, audio-headroom-2013, phenom-layering, dont-play-skeleton, prolix-been-about-this, breach-balron-audio, redpill-manual, ed-rush-killbox-valkyrie-podcast, ekwols-reese-layering, mefjus-masterclass, sequence-rebuild, letsynthesize-preset-files]
+source_ids: [pythius-inquisition, joe-ford-bassgorilla-course, letsynthesize-noisia-course, abis-start-to-finish, audio-headroom-2013, phenom-layering, dont-play-skeleton, prolix-been-about-this, breach-balron-audio, redpill-manual, ed-rush-killbox-valkyrie-podcast, ekwols-reese-layering, mefjus-masterclass, sequence-rebuild, letsynthesize-preset-files, pythius-patreon-presets, enta-serum-presets, notequal-serum-presets]
 vault_note: 01 Principy
 updated: 2026-10-15
 ---
@@ -27,6 +27,6 @@ Každý je podpořený ≥ 3 zdroji; **povýšení čeká na tvoje schválení**
 | C7 | **Měřit na izolovaném pásmu, ne v plném mixu** | Don't Play, Breach, Restless | `naměřeno` | → upřesnění P7 |
 | C8 | **Rytmus not je často zdroj growlu, ne LFO** | Ekwols (2,9 Hz = čtvrťová), Don't Play (0,72/2,15 Hz), Sequence | `naměřeno` | kandidát |
 | C9 | **Pauza a časový limit** (≈2 h/zvuk, 10 min po sketchi, mix commitment ~2 dny) | Abis, Ed Rush & Killbox | `odhad` | kandidát (procesní) |
-| C10 | **Tělo basy z warpu jiným oscilátorem, ne z unisonu** (`osc-warp-body`): zapnutý oscilátor s hlasitostí 0 nehraje, jen řídí PD/AM/Sync warp slyšitelného; rozladění modulátoru (např. −60 ct) dá rázy jako reese bez unisonu | Letsynthesize presety (48/103 souborů, 21 z bas; čteno `tools/index_presets.py`) | `hypothesis` (vzorec v souborech je přečtený, že modulátor s hlasitostí 0 nehraje a co to dělá se zvukem, zatím neověřeno A/B v Serumu) | kandidát; jeden zdroj → chybí druhý pack/producent |
+| C10 | **Tělo basy z warpu jiným oscilátorem, ne z unisonu** (`osc-warp-body`): zapnutý oscilátor s hlasitostí 0 nehraje, jen řídí PD/AM/Sync warp slyšitelného; rozladění modulátoru (např. −60 ct) dá rázy jako reese bez unisonu | Letsynthesize presety (36/103 souborů, 16 bas), Pythius (8th Note neuroish, Comb Wobble), ENTA (Evilreese), notequal (BS_bouce F); čteno `tools/index_presets.py` | `hypothesis` (vzorec v souborech je přečtený; že modulátor s hlasitostí 0 a bez modulace hlasitosti nehraje a co to dělá se zvukem, zatím neověřeno A/B v Serumu) | kandidát; 4 nezávislé zdroje, čeká na A/B |
 
 > Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.
