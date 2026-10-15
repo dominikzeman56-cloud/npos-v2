@@ -5,7 +5,7 @@
   --code-bg: #2a2a2a; --graph-line: rgba(160, 160, 160, .28);
   --font-ui: Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "Cascadia Code", "JetBrains Mono", ui-monospace, Consolas, monospace;
-  --left-w: 280px; --right-w: 280px;
+  --left-w: 280px; --right-w: 280px; --ribbon-w: 62px;
   color-scheme: dark;
 }
 :root[data-theme="light"] {
@@ -22,10 +22,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 input { font: inherit; color: inherit; }
 svg.i { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
-#app { display: grid; height: 100vh; grid-template-rows: minmax(0, 1fr); grid-template-columns: 44px var(--left-w) 4px 1fr 4px var(--right-w); }
-#app.no-left { grid-template-columns: 44px 0 0 1fr 4px var(--right-w); }
-#app.no-right { grid-template-columns: 44px var(--left-w) 4px 1fr 0 0; }
-#app.no-left.no-right { grid-template-columns: 44px 0 0 1fr 0 0; }
+#app { display: grid; height: 100vh; grid-template-rows: minmax(0, 1fr); grid-template-columns: var(--ribbon-w) var(--left-w) 4px 1fr 4px var(--right-w); }
+#app.no-left { grid-template-columns: var(--ribbon-w) 0 0 1fr 4px var(--right-w); }
+#app.no-right { grid-template-columns: var(--ribbon-w) var(--left-w) 4px 1fr 0 0; }
+#app.no-left.no-right { grid-template-columns: var(--ribbon-w) 0 0 1fr 0 0; }
 #app.no-left #left, #app.no-right #right, #app.no-left #rz-left, #app.no-right #rz-right { display: none; }
 
 #ribbon { background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 8px 0; gap: 4px; }
@@ -265,3 +265,13 @@ button, a, .tab, .tree-row, .res, .tagrow, .link-item, .outline-item, .modal .it
 #skin-menu button span { flex: 1; }
 #skin-menu button b { color: var(--accent); }
 #skin { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font: inherit; min-height: 36px; cursor: pointer; }
+
+/* ribbon with text labels under the icons */
+#ribbon .rb { flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+#ribbon .rl { font-size: 10px; line-height: 1; letter-spacing: .02em; white-space: nowrap; }
+@media (min-width: 901px) { #ribbon .rb { width: 54px; height: 50px; display: flex; } }
+@media (max-width: 900px) { #ribbon .rb, #ribbon .mob-only { display: flex; height: 46px; max-width: 72px; } #ribbon .rl { font-size: 9px; } }
+.gc-help { max-width: 240px; line-height: 1.45; color: var(--muted); }
+.gc-legend { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; max-height: 160px; overflow: auto; }
+.gc-legend span { display: flex; align-items: center; gap: 6px; }
+.gc-legend i { width: 9px; height: 9px; border-radius: 50%; flex: none; }

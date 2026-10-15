@@ -213,7 +213,7 @@ function sliceSection(body, heading) {
 const isMobile = () => matchMedia('(max-width: 900px)').matches;
 const saveTabs = () => { lsSet('tabs', S.tabs); lsSet('active', S.active); };
 const tabById = (id) => S.tabs.find((t) => t.id === id);
-const tabTitle = (t) => (t.kind === 'graph' ? 'Graf' : nameOf(t.path));
+const tabTitle = (t) => (t.kind === 'graph' ? 'Mapa' : nameOf(t.path));
 
 /* Browser history: every note/graph navigation is a history entry (state {path|g, i}); an open drawer/modal is a
    transient entry (state {ui, i}) so that Back closes it instead of leaving the app. */
@@ -338,28 +338,31 @@ addEventListener('popstate', (e) => {
 /* ---------- layout pieces ---------- */
 function renderRibbon() {
   const mob = isMobile();
+  // [id, icon, short label under the icon, tooltip with the full description, handler, extra class]
   const items = [
-    ['files', 'files', 'Soubory', () => setLeft('files')],
-    ['search', 'search', 'Hledat (Ctrl+Shift+F)', () => setLeft('search')],
-    ['tags', 'tags', 'Tagy', () => setLeft('tags')],
-    ['graph', 'graph', 'Graf (Ctrl+G)', () => openGraph()],
-    ['switcher', 'switcher', 'Rychlé otevření (Ctrl+O)', () => quickSwitcher()],
-    ['presets', 'presets', 'Presety (index Serum presetů)', () => { location.href = '/presets.html'; }],
-    ['next', 'next', 'Co dál? (zasekl jsem se)', () => { location.href = '/dal.html'; }],
-    ['panel', 'panel', 'Osnova a odkazy', toggleRight, 'mob-only'],
+    ['files', 'files', 'Soubory', 'Soubory: strom všech poznámek podle složek', () => setLeft('files')],
+    ['search', 'search', 'Hledat', 'Hledat v textu všech poznámek (Ctrl+Shift+F)', () => setLeft('search')],
+    ['tags', 'tags', 'Tagy', 'Tagy: poznámky seskupené podle štítků', () => setLeft('tags')],
+    ['graph', 'graph', 'Mapa', 'Mapa: jak spolu poznámky souvisí (Ctrl+G)', () => openGraph()],
+    ['switcher', 'switcher', 'Otevřít', 'Rychlé otevření poznámky podle názvu (Ctrl+O)', () => quickSwitcher()],
+    ['presets', 'presets', 'Presety', 'Presety: prohlížeč Serum presetů, stavba každého (oscilátory, filtry, FX, LFO)', () => { location.href = '/presets.html'; }],
+    ['next', 'next', 'Co dál?', 'Co dál?: zasekl jsem se, poraď mi další krok', () => { location.href = '/dal.html'; }],
+    ['panel', 'panel', 'Osnova', 'Osnova a odkazy aktuální poznámky', toggleRight, 'mob-only'],
   ];
   const r = $('#ribbon'); r.innerHTML = '';
-  for (const [id, ic, title, fn, cls] of items) {
+  const mk = (cls, title, ic, label, fn) => {
     const b = document.createElement('button');
+    b.className = cls; b.title = title; b.setAttribute('aria-label', title);
+    b.innerHTML = icon(ic) + `<span class="rl">${label}</span>`; b.onclick = fn; return b;
+  };
+  for (const [id, ic, label, title, fn, cls] of items) {
     const on = id === 'panel' ? mob && S.layer === 'right'
       : ['files', 'search', 'tags'].includes(id) && S.leftMode === id && (mob ? S.layer === 'left' : !S.noLeft);
-    b.className = 'rb' + (cls ? ' ' + cls : '') + (on ? ' on' : '');
-    b.title = title; b.setAttribute('aria-label', title); b.innerHTML = icon(ic); b.onclick = fn; r.append(b);
+    r.append(mk('rb' + (cls ? ' ' + cls : '') + (on ? ' on' : ''), title, ic, label, fn));
   }
   r.insertAdjacentHTML('beforeend', '<div class="sp"></div>');
-  const t = document.createElement('button');
-  t.className = 'rb'; t.title = 'Vzhled (skin)'; t.setAttribute('aria-label', 'Změnit vzhled'); t.setAttribute('aria-haspopup', 'menu'); t.innerHTML = icon('palette');
-  t.onclick = (e) => { e.stopPropagation(); skinMenu(t); };
+  const t = mk('rb', 'Vzhled: přepnout skin (Samurai, tmavý, světlý)', 'palette', 'Vzhled', (e) => { e.stopPropagation(); skinMenu(t); });
+  t.setAttribute('aria-haspopup', 'menu');
   r.append(t);
 }
 function setLeft(mode) {
@@ -598,9 +601,13 @@ async function renderPane() {
   if (tabById(S.active) !== t) return;
   S.current = n;
   const wrap = document.createElement('div'); wrap.className = 'note';
-  wrap.innerHTML = `<h1 class="inline-title">${esc(n.name)}</h1>`;
-  wrap.append(renderProps(n));
-  wrap.append(renderMarkdown(n));
+  // The file name is the title; skip it when the note's own first H1 says the same thing.
+  const h1 = /^#\s+(.+?)\s*$/m.exec(n.body || '');
+  wrap.innerHTML = h1 && h1[1].replace(/`/g, '') === n.name ? '' : `<h1 class="inline-title">${esc(n.name)}</h1>`;
+  const propsEl = renderProps(n), mdEl = renderMarkdown(n);
+  wrap.append(propsEl, mdEl);
+  const own = mdEl.querySelector('h1');
+  if (!wrap.querySelector('.inline-title') && own && propsEl.nodeType === 1) own.after(propsEl); // properties go under the title
   pane.innerHTML = ''; pane.append(wrap);
   wireLinks(wrap);
   const words = (n.body.match(/\S+/g) || []).length;
@@ -677,8 +684,13 @@ function wireLinks(root) {
 /* ---------- graph ---------- */
 async function renderGraph(pane) {
   pane.innerHTML = `<div id="graph-wrap"><canvas></canvas>
-    <div class="graph-ctl${isMobile() ? ' collapsed' : ''}"><button class="gc-toggle" aria-label="Nastavení grafu" title="Nastavení grafu">⚙</button><div class="gc-opts"><label><input type="checkbox" id="g-local"> Jen okolí aktivní poznámky</label>
-    <label><input type="checkbox" id="g-labels" checked> Popisky</label></div></div></div>`;
+    <div class="graph-ctl${isMobile() ? ' collapsed' : ''}"><button class="gc-toggle" aria-label="Nastavení mapy" title="Nastavení mapy">⚙</button><div class="gc-opts">
+    <div class="gc-help">Mapa ukazuje, které poznámky na sebe odkazují. Kolečko = poznámka (větší = víc odkazů), barva = složka. Klik otevře poznámku, tažení posune, kolečko myši přibližuje.</div>
+    <label><input type="checkbox" id="g-local"> Jen okolí aktivní poznámky</label>
+    <label><input type="checkbox" id="g-hubs" checked> Skrýt rozcestníky (Start, přehled)</label>
+    <label><input type="checkbox" id="g-arch"> Zobrazit archiv</label>
+    <label><input type="checkbox" id="g-labels" checked> Popisky</label>
+    <div class="gc-legend" id="g-legend"></div></div></div></div>`;
   $('.gc-toggle', pane).onclick = () => $('.graph-ctl', pane).classList.toggle('collapsed');
   const wrap = $('#graph-wrap'), canvas = $('canvas', wrap), ctx = canvas.getContext('2d');
   const g = await api('/api/graph');
@@ -687,23 +699,48 @@ async function renderGraph(pane) {
   let nodes, links, sim, T = d3.zoomIdentity, hover = null;
   const hue = (s) => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
 
+  // Hubs (index notes that link to everything) glue the graph into one ball, so by default they are hidden along with
+  // the archive; what is left are the real relations between canon notes and rozbory.
+  const isArch = (n) => n.id.startsWith('90 Archiv/');
+  const isHub = (n) => !n.id.includes('/') && /^(00 Start|60 Rozbory)/.test(n.id);
   const build = () => {
-    let ns = g.nodes, ls = g.links;
+    const hideArch = !$('#g-arch').checked, hideHubs = $('#g-hubs').checked;
+    let ns = g.nodes.filter((n) => !(hideArch && isArch(n)) && !(hideHubs && isHub(n)));
+    let ls = g.links;
+    const alive = new Set(ns.map((n) => n.id));
+    ls = ls.filter(([a, b]) => alive.has(a) && alive.has(b));
     if (S.graphLocal && lastNote) {
       const keep = new Set([lastNote]);
       ls.forEach(([a, b]) => { if (a === lastNote) keep.add(b); if (b === lastNote) keep.add(a); });
       ns = ns.filter((n) => keep.has(n.id)); ls = ls.filter(([a, b]) => keep.has(a) && keep.has(b));
     }
-    nodes = ns.map((n) => ({ ...n }));
+    const deg = new Map(); ls.forEach(([a, b]) => { deg.set(a, (deg.get(a) || 0) + 1); deg.set(b, (deg.get(b) || 0) + 1); });
+    nodes = ns.map((n) => ({ ...n, deg: deg.get(n.id) || 0 }));
     links = ls.map(([source, target]) => ({ source, target }));
+    const groups = [...new Set(nodes.map((n) => n.group))].sort();
+    $('#g-legend').innerHTML = groups.map((k) => `<span><i style="background:hsl(${hue(k)} 55% 58%)"></i>${esc(k === '·' ? 'kánon (10–80)' : k)}</span>`).join('');
     if (sim) sim.stop();
     sim = d3.forceSimulation(nodes)
-      .force('link', d3.forceLink(links).id((d) => d.id).distance(38).strength(0.45))
-      .force('charge', d3.forceManyBody().strength(-55))
-      .force('x', d3.forceX().strength(0.04)).force('y', d3.forceY().strength(0.04))
-      .force('collide', d3.forceCollide(6))
-      .on('tick', draw);
+      .force('link', d3.forceLink(links).id((d) => d.id).distance(70).strength(0.18))
+      .force('charge', d3.forceManyBody().strength(-260).distanceMax(500))
+      .force('x', d3.forceX().strength(0.09)).force('y', d3.forceY().strength(0.09))
+      .force('collide', d3.forceCollide((d) => radius(d) + 5))
+      .on('tick', draw).on('end', fit);
     S.graphSim = sim;
+    setTimeout(fit, 700);
+  };
+  // Fit the whole graph into the view (also after the simulation settles).
+  const fit = () => {
+    if (!nodes || !nodes.length || !canvas.clientWidth) return;
+    const xs = nodes.filter((d) => d.x != null).map((d) => d.x).sort((p, q) => p - q);
+    const ys = nodes.filter((d) => d.y != null).map((d) => d.y).sort((p, q) => p - q);
+    if (!xs.length) return;
+    const at = (arr, f) => arr[Math.min(arr.length - 1, Math.max(0, Math.round(f * (arr.length - 1))))]; // ignore the 6% outermost strays
+    const x0 = at(xs, 0.03), x1 = at(xs, 0.97), y0 = at(ys, 0.03), y1 = at(ys, 0.97);
+    const w = canvas.clientWidth, h = canvas.clientHeight, pad = 60;
+    const k = Math.max(0.15, Math.min(1.2, Math.min((w - pad * 2) / Math.max(x1 - x0, 1), (h - pad * 2) / Math.max(y1 - y0, 1))));
+    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    d3.select(canvas).call(zoom.transform, d3.zoomIdentity.translate(-cx * k, -cy * k).scale(k));
   };
   const resize = () => {
     const r = wrap.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
@@ -718,10 +755,15 @@ async function renderGraph(pane) {
     ctx.clearRect(0, 0, w, h);
     ctx.save();
     ctx.translate(T.x + w / 2, T.y + h / 2); ctx.scale(T.k, T.k);
-    ctx.strokeStyle = css('--graph-line'); ctx.lineWidth = 1 / T.k;
+    ctx.strokeStyle = css('--graph-line'); ctx.lineWidth = 1 / T.k; ctx.globalAlpha = hover ? 0.35 : 0.55;
     ctx.beginPath();
     for (const l of links) { ctx.moveTo(l.source.x, l.source.y); ctx.lineTo(l.target.x, l.target.y); }
-    ctx.stroke();
+    ctx.stroke(); ctx.globalAlpha = 1;
+    if (hover) { // links of the hovered note stand out
+      ctx.strokeStyle = css('--link'); ctx.lineWidth = 1.6 / T.k; ctx.beginPath();
+      for (const l of links) if (l.source === hover || l.target === hover) { ctx.moveTo(l.source.x, l.source.y); ctx.lineTo(l.target.x, l.target.y); }
+      ctx.stroke();
+    }
     const showLabels = $('#g-labels')?.checked;
     const acc = css('--accent'), txt = css('--text'), dark = S.theme !== 'light';
     ctx.font = `${11 / Math.sqrt(T.k)}px sans-serif`; ctx.textAlign = 'center';
@@ -731,7 +773,7 @@ async function renderGraph(pane) {
       ctx.fillStyle = isA ? acc : `hsl(${hue(d.group)} ${dark ? 45 : 55}% ${dark ? 62 : 48}%)`;
       ctx.fill();
       if (isH) { ctx.lineWidth = 2 / T.k; ctx.strokeStyle = txt; ctx.stroke(); }
-      if (isH || (showLabels && (T.k > 2 || (T.k > 1.2 && d.deg > 8) || (T.k > 0.7 && d.deg > 25) || isA))) {
+      if (isH || (showLabels && (T.k > 1.8 || (T.k > 1.2 && d.deg > 6) || d.deg > 16 || isA))) {
         ctx.fillStyle = txt; ctx.fillText(d.name, d.x, d.y + radius(d) + 11 / Math.sqrt(T.k));
       }
     }
@@ -753,6 +795,7 @@ async function renderGraph(pane) {
   canvas.addEventListener('mousemove', (e) => { const n = hit(e) || null; if (n !== hover) { hover = n; canvas.style.cursor = n ? 'pointer' : 'default'; draw(); } });
   canvas.addEventListener('click', (e) => { const n = hit(e, matchMedia('(pointer: coarse)').matches ? 24 : 12); if (n) openNote(n.id, { newTab: e.ctrlKey || e.metaKey }); });
   $('#g-local').onchange = (e) => { S.graphLocal = e.target.checked; build(); };
+  $('#g-hubs').onchange = build; $('#g-arch').onchange = build;
   $('#g-labels').onchange = draw;
   new ResizeObserver(resize).observe(wrap);
   build(); resize();
