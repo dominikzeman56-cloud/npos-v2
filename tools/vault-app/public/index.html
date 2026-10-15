@@ -6,11 +6,11 @@
 <meta name="theme-color" content="#1e1e1e">
 <title>Vault</title>
 <script>try{var s=JSON.parse(localStorage.getItem("vault.skin"));document.documentElement.dataset.theme=["samurai","dark","light"].indexOf(s)<0?"samurai":s}catch(e){document.documentElement.dataset.theme="samurai"}</script>
-<script>try{if(!location.hash&&!sessionStorage.getItem("vault.entered")){sessionStorage.setItem("vault.entered","1");location.replace("/dashboard.html")}}catch(e){}</script>
 <link rel="stylesheet" href="/style.css">
 <link rel="stylesheet" href="/skin-samurai.css">
 </head>
 <body>
+<script src="/topbar.js"></script>
 <div id="app">
   <div id="scrim"></div>
   <nav id="ribbon"></nav>

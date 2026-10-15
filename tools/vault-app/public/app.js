@@ -339,17 +339,11 @@ addEventListener('popstate', (e) => {
 /* ---------- layout pieces ---------- */
 function renderRibbon() {
   const mob = isMobile();
-  // [id, icon, short label under the icon, tooltip with the full description, handler, extra class]
+  // Global navigation (Kánon / Dashboard / Presety / Co dál? / vzhled) lives in the shared top bar; the ribbon only holds Kánon tools.
   const items = [
     ['files', 'files', 'Soubory', 'Soubory: strom všech poznámek podle složek', () => setLeft('files')],
-    ['search', 'search', 'Hledat', 'Hledat v textu všech poznámek (Ctrl+Shift+F)', () => setLeft('search')],
+    ['search', 'search', 'Hledat', 'Hledat poznámku podle názvu i textu (Ctrl+O nebo Ctrl+Shift+F)', () => setLeft('search')],
     ['tags', 'tags', 'Tagy', 'Tagy: poznámky seskupené podle štítků', () => setLeft('tags')],
-    ['graph', 'graph', 'Mapa', 'Mapa: jak spolu poznámky souvisí (Ctrl+G)', () => openGraph()],
-    ['switcher', 'switcher', 'Otevřít', 'Rychlé otevření poznámky podle názvu (Ctrl+O)', () => quickSwitcher()],
-    ['dash', 'dash', 'Dashboard', 'Dashboard: aktuální track, fáze práce, poznámky, priority a poradce', () => { location.href = '/dashboard.html'; }],
-    ['presets', 'presets', 'Presety', 'Presety: prohlížeč Serum presetů, stavba každého (oscilátory, filtry, FX, LFO)', () => { location.href = '/presets.html'; }],
-    ['next', 'next', 'Co dál?', 'Co dál?: zasekl jsem se, poraď mi další krok', () => { location.href = '/dal.html'; }],
-    ['panel', 'panel', 'Osnova', 'Osnova a odkazy aktuální poznámky', toggleRight, 'mob-only'],
   ];
   const r = $('#ribbon'); r.innerHTML = '';
   const mk = (cls, title, ic, label, fn) => {
@@ -357,15 +351,10 @@ function renderRibbon() {
     b.className = cls; b.title = title; b.setAttribute('aria-label', title);
     b.innerHTML = icon(ic) + `<span class="rl">${label}</span>`; b.onclick = fn; return b;
   };
-  for (const [id, ic, label, title, fn, cls] of items) {
-    const on = id === 'panel' ? mob && S.layer === 'right'
-      : ['files', 'search', 'tags'].includes(id) && S.leftMode === id && (mob ? S.layer === 'left' : !S.noLeft);
-    r.append(mk('rb' + (cls ? ' ' + cls : '') + (on ? ' on' : ''), title, ic, label, fn));
+  for (const [id, ic, label, title, fn] of items) {
+    const on = S.leftMode === id && (mob ? S.layer === 'left' : !S.noLeft);
+    r.append(mk('rb' + (on ? ' on' : ''), title, ic, label, fn));
   }
-  r.insertAdjacentHTML('beforeend', '<div class="sp"></div>');
-  const t = mk('rb', 'Vzhled: přepnout skin (Samurai, tmavý, světlý)', 'palette', 'Vzhled', (e) => { e.stopPropagation(); skinMenu(t); });
-  t.setAttribute('aria-haspopup', 'menu');
-  r.append(t);
 }
 function setLeft(mode) {
   if (isMobile()) {
@@ -500,7 +489,7 @@ function renderTree(body) {
 
 let searchTimer = null;
 function renderSearch(body) {
-  body.innerHTML = '<div class="searchbox"><input placeholder="Hledat… (tag:nazev)" spellcheck="false"></div><div id="sres"></div>';
+  body.innerHTML = '<div class="searchbox"><input placeholder="Název nebo text… (tag:nazev)" spellcheck="false"></div><div id="sres"></div>';
   const inp = $('input', body);
   inp.value = S.query;
   const run = async () => {
@@ -508,7 +497,14 @@ function renderSearch(body) {
     const box = $('#sres', body);
     if (!S.query) { box.innerHTML = '<div class="hint">Zadej hledaný text. Filtr podle tagu: <kbd>tag:neurofunk</kbd></div>'; return; }
     const r = await api('/api/search?q=' + enc(S.query));
-    box.innerHTML = `<div class="hint">${r.total} výsledků</div>`;
+    box.innerHTML = '';
+    const byName = S.query.startsWith('tag:') ? [] : [...S.noteSet].map((p) => [fuzzy(S.query, nameOf(p)), p]).filter((x) => x[0] > 0).sort((p, q) => q[0] - p[0]).slice(0, 6).map((x) => x[1]);
+    S.bestTitle = byName[0] || null;
+    if (byName.length) {
+      box.insertAdjacentHTML('beforeend', '<div class="hint">Názvy poznámek (Enter otevře první)</div>');
+      for (const p of byName) { const d = document.createElement('div'); d.className = 'res'; d.innerHTML = `<div class="t">${esc(nameOf(p))}</div><div class="pth">${esc(dirOf(p))}</div>`; d.onclick = (e) => openNote(p, { newTab: e.ctrlKey || e.metaKey }); box.append(d); }
+    }
+    box.insertAdjacentHTML('beforeend', `<div class="hint">${r.total} výsledků v textu</div>`);
     const re = r.terms.length ? new RegExp('(' + r.terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'ig') : null;
     for (const x of r.results) {
       const d = document.createElement('div'); d.className = 'res';
@@ -519,6 +515,7 @@ function renderSearch(body) {
     }
   };
   inp.oninput = () => { clearTimeout(searchTimer); searchTimer = setTimeout(run, 220); };
+  inp.onkeydown = (e) => { if (e.key === 'Enter' && S.bestTitle) { e.preventDefault(); openNote(S.bestTitle, { newTab: e.ctrlKey || e.metaKey }); } };
   run();
 }
 
@@ -862,7 +859,7 @@ function initResizers() {
 }
 addEventListener('keydown', (e) => {
   const mod = e.ctrlKey || e.metaKey;
-  if (mod && e.key.toLowerCase() === 'o') { e.preventDefault(); quickSwitcher(); }
+  if (mod && e.key.toLowerCase() === 'o') { e.preventDefault(); if (S.leftMode !== 'search' || (isMobile() ? S.layer !== 'left' : S.noLeft)) setLeft('search'); else $('#left .searchbox input')?.focus(); }
   else if (mod && e.key.toLowerCase() === 'g') { e.preventDefault(); openGraph(); }
   else if (mod && e.shiftKey && e.key.toLowerCase() === 'f') { e.preventDefault(); if (isMobile()) { if (!(S.layer === 'left' && S.leftMode === 'search')) setLeft('search'); } else { S.leftMode = 'search'; S.noLeft = false; lsSet('noLeft', false); applyLayout(); renderLeft(); renderRibbon(); setTimeout(() => $('#left .searchbox input')?.focus(), 0); } }
   else if (e.key === 'Escape' && S.layer) { e.preventDefault(); closeLayer(); }
@@ -936,7 +933,7 @@ async function init() {
   const idx = await api('/api/index');
   S.notes = idx.notes; S.vault = idx.vault; S.noteSet = new Set(idx.notes.map((n) => n.path));
   document.title = idx.vault + ' – Vault';
-  S.tabs = S.tabs.filter((t) => t.kind === 'graph' || S.noteSet.has(t.path));
+  S.tabs = S.tabs.filter((t) => t.kind !== 'graph' && S.noteSet.has(t.path)); // the Mapa tab was removed from the UI
   if (!tabById(S.active)) S.active = S.tabs[0]?.id || null;
   const [hash, headHash] = decodeURIComponent(location.hash.slice(1)).split('::'); // #path::heading (deep link, e.g. from Presety)
   NAV.max = curI();
