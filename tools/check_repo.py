@@ -31,6 +31,8 @@ SOURCE_TYPES = {"producer_course", "ableton_project", "preset_pack", "interview"
 RULE_LABELS = {"consensus", "conditional", "school", "dogma_unverified"}
 REQUIRED = ("id", "type", "title", "status", "confidence", "source_type", "source_ids", "updated")
 EMPTY_OK = {"personal_observation", "other"}
+FUNCTIONS = {"sub", "body", "movement", "noise", "texture", "lead", "pad", "fx", "other"}
+INDEX_KEYS = ("id", "source_id", "name", "file", "function", "archetype", "confidence", "cues_basis", "cues")
 
 
 def load_jsonl(path: Path):
@@ -212,6 +214,28 @@ def main() -> int:
             check_object(d, pschema, f"data/presets/{p.name}", errors)
             if d.get("source_id") not in source_ids:
                 errors.append(f"data/presets/{p.name}: source_id {d.get('source_id')!r} není ve sources.jsonl")
+        # kompaktní indexy packů (tools/index_presets.py); plné dumpy jsou v _local/ mimo git
+        seen: set[str] = set()
+        for p in sorted((presets_dir / "index").glob("*.jsonl")):
+            for n, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+                where = f"data/presets/index/{p.name}:{n}"
+                try:
+                    d = json.loads(line)
+                except json.JSONDecodeError as e:
+                    errors.append(f"{where}: neplatný JSON ({e})")
+                    continue
+                miss = [k for k in INDEX_KEYS if k not in d]
+                if miss:
+                    errors.append(f"{where}: chybí {', '.join(miss)}")
+                if d.get("source_id") not in source_ids:
+                    errors.append(f"{where}: source_id {d.get('source_id')!r} není ve sources.jsonl")
+                if d.get("function") not in FUNCTIONS:
+                    errors.append(f"{where}: function {d.get('function')!r} mimo slovník")
+                if d.get("confidence") not in CONFIDENCE:
+                    errors.append(f"{where}: confidence {d.get('confidence')!r} mimo slovník")
+                if d.get("id") in seen:
+                    errors.append(f"{where}: duplicitní id {d.get('id')!r}")
+                seen.add(d.get("id"))
 
     # --- schémata jsou platný JSON
     for s in sorted((ROOT / "core").glob("*.schema.json")):

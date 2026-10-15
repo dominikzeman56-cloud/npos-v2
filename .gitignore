@@ -14,3 +14,6 @@ venv/
 
 # Transcript artifacts (large text dumps)
 transcripts/
+
+# Full preset dumps from paid packs stay local (index in data/presets/index/ is the shareable part)
+data/presets/_local/

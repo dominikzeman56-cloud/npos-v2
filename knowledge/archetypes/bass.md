@@ -5,14 +5,14 @@ title: Archetypy basů
 status: canon
 confidence: measured
 source_type: track_analysis
-source_ids: [abis-reese-fm-masterclass, pythius-reese-tutorial, pythius-fearless-remix, phenom-roar, letsynthesize-noisia-course, magnetude-neuro-basses, burr-oak-harmonic-growl, ekwols-reese-layering, prolix-been-about-this]
+source_ids: [abis-reese-fm-masterclass, pythius-reese-tutorial, pythius-fearless-remix, phenom-roar, letsynthesize-noisia-course, magnetude-neuro-basses, burr-oak-harmonic-growl, ekwols-reese-layering, prolix-been-about-this, letsynthesize-preset-files]
 vault_note: 03 Zvuk a mix
 updated: 2026-10-15
 ---
 
 # Archetypy basů
 
-Seed (řádky 1–5) je v kontraktu BLUEPRINT kap. 5; řádky 6–15 jsou **kandidáti** — do slovníku se povyšují až po opakování v datech.
+Seed (řádky 1–5) je v kontraktu BLUEPRINT kap. 5; řádky 6–16 jsou **kandidáti** — do slovníku se povyšují až po opakování v datech.
 
 Mapování na BLUEPRINT slovníky: `bass.type` (`growl`/`reese`/`hybrid`/`sub_led`/`other`), `body_design.primary` (`fm`/`wavetable`/`detune_reese`/`filter_growl`/`sample`/`hybrid`/`other`), seed archetypů (`grid-locked-filter-growl`, `slow-grid-growl`, `detuned-unison-reese`, `fm-distorted-body`, `clean-sub-sine`, `serum-overlay-chords`). **Nové kandidáty přidat jen po opakování v datech.**
 
@@ -33,6 +33,7 @@ Mapování na BLUEPRINT slovníky: `bass.type` (`growl`/`reese`/`hybrid`/`sub_le
 | 13 | **switch bass** | modulace okolo distorze | `Phaser → Overdrive → Flanger → EQ8 → MBD ×2`; sestupná pitch obálka; vstupní gain −5 až −10 dB | LS 11, projekty | nízké | `naměřeno` |
 | 14 | **overlay reese přes akord** | tenze nad basou | chord patch → Comb → Trash → Guitar Rig → hodně reverbu „far back"; 4 dropy A / 4 dropy B | Abis Grains | střední | `naměřeno` |
 | 15 | **stack 30 vrstev** (výjimka) | extrémní vrstvení | 30× Serum, hero chain, gain balance; **jen s resamplem, jinak CPU/stabilita** | Phenom | **vysoké** | `naměřeno` (architektura) |
+| 16 | **`osc-warp-body`** (kandidát) | tělo z warpu jiným oscilátorem | Serum 2: OSC A slyšitelný, warp `PD`/`AM`/`Sync` z OSC B/C; OSC B/C **zapnuté, hlasitost 0** (jen modulátory), často oktáva +1/+2 nebo fine −60 ct; unison 1; za tím distorze + EQ + comp ve FX | Letsynthesize presety (21 bas, viz `data/presets/index/`) | nízké | `hypothesis` (stopy v souborech přečtené; zvuk a „hlasitost 0 = nehraje“ neověřeno A/B) |
 
 **Rozhodovací pomůcka (decision heuristics, `estimated`):** reese/deep = sub + body (filtrovaná saw) · mid-bass/hyper = body + noise + movement · FM/metallic = FM osc + distorze + textura · wobble/growl = movement (LFO-filtr) + distorze.
 

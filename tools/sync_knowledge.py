@@ -95,13 +95,14 @@ for slug, num, status, conf, stype, srcs in M:
 
 # candidates
 cand = pr[pr.index("## 3. Kandidáti"):pr.index("## 4. Povyšování")]
-cand = cand.split("---")[0]
+cand = cand.split("\n---\n")[0]  # oddělovač sekce, ne |---| v tabulce
 write("principles/candidates.md",
       {"id": "candidates", "type": "candidate", "title": "Kandidáti na nové principy", "status": "candidate",
        "confidence": "estimated", "source_type": "producer_course",
        "source_ids": ["pythius-inquisition", "joe-ford-bassgorilla-course", "letsynthesize-noisia-course", "abis-start-to-finish",
                       "audio-headroom-2013", "phenom-layering", "dont-play-skeleton", "prolix-been-about-this", "breach-balron-audio",
-                      "redpill-manual", "ed-rush-killbox-valkyrie-podcast", "ekwols-reese-layering", "mefjus-masterclass", "sequence-rebuild"],
+                      "redpill-manual", "ed-rush-killbox-valkyrie-podcast", "ekwols-reese-layering", "mefjus-masterclass", "sequence-rebuild",
+                      "letsynthesize-preset-files"],
        "vault_note": "01 Principy", "updated": DATE},
       "# Kandidáti na nové principy\n\n" + unlink(cand.replace("## 3. Kandidáti na nové principy", "").strip()) + NOTE)
 
@@ -173,9 +174,10 @@ write("archetypes/bass.md",
       {"id": "archetypes-bass", "type": "archetype", "title": "Archetypy basů", "status": "canon",
        "confidence": "measured", "source_type": "track_analysis",
        "source_ids": ["abis-reese-fm-masterclass", "pythius-reese-tutorial", "pythius-fearless-remix", "phenom-roar", "letsynthesize-noisia-course",
-                      "magnetude-neuro-basses", "burr-oak-harmonic-growl", "ekwols-reese-layering", "prolix-been-about-this"],
+                      "magnetude-neuro-basses", "burr-oak-harmonic-growl", "ekwols-reese-layering", "prolix-been-about-this",
+                      "letsynthesize-preset-files"],
        "vault_note": "03 Zvuk a mix", "updated": DATE},
-      "# Archetypy basů\n\nSeed (řádky 1–5) je v kontraktu BLUEPRINT kap. 5; řádky 6–15 jsou **kandidáti** — do slovníku se povyšují až po opakování v datech.\n\n" + unlink(a) + NOTE)
+      "# Archetypy basů\n\nSeed (řádky 1–5) je v kontraktu BLUEPRINT kap. 5; řádky 6–16 jsou **kandidáti** — do slovníku se povyšují až po opakování v datech.\n\n" + unlink(a) + NOTE)
 
 write("archetypes/README.md",
       {"id": "archetypes-index", "type": "index", "title": "Archetypy — rozcestník", "status": "canon",
@@ -184,7 +186,9 @@ write("archetypes/README.md",
 
 Slovník archetypů se rozšiřuje **jen tím, co se opakuje v datech** (`data/tracks`, `data/presets`). Seed: `grid-locked-filter-growl` · `slow-grid-growl` · `detuned-unison-reese` · `fm-distorted-body` · `clean-sub-sine` · `serum-overlay-chords`.
 
-Aktuálně: [`bass.md`](bass.md) — 15 archetypů basy s receptem, zdrojem a jistotou (5 seed, 10 kandidátů).""")
+Aktuálně: [`bass.md`](bass.md) — 16 archetypů basy s receptem, zdrojem a jistotou (5 seed, 11 kandidátů).
+
+Návrhy archetypů pro presety z packů jsou v `data/presets/index/*.jsonl` (`tools/index_presets.py`, vždy `hypothesis`).""")
 
 # ---------- guides ----------
 def strip_frontmatter(t):

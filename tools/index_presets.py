@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+"""index_presets.py — projde složku `.SerumPreset` a vyrobí kompaktní index pro repo.
+
+Index (jeden JSON na řádek) nese jen metadata a přečtené „stopy“ (cues): počet aktivních oscilátorů, unison,
+cross-osc warp, tiché modulátory, LFO → filtr, mono, délku FX řetězu. Žádný výpis parametrů — plný
+`reading` jde volitelně do `--dump-dir`, který patří mimo git (`data/presets/_local/`), protože presety
+z placených packů se nesdílejí.
+
+Stopy jsou `preset_file` (přečtené ze souboru). Funkce a archetyp jsou **návrh** z heuristiky
+(jméno presetu + stopy) a nesou `confidence: hypothesis`; potvrzuje je člověk poslechem nebo A/B v Serumu.
+
+Použití:
+  py -3.12 tools/index_presets.py ROOT --source-id letsynthesize-preset-files \\
+      --out data/presets/index/letsynthesize-preset-files.jsonl --dump-dir data/presets/_local/letsynthesize
+"""
+from __future__ import annotations
+
+import argparse
+import collections
+import json
+import re
+import sys
+from pathlib import Path
+from typing import Any
+
+sys.path.insert(0, str(Path(__file__).parent))
+import analyze_preset as ap  # noqa: E402
+
+# (funkce vrstvy, regex na jméno) — první shoda vyhrává
+NAME_RULES = [
+    ("other", r"kick|snare|clap|drums|perc|hat"),
+    ("fx", r"riser|buildup|scream|drunk|breathfx|foley|sweep|impact"),
+    ("pad", r"pad|atmos|drone|strings|soft|chord"),
+    ("lead", r"lead|lazer|robot|idiot|funky|pulse|pluck"),
+    ("other", r"guitar"),
+    ("sub", r"\bsub\b|compressed sine|distorted sine"),
+    ("body", r"bass|reese|neuro|nruo|stab|annihilation|weird|screechy|metallic|noise|synth layer|thing|growl|wobble"),
+]
+CROSS_WARP = ("_OSC", "_OSC2", "_SUB", "_NOISE")
+
+
+def cues(a: dict[str, Any]) -> dict[str, Any]:
+    r = a["reading"]
+    on = [o for o in r["oscillators"] if o["enabled"]]
+    warps = {o.get("kind_params", {}).get(k) for o in on for k in ("kParamWarpMenu", "kParamWarpMenu2")}
+    cross = sorted(w for w in warps if isinstance(w, str) and (w.endswith(CROSS_WARP) or w == "kSync"))
+    return {
+        "active_osc": len(on),
+        "max_unison": max((o["unison_voices"] for o in on), default=1),
+        "cross_warp": cross,
+        # zapnutý hlavní oscilátor (slot 0–2) s hlasitostí 0: nehraje, jen moduluje (neověřeno A/B v Serumu)
+        "silent_mod_osc": sum(1 for o in on if o["slot"] <= 2 and o["params"].get("kParamVolume") == 0.0),
+        "lfo_to_filter": any(m["source"].startswith("LFO") and m["dest_module"] == "VoiceFilter" for m in r["modulation"]),
+        "mod_slots": len(r["modulation"]),
+        "mono": r["voice"].get("kParamMonoToggle") == 1.0,
+        "fx_count": len(r["fx"]),
+    }
+
+
+def propose(name: str, c: dict[str, Any]) -> tuple[str, str, list[str]]:
+    """Návrh (function, archetype, why). Archetyp jen ze slovníku seed + kandidát osc-warp-body."""
+    n = name.lower()
+    func = next((f for f, pat in NAME_RULES if re.search(pat, n)), "other")
+    why = [f"jméno → {func}"]
+    if func == "body" and "sub" in n:
+        func = "sub"
+    arch = "unclassified"
+    if func == "sub":
+        arch = "clean-sub-sine"
+    elif func == "body":
+        if any("FM" in w for w in c["cross_warp"]):
+            arch = "fm-distorted-body"; why.append("FM z jiného oscilátoru")
+        elif c["silent_mod_osc"] and any(w.startswith(("kPD", "kAM", "kRM")) or w == "kSync" for w in c["cross_warp"]):
+            arch = "osc-warp-body"; why.append("tichý modulátor → " + ",".join(c["cross_warp"]))
+        elif c["max_unison"] >= 3 and not c["lfo_to_filter"]:
+            arch = "detuned-unison-reese"; why.append(f"unison {c['max_unison']}")
+        if c["lfo_to_filter"]:
+            why.append("LFO → filtr (mřížka ze souboru neověřitelná)")
+    return func, arch, why
+
+
+def index(root: Path, source_id: str, dump_dir: Path | None) -> tuple[list[dict[str, Any]], list[str]]:
+    rows, full, bad = [], [], []
+    for f in sorted(p for p in root.rglob("*.SerumPreset") if not p.name.startswith("._")):
+        try:
+            a = ap.analyze(f, source_id=source_id)
+        except (ValueError, OSError) as e:
+            bad.append(f"{f.name}: {e}")
+            continue
+        rel = f.relative_to(root)
+        group = rel.parts[0] if len(rel.parts) > 1 else ""
+        pid = ap.slugify(f"{source_id}-{group[:32]}-{a['name']}")
+        c = cues(a)
+        func, arch, why = propose(a["name"], c)
+        rows.append({"id": pid, "source_id": source_id, "name": a["name"], "group": group, "file": f.name,
+                     "synth": a["synth"], "tags": a["tags"], "function": func, "archetype": arch,
+                     "confidence": "hypothesis", "cues_basis": "preset_file", "cues": c, "why": why,
+                     "fx_chain": a["fx_chain"]})
+        full.append(a)
+    ids = collections.Counter(r["id"] for r in rows)
+    for r in rows:  # duplicitní jména ve stejné skupině
+        if ids[r["id"]] > 1:
+            r["id"] = ap.slugify(f"{r['id']}-{Path(r['file']).stem}")
+    if dump_dir:
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        for r, a in zip(rows, full):
+            a.update(id=r["id"], function=r["function"], archetype=r["archetype"])
+            (dump_dir / f"{r['id']}.json").write_text(json.dumps(a, ensure_ascii=False, indent=2) + "\n",
+                                                      encoding="utf-8", newline="\n")
+    return rows, bad
+
+
+def main(argv: list[str] | None = None) -> int:
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
+    p = argparse.ArgumentParser(description="Kompaktní index složky .SerumPreset (návrhy = hypothesis).")
+    p.add_argument("root", type=Path)
+    p.add_argument("--source-id", required=True)
+    p.add_argument("--out", type=Path, required=True, help="JSONL index (do repa)")
+    p.add_argument("--dump-dir", type=Path, default=None, help="plné analýzy (mimo git)")
+    args = p.parse_args(argv)
+    rows, bad = index(args.root, args.source_id, args.dump_dir)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8", newline="\n")
+    print(f"{len(rows)} presetů → {args.out}" + (f", dumpy → {args.dump_dir}" if args.dump_dir else ""))
+    print("návrhy:", collections.Counter((r["function"], r["archetype"]) for r in rows).most_common())
+    for b in bad:
+        print("chyba:", b, file=sys.stderr)
+    return 1 if bad else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
