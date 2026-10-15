@@ -13,7 +13,7 @@ const FIELDS = [
 const EMPTY = { track: {}, stage: null, last: '', next: '', notes: [], tasks: [], sessions: [] };
 let D = Object.assign({}, EMPTY, lsGet('dash', {}));
 let NS = { phases: [], items: [] };
-const save = () => { const ok = lsSet('dash', D); $('#saved').textContent = ok ? 'uloženo jen v tomhle prohlížeči' : 'nelze uložit (soukromý režim?)'; };
+const save = () => { const ok = lsSet('dash', D); try { renderStatus(); } catch { /* before first render */ } $('#saved').textContent = ok ? 'uloženo jen v tomhle prohlížeči' : 'nelze uložit (soukromý režim?)'; };
 const stamp = () => new Date().toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' });
 const li = (h) => { const d = document.createElement('div'); d.innerHTML = h; return d.firstElementChild; };
 
@@ -49,7 +49,7 @@ function renderSess() {
 function ask(q) {
   const words = q.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length > 2);
   if (!words.length) { $('#ans').innerHTML = ''; return; }
-  const score = (it) => { const hay = (it.situation + ' ' + it.steps.join(' ') + ' ' + it.sources.join(' ')).toLowerCase(); return words.reduce((a, w) => a + (it.situation.toLowerCase().includes(w) ? 3 : 0) + (hay.includes(w) ? 1 : 0), 0); };
+  const score = (it) => { const hay = (it.situation + ' ' + it.steps.join(' ') + ' ' + it.sources.join(' ')).toLowerCase(); const base = words.reduce((a, w) => a + (it.situation.toLowerCase().includes(w) ? 3 : 0) + (hay.includes(w) ? 1 : 0), 0); return base > 0 && it.phase === D.stage ? base + 2 : base; }; // current phase wins ties
   const hits = NS.items.map((it) => [score(it), it]).filter(([s]) => s > 0).sort((a, b) => b[0] - a[0]).slice(0, 3).map(([, it]) => it);
   $('#ans').innerHTML = hits.length ? hits.map((it) => `<div class="hit"><b>${esc(it.situation)}</b><ol>${it.steps.slice(0, 3).map((s) => `<li>${esc(s).replace(/`([^`]+)`/g, '<code>$1</code>')}</li>`).join('')}</ol><a href="/dal.html?p=${esc(it.phase)}&s=${esc(it.id)}">Celý postup →</a> <span class="muted">· ${esc(it.confidence === 'estimated' ? 'odhad' : it.confidence)}</span></div>`).join('')
     : '<div class="hit"><b>Nic nenalezeno</b><span class="muted">Zkus kratší slovo, nebo projdi fáze v <a href="/dal.html">Co dál?</a>.</span></div>';
@@ -80,8 +80,19 @@ function wire() {
   const sk = $('#skin'); sk.value = lsGet('skin', 'samurai');
   sk.onchange = () => { lsSet('skin', sk.value); document.documentElement.dataset.theme = sk.value; };
 }
-function renderAll() { renderTrack(); renderPipe(); renderNotes(); renderTasks(); renderSess(); for (const k of ['last', 'next']) $('#' + k).value = D[k] || ''; }
+function renderStatus() {
+  const T = D.track, ph = NS.phases.find((p) => p.id === D.stage), done = D.tasks.filter((x) => x.done).length;
+  const bits = [T.title && 'TRACK: ' + T.title, T.bpm && T.bpm + ' BPM', T.key && 'TÓNINA: ' + T.key, ph && 'FÁZE: ' + ph.title, D.tasks.length && `ÚKOLY: ${done}/${D.tasks.length}`].filter(Boolean);
+  $('#status').textContent = bits.length ? bits.join('  ·  ') : 'vyplň aktuální track a vyber fázi';
+}
+function renderAll() { renderTrack(); renderPipe(); renderNotes(); renderTasks(); renderSess(); renderStatus(); for (const k of ['last', 'next']) $('#' + k).value = D[k] || ''; }
 
+addEventListener('keydown', (e) => {
+  if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === 'k') { e.preventDefault(); $('#q').focus(); }
+  else if (k === 'j') { e.preventDefault(); $('#sadd').click(); }
+});
 (async () => {
   wire();
   try { for (const u of ['/data/next-step.json', '/api/next-step']) { const r = await fetch(u); if (r.ok && (r.headers.get('content-type') || '').includes('json')) { NS = await r.json(); break; } } } catch { /* offline: dashboard still works */ }
