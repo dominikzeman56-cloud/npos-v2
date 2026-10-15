@@ -113,7 +113,7 @@ Stejné nástroje jako build 1, ale **jiný materiál**: Dirts — vox tag origi
 Čtyři osvědčené cesty (ze zdrojů, seřazeno od nejlevnější):
 
 1. **Automace levelu / transpozice místo nového materiálu** (LS 26: fade křivka přes druhý drop; rozdíl −5/−10 dB není dramatický, neřeš hloubku) `kurz`.
-2. **Jiný distortion charakter na stejném riffu** (Pythius Fearless: Shade + Corrosion BP @ 1,8 kHz místo First reese) `kurz`.
+2. **Jiný rytmus a variace na stejném riffu** (Pythius Fearless: odpověď = stejné reese jako otázka, riff 2× natažený, rychlejší bicí, ShaperBox stutter; každý zásah jiná varianta makra/wavetable/EQ; dřívější tvrzení o „Shade + Corrosion“ pro druhý drop v řeči není) `kurz`.
 3. **Změna rytmu basy** (Inquisition: malá změna rytmu stačí, původně úplně jiný drop stáhnul zpět kvůli DNA) `kurz`.
 4. **Vokálně prázdný drop 2** (Dirts, originál Tao Maffa: čistě instrumentální 3:03–3:51) = prostor pro vlastní podpis `naměřeno`.
 

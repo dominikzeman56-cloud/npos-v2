@@ -21,6 +21,6 @@ updated: 2026-10-15
 - **Vokální sendy** (Dry pro Soothe SC, Delay 1/4, Dist −20 dB, Shimmer), volume automation před delayem; AI vokál zničit. `[naměřeno]`
 - **Remix:** pročesat originál, Question/Answer riff, stejná barva reese na A i B, drop 2 jiná špína. `[naměřeno]`
 **Nekopírovat.** Bitwig-specifické věci (container Chain, Note Receiver) 1:1; **pluginy podle jména** (jeho Compactor/ShaperBox je řešení pro jeho workflow); lyrics a frázi z Inquisition (theme krást, fráze ne).
-**Zdroje.** Pythius Template Workflow · Pythius Inquisition Track Breakdown · Pythius Fearless Remix Walkthrough · Pythius Reese Tutorial. `producer_course`.
+**Zdroje.** Pythius - Template Workflow · Pythius - Inquisition Track Breakdown · Pythius - Fearless Remix Walkthrough · Pythius - Reese Tutorial (Patreon). `producer_course`.
 
 > Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.

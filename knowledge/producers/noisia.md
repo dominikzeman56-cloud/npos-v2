@@ -22,6 +22,6 @@ updated: 2026-10-15
 - Metalická perkuse z FM vrstvená k basám; impacty z kicku v reverbu; vokály z filmových dialogů. `[naměřeno]` (kurz)
 **Nekopírovat.** „Operator místo Serum" jako dogma — kurz to staví jako designové omezení, ne jako zákon. Číselné cíle hlasitosti ani délky dropu se z kurzu **nepřebírají**: kurz je rekonstrukce stylu (reference: *Asteroid* remix), ne měření Noisií.
 **Reference (ověřeno).** *Asteroid* (remix Noisia) — referenční track kurzu Letsynthesize.
-**Zdroje.** Letsynthesize Noisia 01 Teorie a bicí … Letsynthesize Noisia 05 Aranž, sub a mix · Letsynthesize Noisia — projekty .als.
+**Zdroje.** Letsynthesize - Noisia 01 Teorie a bicí … Letsynthesize - Noisia 05 Aranž, sub a mix · Letsynthesize Noisia — projekty .als.
 
 > Strojově čitelná kopie z vaultu (`Hudební produkce`). Zdroje: `knowledge/sources.jsonl`. Neupravuj ručně — změny se dělají ve vaultu a regenerují.
