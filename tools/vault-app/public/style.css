@@ -21,7 +21,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 input { font: inherit; color: inherit; }
 svg.i { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
-#app { display: grid; height: 100vh; grid-template-columns: 44px var(--left-w) 4px 1fr 4px var(--right-w); }
+#app { display: grid; height: 100vh; grid-template-rows: minmax(0, 1fr); grid-template-columns: 44px var(--left-w) 4px 1fr 4px var(--right-w); }
 #app.no-left { grid-template-columns: 44px 0 0 1fr 4px var(--right-w); }
 #app.no-right { grid-template-columns: 44px var(--left-w) 4px 1fr 0 0; }
 #app.no-left.no-right { grid-template-columns: 44px 0 0 1fr 0 0; }
@@ -75,7 +75,7 @@ mark { background: rgba(255, 208, 0, .35); color: inherit; border-radius: 2px; }
 .outline-item:hover { background: var(--hover); color: var(--text); }
 
 /* main */
-#main { display: flex; flex-direction: column; min-width: 0; background: var(--bg1); }
+#main { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; background: var(--bg1); }
 #tabbar { display: flex; align-items: stretch; background: var(--bg2); border-bottom: 1px solid var(--border); height: 36px; flex: none; }
 #tabs { display: flex; flex: 1; overflow-x: auto; scrollbar-width: none; }
 .tab { display: flex; align-items: center; gap: 8px; padding: 0 10px 0 14px; max-width: 220px; min-width: 90px; color: var(--muted); border-right: 1px solid var(--border); cursor: pointer; white-space: nowrap; }
@@ -87,7 +87,7 @@ mark { background: rgba(255, 208, 0, .35); color: inherit; border-radius: 2px; }
 .tab .x:hover { background: var(--hover); opacity: 1; }
 #tabbar .tb { width: 36px; display: grid; place-items: center; color: var(--muted); }
 #tabbar .tb:hover { color: var(--text); background: var(--hover); }
-#pane { flex: 1; overflow: auto; position: relative; }
+#pane { flex: 1; min-height: 0; overflow: auto; position: relative; }
 #statusbar { flex: none; display: flex; justify-content: flex-end; gap: 14px; padding: 3px 12px; color: var(--faint); font-size: 12px; border-top: 1px solid var(--border); background: var(--bg1); }
 
 .note { max-width: 780px; margin: 0 auto; padding: 36px 40px 120px; }
