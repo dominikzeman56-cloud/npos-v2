@@ -9,6 +9,7 @@
 | `npm start` (ve `tools/vault-app`) | živý server na `http://localhost:4747` |
 | `npm test` | testy serveru a knihoven (`node --test`, bez sítě a bez skutečného vaultu) |
 | `node export-static.mjs` | export do `site/` (poznámky, indexy; bez plných staveb presetů) |
+| `npm run deploy` | export, nasazení na Vercel **z kopie mimo git repo** a kontrola, že web bez hesla vrací 401 (`-- --builds` přidá stavby presetů) |
 | `node export-static.mjs --builds` | totéž + `data/builds/<id>.json` (stavby presetů z placených packů, jen se souhlasem majitele) |
 
 Proměnné prostředí: `VAULT_PATH` (cesta ke vaultu, výchozí `D:\ObsidianVault`), `PORT` (výchozí 4747), `VAULT_IGNORE` (složky vynechané z indexu, oddělené čárkou; výchozí viz `lib/vault-index.mjs`). Heslo sdíleného webu je `VAULT_PASSWORD` na Vercelu (bez něj web odmítá vše, fail-closed).
@@ -38,6 +39,8 @@ Index se přestaví automaticky po změně souboru ve vaultu (sledování soubor
 `site/` obsahuje stránky, `data/vault.json` (index + poznámky + tagy + graf), `data/presets.json`, `data/next-step.json` a volitelně `data/builds/`. Z exportu se odstraňují lokální cesty (`D:\…`, viz `lib/scrub-paths.mjs`). Složky `workshop videos` a `ai-memory-vault` se nevyvážejí, stejně tak poznámky s `share: false`.
 
 Přístup na Vercelu hlídá `deploy/middleware.js` (Basic Auth proti `VAULT_PASSWORD`).
+
+Nasazuj přes `npm run deploy`: `vercel deploy` uvnitř git repa připojí autora posledního commitu a Vercel nasazení zablokuje, pokud autor není členem projektu (stav `Blocked`). Skript proto nasazuje z dočasné kopie `site/` bez gitu.
 
 ## Stránky
 
