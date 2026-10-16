@@ -1,0 +1,135 @@
+{
+  "k": 7,
+  "features": [
+    "rms_db",
+    "crest_db",
+    "band_sub_pct",
+    "band_low_pct",
+    "band_mid_pct",
+    "band_high_pct",
+    "band_air_pct",
+    "centroid_hz",
+    "rolloff85_hz",
+    "harmonic_pct",
+    "am_depth",
+    "side_minus_mid_db",
+    "upper_db",
+    "upper_centroid_hz",
+    "upper_flatness",
+    "upper_motion",
+    "upper_flux",
+    "attack",
+    "c4_rms_db",
+    "c4_band_low_pct",
+    "c4_band_mid_pct",
+    "c4_band_high_pct",
+    "c4_centroid_hz",
+    "c4_harmonic_pct",
+    "c4_upper_flatness",
+    "c4_upper_motion",
+    "c4_side_minus_mid_db"
+  ],
+  "family": {
+    "n": 667,
+    "accuracy": 0.819,
+    "majority_baseline": 0.679,
+    "balanced_accuracy": 0.586,
+    "recall": {
+      "bass": 0.954,
+      "fx": 0.111,
+      "perc": 0.754,
+      "tonal": 0.523
+    },
+    "precision": {
+      "bass": 0.849,
+      "fx": 0.75,
+      "perc": 0.878,
+      "tonal": 0.648
+    },
+    "confusion": {
+      "bass": {
+        "bass": 432,
+        "tonal": 19,
+        "perc": 2
+      },
+      "fx": {
+        "bass": 11,
+        "tonal": 12,
+        "fx": 3,
+        "perc": 1
+      },
+      "perc": {
+        "tonal": 6,
+        "perc": 43,
+        "bass": 8
+      },
+      "tonal": {
+        "perc": 3,
+        "tonal": 68,
+        "bass": 58,
+        "fx": 1
+      }
+    },
+    "counts": {
+      "bass": 453,
+      "tonal": 130,
+      "fx": 27,
+      "perc": 57
+    }
+  },
+  "bass_subtype": {
+    "n": 432,
+    "accuracy": 0.815,
+    "majority_baseline": 0.822,
+    "balanced_accuracy": 0.226,
+    "recall": {
+      "bass": 0.989,
+      "neuro": 0.0,
+      "reese": 0.0,
+      "stab": 0.0,
+      "sub": 0.143
+    },
+    "precision": {
+      "bass": 0.834,
+      "neuro": 0.0,
+      "reese": 0.0,
+      "stab": 0.0,
+      "sub": 0.25
+    },
+    "confusion": {
+      "bass": {
+        "bass": 351,
+        "reese": 1,
+        "neuro": 1,
+        "sub": 2
+      },
+      "neuro": {
+        "bass": 26,
+        "sub": 1
+      },
+      "reese": {
+        "bass": 27,
+        "stab": 2
+      },
+      "stab": {
+        "bass": 11,
+        "reese": 3
+      },
+      "sub": {
+        "bass": 6,
+        "sub": 1
+      }
+    },
+    "counts": {
+      "reese": 29,
+      "sub": 7,
+      "bass": 355,
+      "neuro": 27,
+      "stab": 14
+    }
+  },
+  "bass_subtype_trusted": [],
+  "rows": 937,
+  "unlabeled_name": 270,
+  "note": "Validace = leave-one-out nad kotvami z názvu (hypothesis); duplikáty se nepočítají jako sousedé."
+}

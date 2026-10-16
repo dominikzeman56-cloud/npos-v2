@@ -5,7 +5,7 @@ Vstup: `data/presets/audio/*.jsonl` (deskriptory z `render_preset.py`) + role z 
 Postup: kNN (k sousedů, z-skóre deskriptorů) natrénované na presetech, jejichž název roli nese; pro každý preset
 navrhne rodinu (bass / tonal / perc / fx) a u basů podtyp, **jen pokud ho křížová validace odliší líp než náhoda**.
 
-Pravdivost: deskriptory jsou `measured` (jen pro protokol renderu: jedna nota E1), role ze zvuku je `estimated`
+Pravdivost: deskriptory jsou `measured` (jen pro protokol renderu: nota E1, volitelně i C4 z `audio-c4/`), role ze zvuku je `estimated`
 (statistický odhad z kotev, které samy pocházejí z názvu = hypothesis). Potvrzuje člověk poslechem.
 
 Výstup: `data/presets/roles/audio-roles.jsonl` (řádek na preset) a `data/presets/roles/eval.json` (přesnost, záměny).
@@ -36,6 +36,10 @@ FEATURES = [("rms_db", None), ("crest_db", None), ("band_sub_pct", None), ("band
             ("harmonic_pct", None), ("am_depth", "log1p"), ("side_minus_mid_db", "clip"), ("upper_db", None),
             ("upper_centroid_hz", "log"), ("upper_flatness", None), ("upper_motion", "log1p"),
             ("upper_flux", "log1p"), ("attack", None)]
+# z renderu na C4 (audio-c4/): leady a pady se posuzují ve své poloze, ne na E1
+FEATURES_C4 = [("rms_db", None), ("band_low_pct", None), ("band_mid_pct", None), ("band_high_pct", None),
+               ("centroid_hz", "log"), ("harmonic_pct", None), ("upper_flatness", None), ("upper_motion", "log1p"),
+               ("side_minus_mid_db", "clip")]
 
 
 def load_jsonl(p: Path) -> list[dict]:
@@ -44,6 +48,9 @@ def load_jsonl(p: Path) -> list[dict]:
 
 def load(root: Path = PRESETS) -> tuple[list[dict], dict[str, dict]]:
     audio = [r for f in sorted((root / "audio").glob("*.jsonl")) for r in load_jsonl(f)]
+    c4 = {r["id"]: r["audio"] for f in sorted((root / "audio-c4").glob("*.jsonl")) for r in load_jsonl(f)}
+    for r in audio:
+        r["audio_c4"] = c4.get(r["id"])
     meta: dict[str, dict] = {}
     for d in ("index", "fxp"):
         for f in sorted((root / d).glob("*.jsonl")):
@@ -52,9 +59,16 @@ def load(root: Path = PRESETS) -> tuple[list[dict], dict[str, dict]]:
     return audio, meta
 
 
-def vector(a: dict[str, Any]) -> list[float | None]:
+def vector(a: dict[str, Any], c4: dict[str, Any] | None = None, use_c4: bool = False) -> list[float | None]:
+    out = _vec(a, FEATURES)
+    if use_c4:
+        out += _vec(c4 or {}, FEATURES_C4) if c4 and not c4.get("silent") else [None] * len(FEATURES_C4)
+    return out
+
+
+def _vec(a: dict[str, Any], spec: list[tuple[str, str | None]]) -> list[float | None]:
     out: list[float | None] = []
-    for k, tr in FEATURES:
+    for k, tr in spec:
         if k == "attack":
             out.append(1.0 if a.get("window") == "attack" else 0.0)
             continue
@@ -130,7 +144,8 @@ def evaluate(pred: list[tuple[str | None, float]], labels: list[str | None]) -> 
 def run(k: int = 7, root: Path = PRESETS) -> tuple[list[dict], dict[str, Any]]:
     audio, meta = load(root)
     rows = [r for r in audio if not r["audio"].get("silent") and r["id"] in meta]
-    X = matrix([vector(r["audio"]) for r in rows])
+    use_c4 = any(r.get("audio_c4") for r in rows)
+    X = matrix([vector(r["audio"], r.get("audio_c4"), use_c4) for r in rows])
     name_role = [meta[r["id"]].get("role", "other") for r in rows]
     fam = [FAMILY.get(x) for x in name_role]
     fam_pred = knn(X, fam, k)
@@ -152,8 +167,8 @@ def run(k: int = 7, root: Path = PRESETS) -> tuple[list[dict], dict[str, Any]]:
                     "family_audio": fp, "family_score": fs,
                     "bass_role_audio": sp if sp in trusted else None, "bass_role_score": ss if sp in trusted else None,
                     "agree": None if fam[i] is None else fam[i] == fp,
-                    "confidence": "estimated", "basis": f"render_{r['protocol']['note_name']}+knn{k}"})
-    ev = {"k": k, "features": [f for f, _ in FEATURES], "family": ev_fam, "bass_subtype": ev_sub,
+                    "confidence": "estimated", "basis": f"render_E1{'+C4' if use_c4 else ''}+knn{k}"})
+    ev = {"k": k, "features": [f for f, _ in FEATURES] + ([f"c4_{f}" for f, _ in FEATURES_C4] if use_c4 else []), "family": ev_fam, "bass_subtype": ev_sub,
           "bass_subtype_trusted": trusted, "rows": len(out),
           "unlabeled_name": sum(1 for x in fam if x is None),
           "note": "Validace = leave-one-out nad kotvami z názvu (hypothesis); duplikáty se nepočítají jako sousedé."}
