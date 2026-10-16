@@ -9,7 +9,8 @@ Pravidla (BLUEPRINT 7.1: povolený offline zápis, ne náhrada sound designu, ne
   - výstup jen mimo repo nebo do `data/presets/_local/` (gitignored); odvozeno z placených packů, nikdy se nenahrává ani necommituje,
   - metadata: `derived_from`, mutované parametry, `confidence: hypothesis`; poslechem ho potvrdí jen člověk,
   - mutuje se jen to, co už preset obsahuje v `plainParams` a co je spojité: parametr musí mít v korpusu aspoň 8 různých hodnot a
-    nesmí být celočíselný (oktávy, počty hlasů), nesmí to být master volume, počet hlasů, oversampling ani tvar křivek obálek,
+    nesmí být (z 98 % a víc) celočíselný ani volba (oktávy, počty hlasů, výška), nesmí to být master volume, počet hlasů, oversampling ani tvar křivek obálek,
+  - nuly (vypnuto) a modulace, které míří na výšku, se nemění;
   - nová hodnota = stará + N(0, spread · šířka), šířka = rozsah p10–p90 korpusu rozšířený o původní hodnotu; výsledek zůstává v tomto
     rozšířeném rozsahu a nemění znaménko ani neklesne pod 10 % původní velikosti (neumlčí oscilátor, neobrátí modulaci),
   - rozsah se bere z presetů stejné role (od 10 kusů); co role nepokrývá, doplní celý korpus,
@@ -17,7 +18,8 @@ Pravidla (BLUEPRINT 7.1: povolený offline zápis, ne náhrada sound designu, ne
 Použití: py -3.12 tools/preset_seed.py --roots "<složka s .SerumPreset>" --role bass --n 3 --seed 1 --out "<složka User/Generated>"
          [--from-id ID] [--mutate 4] [--spread 0.25] [--check]
          --check vyrenderuje zdroj a mutant (potřebuje lokálně pedalboard a plugin), vypíše změnu deskriptorů a zahodí mutanty,
-         které se nezměnily, umlkly, změnily hlasitost o > 6 dB nebo posunuly těžiště spektra > 3×.
+         které umlkly, změnily hlasitost o > 6 dB nebo posunuly těžiště spektra > 3×. Nezměněný mutant tím nepoznáš (render není bitově
+         opakovatelný kvůli náhodné fázi); mutant bez jediné změny se zahodí už před renderem.
 Prostředí: NPOS_SERUM_PRESETS (složky s presety, oddělené středníkem na Windows) nahradí --roots, NPOS_SERUM_OUT nahradí --out.
 Preset, který v indexu není (cizí složka, vlastní presety), dostane roli z názvu souboru stejnými pravidly jako index_presets.py.
 --list-roles vypíše JSON {role: počet} a skončí, --json vypíše na konci JSON se seznamem souborů.
@@ -31,6 +33,7 @@ import argparse
 import collections
 import hashlib
 import json
+import math
 import os
 import random
 import re
@@ -48,6 +51,8 @@ PRESETS = REPO / "data" / "presets"
 LOCAL = PRESETS / "_local"
 MIN_DISTINCT = 8      # tolik různých pozorovaných hodnot musí parametr mít, aby šel mutovat (jinak je to volba nebo režim)
 NEVER = {"kParamMasterVolume", "kParamPolyCount", "kParamS1Compatibility", "kParamOversampling"}
+DISCRETE = {"kParamOctave", "kParamUnison", "kParamPitch", "kParamPitchRatio", "kParamCoarsePit", "kParamKeyZoneMin", "kParamKeyZoneMax"}   # celočíselné volby
+PITCH_DEST = {"kParamCoarsePit", "kParamMasterTuning", "kParamFine", "kParamOctave", "kParamPitch", "kParamShift"}   # modulace výšky: změna by přeladila preset
 NEVER_PREFIX = ("kParamCurve",)   # tvary obálek: kdyby se mutovaly, tvořily by třetinu změn a nejméně slyšitelnou
 KEEP_FRACTION = 0.1   # mutace nesmí zmenšit velikost nenulového parametru pod 10 % původní hodnoty
 
@@ -74,9 +79,10 @@ def build_ranges(presets: list[dict[str, Any]]) -> dict[tuple[str, str], tuple[f
                 obs[(range_kind(mod), k)].append(float(v))
     out = {}
     for key, vals in obs.items():
-        if key[1] in NEVER or key[1].startswith(NEVER_PREFIX):
+        if key[1] in NEVER or key[1] in DISCRETE or key[1].startswith(NEVER_PREFIX):
             continue
-        if len(set(round(x, 6) for x in vals)) < MIN_DISTINCT or all(x == round(x) for x in vals):   # volba, režim, celé číslo
+        whole = sum(1 for x in vals if x == round(x)) / len(vals)
+        if len(set(round(x, 6) for x in vals)) < MIN_DISTINCT or whole >= 0.98:   # volba, režim, celé číslo (pár zatoulaných desetinných hodnot to nezmění)
             continue
         lo, hi = np.percentile(vals, [10, 90])
         if hi > lo:
@@ -115,7 +121,11 @@ def mutate(cb: dict[str, Any], ranges: dict[tuple[str, str], tuple[float, float]
     """Změní nejvýš k parametrů v místě (cb se upraví) a bere kandidáty, dokud nenastane k skutečných změn nebo nedojdou.
     Nová hodnota = stará + N(0, spread · (hi − lo)), kde lo a hi jsou p10 a p90 korpusu rozšířené o původní hodnotu; výsledek
     zůstává v [lo, hi], nemění znaménko a nesmí klesnout pod 10 % původní velikosti."""
-    cand = [(m, key, v) for m, key, v in sio.plain_params(cb) if is_num(v) and (range_kind(m), key) in ranges]
+    def pitch_slot(m: str) -> bool:      # amount modulace, která míří na výšku, by preset přeladila
+        return m.startswith("ModSlot") and isinstance(cb.get(m), dict) and cb[m].get("destModuleParamName") in PITCH_DEST
+
+    cand = [(m, key, v) for m, key, v in sio.plain_params(cb)
+            if is_num(v) and float(v) != 0.0 and not pitch_slot(m) and (range_kind(m), key) in ranges]   # nula = vypnuto, nezapínáme
     rng.shuffle(cand)
     done: list[dict[str, Any]] = []
     for mod, key, old in cand:
@@ -133,7 +143,7 @@ def mutate(cb: dict[str, Any], ranges: dict[tuple[str, str], tuple[float, float]
         new = float(np.clip(old_f + rng.gauss(0.0, spread * (hi - lo)), lo, hi))
         if isinstance(old, sio.F32):       # zachovat šířku uloženého čísla (float32), jinak se preset zvětší a liší od Serum
             new = float(np.float32(new))
-        if new == old_f:
+        if new == old_f or not math.isfinite(new):
             continue
         cb[mod]["plainParams"][key] = type(old)(new)
         done.append({"module": mod, "param": key, "old": round(old_f, 6), "new": round(new, 6)})
@@ -151,6 +161,12 @@ def make_one(meta: dict[str, Any], cb: dict[str, Any], derived_from: str, role: 
     m2["presetDescription"] = f"Odvozeno z '{meta.get('presetName', '?')}' ({meta.get('presetAuthor') or 'autor neuveden'})"
     m2["presetComment"] = f"derived_from {derived_from}; {len(muts)} parametrů zmutováno; hypothesis, neposlechnuto"
     m2["tags"] = list(dict.fromkeys(list(meta.get("tags") or []) + ["Generated"]))
+    m2.pop("presetAuthorLocked", None)
+    for k in ("presetName", "presetAuthor", "presetDescription", "tags"):   # tělo musí říkat totéž co hlavička, jinak se po uložení v Serum vrátí původní autor
+        if k in cb2:
+            cb2[k] = m2[k]
+    if "presetAuthorLocked" in cb2:
+        cb2["presetAuthorLocked"] = False
     log = {"name": label, "derived_from": derived_from, "role": role, "mutations": muts, "confidence": "hypothesis"}
     return sio.write_preset(m2, cb2), log
 
@@ -193,7 +209,14 @@ def scan_rows(roots: list[Path], index: list[dict[str, Any]]) -> list[tuple[dict
                     role = "other"
                 row = {"id": "local-" + hashlib.md5(str(f.resolve()).encode("utf-8")).hexdigest()[:12], "role": role, "name": f.stem}
             out.append((row, f))
-    return out
+    seen: set[Path] = set()                # překrývající se --roots by jinak započítaly preset dvakrát
+    uniq = []
+    for row, f in out:
+        r = f.resolve()
+        if r not in seen:
+            seen.add(r)
+            uniq.append((row, f))
+    return uniq
 
 
 MAX_DECODE = 200   # nejvýš tolik presetů role a tolik ostatních se dekóduje (~30 ms na soubor), ať velká složka netrvá minuty
@@ -252,6 +275,13 @@ def parse_plan(text: str) -> dict[str, int]:
     return plan
 
 
+def _spread(text: str) -> float:
+    v = float(text)
+    if not math.isfinite(v) or not 0 < v <= 1:
+        raise argparse.ArgumentTypeError("spread musí být číslo v (0, 1]")
+    return v
+
+
 def main(argv: list[str] | None = None) -> int:
     for s in (sys.stdout, sys.stderr):
         try:
@@ -270,7 +300,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--export-seeds", type=Path, help="zkopírovat malou sadu semínek do této složky a skončit")
     p.add_argument("--seed-plan", default="bass=12,lead=10,stab=8", help="kolik semínek které role (role=počet, oddělené čárkou)")
     p.add_argument("--json", action="store_true", help="na konci vypsat JSON se seznamem vzniklých souborů")
-    p.add_argument("--spread", type=float, default=0.25, help="síla mutace jako zlomek rozsahu (0,25 jemná, 0,4–0,5 výrazná)")
+    p.add_argument("--spread", type=_spread, default=0.25, help="síla mutace jako zlomek rozsahu (0,25 jemná, 0,4–0,5 výrazná)")
     p.add_argument("--check", action="store_true", help="vyrenderovat zdroj a mutant a zahodit nepovedené (viz začátek souboru)")
     a = p.parse_args(argv)
     if not a.roots and os.environ.get("NPOS_SERUM_PRESETS"):

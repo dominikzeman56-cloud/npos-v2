@@ -190,3 +190,39 @@ def test_seed_plan_parsing_and_diverse_picking(tmp_path):
     assert len(picked) == 4 and set(names) == {"A", "B", "C"}          # střídá složky, nebere jednu dokola
     assert not any(f in (big, gen, kit) for _, f in picked)             # obří soubory, vlastní výstupy a kity ne
     assert [f for _, f in ps.pick_seeds(items, {"bass": 4})] == [f for _, f in picked]   # deterministické
+
+
+def test_tolerant_integer_test_and_denylist():
+    cs = []
+    for i in range(60):
+        cs.append({"Oscillator1": {"plainParams": {"kParamUnison": float(2 + i % 12) if i != 3 else 3.4, "kParamPan": 0.01 * i,
+                                                  "kParamOctave": float(i % 9 - 4) + (0.3 if i == 5 else 0.0)}}})
+    r = ps.build_ranges(cs)
+    assert ("Oscillator", "kParamUnison") not in r and ("Oscillator", "kParamOctave") not in r and ("Oscillator", "kParamPan") in r
+
+
+def test_zero_pitch_destination_and_nan_are_left_alone():
+    cs = [{"ModSlot0": {"plainParams": {"kParamAmount": 5.0 + 1.37 * i}}, "Oscillator0": {"plainParams": {"kParamVolume": 0.1 + 0.01 * i}},
+           "LFO0": {"plainParams": {"kParamRate": 0.5 + 1.13 * i}}} for i in range(30)]
+    r = ps.build_ranges(cs)
+    cb = {"ModSlot0": {"destModuleParamName": "kParamMasterTuning", "plainParams": {"kParamAmount": 7.0}},
+          "Oscillator0": {"plainParams": {"kParamVolume": 0.0}}, "LFO0": {"plainParams": {"kParamRate": 5.0}}}
+    muts = ps.mutate(cb, r, random.Random(1), k=4, spread=0.5)
+    assert [m["param"] for m in muts] == ["kParamRate"]                   # amount na výšku a vypnutý oscilátor zůstaly
+    assert cb["ModSlot0"]["plainParams"]["kParamAmount"] == 7.0 and cb["Oscillator0"]["plainParams"]["kParamVolume"] == 0.0
+    assert ps.mutate({"LFO0": {"plainParams": {"kParamRate": 5.0}}}, r, random.Random(1), k=1, spread=float("nan")) == []
+    with pytest.raises(Exception):
+        ps._spread("nan")
+
+
+def test_body_identity_matches_header_and_scan_dedupes(tmp_path):
+    r = ps.build_ranges(corpus())
+    cb = preset(0.3)
+    cb.update({"presetName": "Orig", "presetAuthor": "Someone", "presetDescription": "x", "tags": ["a"], "presetAuthorLocked": True})
+    blob, _ = ps.make_one({"fileType": "SerumPreset", "presetName": "Orig", "presetAuthor": "Someone", "presetAuthorLocked": True, "tags": ["a"]},
+                          cb, "id-1", "bass", r, random.Random(2), 2, "GEN bass s2-1")
+    m, body = sio.read_preset(blob)
+    assert body["presetName"] == m["presetName"] == "GEN bass s2-1" and body["presetAuthor"] == "NPOS generated" and "presetAuthorLocked" not in m
+    f = tmp_path / "BS a.SerumPreset"
+    f.write_bytes(b"x")
+    assert len(ps.scan_rows([tmp_path, tmp_path], [])) == 1
