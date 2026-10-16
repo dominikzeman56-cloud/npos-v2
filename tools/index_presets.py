@@ -29,6 +29,7 @@ import analyze_preset as ap  # noqa: E402
 # (funkce vrstvy, regex na jméno) — první shoda vyhrává
 NAME_RULES = [
     ("other", r"kick|snare|clap|drums|perc|hat"),
+    ("body", r"_bass_|preset bass "),  # "<AUTOR>_Bass_<název>": po Bass je jen jméno zvuku
     ("fx", r"riser|buildup|scream|drunk|breathfx|foley|sweep|impact"),
     ("pad", r"pad|atmos|drone|strings|soft|chord"),
     ("lead", r"lead|lazer|robot|idiot|funky|pulse|pluck|(^|[\s_])ld([\s_]|$)"),
@@ -97,7 +98,7 @@ def cues(a: dict[str, Any]) -> dict[str, Any]:
                        or any(len(v) > 1 for v in fine_by_oct.values()),
         "lfo_to_filter": any(m["source"].startswith("LFO") and m["dest_module"] == "VoiceFilter" for m in r["modulation"]),
         "mod_slots": len(r["modulation"]),
-        "mono": r["voice"].get("kParamMonoToggle") == 1.0,
+        "mono": r["voice"].get("kParamMonoToggle") == 1.0 or r["voice"].get("kParamPolyCount") == 1.0,  # převedené .fxp nesou jen PolyCount
         "fx_count": len(r["fx"]),
     }
 
