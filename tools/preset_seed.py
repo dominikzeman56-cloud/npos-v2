@@ -68,9 +68,11 @@ def mutate(cb: dict[str, Any], ranges: dict[tuple[str, str], tuple[float, float]
         lo, hi = ranges[(sio.module_kind(mod), key)]
         lo, hi = min(lo, float(old)), max(hi, float(old))
         new = float(np.clip(old + rng.gauss(0.0, spread * (hi - lo)), lo, hi))
+        if isinstance(old, sio.F32):       # zachovat šířku uloženého čísla (float32), jinak se preset zvětší a liší od Serum
+            new = float(np.float32(new))
         if new == float(old):
             continue
-        cb[mod]["plainParams"][key] = new
+        cb[mod]["plainParams"][key] = type(old)(new)
         done.append({"module": mod, "param": key, "old": round(float(old), 6), "new": round(new, 6)})
     return done
 

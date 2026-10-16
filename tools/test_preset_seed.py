@@ -33,6 +33,28 @@ def test_roundtrip_recomputes_hash_and_keeps_content():
         sio.read_preset(b"nope")
 
 
+def test_codec_keeps_float32_width_and_is_byte_exact():
+    cb = {"a": {"plainParams": {"x": sio.F32(0.25), "y": 0.1, "z": 7, "n": -3, "s": "t", "b": True}}, "l": [sio.F32(1.5), 2, None],
+          "big": {str(i): i for i in range(300)}}
+    parts: list[bytes] = []
+    sio._encode(cb, parts)
+    raw = b"".join(parts)
+    back, end = sio._decode(raw)
+    assert end == len(raw) and back == cb
+    assert isinstance(back["a"]["plainParams"]["x"], sio.F32) and not isinstance(back["a"]["plainParams"]["y"], sio.F32)
+    parts2: list[bytes] = []
+    sio._encode(back, parts2)
+    assert b"".join(parts2) == raw
+    assert raw[raw.index(b"\x61x") + 2] == 0xFA and raw[raw.index(b"\x61y") + 2] == 0xFB  # x je float32, y float64
+
+
+def test_mutated_float32_stays_float32():
+    cb = {"VoiceFilter0": {"plainParams": {"kParamFreq": sio.F32(0.3)}}}
+    cs = [{"VoiceFilter0": {"plainParams": {"kParamFreq": sio.F32(0.02 * i)}}} for i in range(30)]
+    ms = ps.mutate(cb, ps.build_ranges(cs), random.Random(1), k=1)
+    assert ms and isinstance(cb["VoiceFilter0"]["plainParams"]["kParamFreq"], sio.F32)
+
+
 def test_plain_params_tolerates_odd_module_shapes():
     cb = {"A": {"plainParams": "text"}, "B": "x", "C": {"plainParams": None}, "D": {"plainParams": {"k": 1.0}}, "E": 5}
     assert list(sio.plain_params(cb)) == [("D", "k", 1.0)]
