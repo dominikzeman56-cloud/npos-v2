@@ -18,6 +18,11 @@ Použití: py -3.12 tools/preset_seed.py --roots "<složka s .SerumPreset>" --ro
          [--from-id ID] [--mutate 4] [--spread 0.25] [--check]
          --check vyrenderuje zdroj a mutant (potřebuje lokálně pedalboard a plugin), vypíše změnu deskriptorů a zahodí mutanty,
          které se nezměnily, umlkly, změnily hlasitost o > 6 dB nebo posunuly těžiště spektra > 3×.
+Prostředí: NPOS_SERUM_PRESETS (složky s presety, oddělené středníkem na Windows) nahradí --roots, NPOS_SERUM_OUT nahradí --out.
+Preset, který v indexu není (cizí složka, vlastní presety), dostane roli z názvu souboru stejnými pravidly jako index_presets.py.
+--list-roles vypíše JSON {role: počet} a skončí, --json vypíše na konci JSON se seznamem souborů.
+--export-seeds DIR --seed-plan bass=12,lead=10,stab=8 zkopíruje z --roots malou sadu semínek (rozmanitou, bez obřích souborů) do DIR;
+generování nad 20–30 presety je rychlé a sadu si každý poskládá ze svých vlastních presetů. DIR musí splnit stejné pravidlo jako --out.
 Návratový kód: 0 = vzniklo všech --n souborů, 1 = méně, 2 = chyba prostředí.
 """
 from __future__ import annotations
@@ -26,6 +31,7 @@ import argparse
 import collections
 import hashlib
 import json
+import os
 import random
 import re
 import sys
@@ -169,25 +175,81 @@ def free_path(out: Path, stem: str) -> Path:
     return p
 
 
-def load_corpus(roots: list[Path], index: list[dict[str, Any]]) -> tuple[list[tuple[dict, Path, dict]], collections.Counter]:
-    """Soubory z `roots` spárované s řádky indexu podle (složka, jméno souboru). Nečitelné soubory se spočítají podle chyby."""
+def scan_rows(roots: list[Path], index: list[dict[str, Any]]) -> list[tuple[dict, Path]]:
+    """Soubory z `roots` s řádkem indexu podle (složka, jméno souboru), jinak s rolí z názvu. Nic se nedekóduje (rychlé)."""
     want = {(r.get("group", ""), r["file"]): r for r in index}
-    out, skipped = [], collections.Counter()
+    out: list[tuple[dict, Path]] = []
     for root in roots:
         files = sorted(root.rglob("*.SerumPreset")) if root.is_dir() else [root]
         for f in files:
             parts = f.relative_to(root).parts if root.is_dir() else ()
             group = parts[0] if len(parts) > 1 else (root.parent.name if not root.is_dir() else "")
             row = want.get((group, f.name))
-            if row is None:
-                continue
-            try:
-                _meta, cb = sio.read_preset(f)
-            except Exception as e:  # noqa: BLE001 - poškozený soubor se přeskočí, ale spočítá
-                skipped[type(e).__name__] += 1
-                continue
-            out.append((row, f, cb))
+            if row is None:                    # cizí složka nebo vlastní preset: role z názvu, id z cesty
+                try:
+                    from index_presets import role_of
+                    role = role_of(f.stem)
+                except Exception:  # noqa: BLE001 - bez pravidel jen neznámá role
+                    role = "other"
+                row = {"id": "local-" + hashlib.md5(str(f.resolve()).encode("utf-8")).hexdigest()[:12], "role": role, "name": f.stem}
+            out.append((row, f))
+    return out
+
+
+MAX_DECODE = 200   # nejvýš tolik presetů role a tolik ostatních se dekóduje (~30 ms na soubor), ať velká složka netrvá minuty
+
+
+def load_corpus(roots: list[Path], index: list[dict[str, Any]], want_role: str | None = None, from_id: str | None = None,
+                cap: int = MAX_DECODE) -> tuple[list[tuple[dict, Path, dict]], collections.Counter]:
+    """Dekóduje presety hledané role (nebo semínko) a vzorek ostatních pro rozsahy. Výběr je deterministický (podle otisku cesty).
+    Nečitelné soubory se spočítají podle chyby."""
+    items = scan_rows(roots, index)
+    key = lambda it: hashlib.md5(str(it[1]).encode("utf-8")).hexdigest()  # noqa: E731
+    mine = sorted([it for it in items if (from_id and it[0]["id"] == from_id) or (want_role and it[0].get("role") == want_role)], key=key)[:cap]
+    ids = {it[0]["id"] for it in mine}
+    chosen = mine + sorted([it for it in items if it[0]["id"] not in ids], key=key)[:cap]
+    out, skipped = [], collections.Counter()
+    for row, f in chosen:
+        try:
+            _meta, cb = sio.read_preset(f)
+        except Exception as e:  # noqa: BLE001 - poškozený soubor se přeskočí, ale spočítá
+            skipped[type(e).__name__] += 1
+            continue
+        out.append((row, f, cb))
     return out, skipped
+
+
+SEED_SKIP = re.compile(r"^GEN |\bkit\b", re.I)   # vlastní výstupy generátoru a bicí kity (role z názvu je u nich špatně)
+MAX_SEED_BYTES = 3_000_000   # obří soubory nesou vložené wavetably, nejsou to dobrá semínka a zdržují
+
+
+def pick_seeds(items: list[tuple[dict, Path]], plan: dict[str, int]) -> list[tuple[dict, Path]]:
+    """Pro každou roli z plánu vybere až N presetů střídavě z různých složek (rozmanitost), deterministicky podle otisku cesty."""
+    out: list[tuple[dict, Path]] = []
+    for role, n in plan.items():
+        by_group: dict[str, list[tuple[dict, Path]]] = collections.defaultdict(list)
+        for row, f in items:
+            if row.get("role") == role and f.stat().st_size <= MAX_SEED_BYTES and not SEED_SKIP.search(f.stem):
+                by_group[f.parent.name].append((row, f))
+        for g in by_group.values():
+            g.sort(key=lambda it: hashlib.md5(str(it[1]).encode("utf-8")).hexdigest())
+        picked: list[tuple[dict, Path]] = []
+        while len(picked) < n and any(by_group.values()):
+            for g in sorted(by_group):
+                if by_group[g] and len(picked) < n:
+                    picked.append(by_group[g].pop(0))
+        out.extend(picked)
+    return out
+
+
+def parse_plan(text: str) -> dict[str, int]:
+    plan = {}
+    for part in text.split(","):
+        role, _, n = part.partition("=")
+        if not role.strip() or not n.strip().isdigit() or not 1 <= int(n) <= 100:
+            raise ValueError(f"neplatný plán '{part}' (čekám role=počet, např. bass=12,lead=10)")
+        plan[role.strip()] = int(n)
+    return plan
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -197,33 +259,68 @@ def main(argv: list[str] | None = None) -> int:
         except (AttributeError, ValueError):
             pass
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--roots", type=Path, nargs="+", required=True, help="složky s Serum 2 presety (stejné jako při indexaci)")
+    p.add_argument("--roots", type=Path, nargs="+", help="složky s Serum 2 presety (výchozí z NPOS_SERUM_PRESETS)")
     p.add_argument("--role", help="role z názvu (bass, reese, lead, pad, ...)")
     p.add_argument("--from-id", help="konkrétní semínko podle id v indexu")
     p.add_argument("--n", type=int, default=3)
     p.add_argument("--mutate", type=int, default=4, help="kolik parametrů změnit")
     p.add_argument("--seed", type=int, default=1)
-    p.add_argument("--out", type=Path, default=LOCAL / "generated")
+    p.add_argument("--out", type=Path, default=Path(os.environ["NPOS_SERUM_OUT"]) if os.environ.get("NPOS_SERUM_OUT") else LOCAL / "generated")
+    p.add_argument("--list-roles", action="store_true", help="vypsat JSON {role: počet} a skončit")
+    p.add_argument("--export-seeds", type=Path, help="zkopírovat malou sadu semínek do této složky a skončit")
+    p.add_argument("--seed-plan", default="bass=12,lead=10,stab=8", help="kolik semínek které role (role=počet, oddělené čárkou)")
+    p.add_argument("--json", action="store_true", help="na konci vypsat JSON se seznamem vzniklých souborů")
     p.add_argument("--spread", type=float, default=0.25, help="síla mutace jako zlomek rozsahu (0,25 jemná, 0,4–0,5 výrazná)")
     p.add_argument("--check", action="store_true", help="vyrenderovat zdroj a mutant a zahodit nepovedené (viz začátek souboru)")
     a = p.parse_args(argv)
-    if not (a.role or a.from_id):
-        p.error("zadej --role nebo --from-id")
+    if not a.roots and os.environ.get("NPOS_SERUM_PRESETS"):
+        a.roots = [Path(x) for x in os.environ["NPOS_SERUM_PRESETS"].split(os.pathsep) if x]
+    if not a.roots:
+        p.error("zadej --roots nebo nastav NPOS_SERUM_PRESETS")
+    if not (a.role or a.from_id or a.list_roles or a.export_seeds):
+        p.error("zadej --role, --from-id, --list-roles nebo --export-seeds")
     try:
         import zstandard  # noqa: F401 - bez něj nejde číst ani psát presety; ať to selže nahlas
     except ImportError:
         print("chybí zstandard (pip install zstandard); spusť přes py -3.12", file=sys.stderr)
         return 2
-    if not out_dir_ok(a.out):
+    if not a.list_roles and not out_dir_ok(a.out):
         print("výstup musí být mimo repo nebo pod data/presets/_local (odvozeno z placených packů)", file=sys.stderr)
         return 2
     index = [json.loads(line) for f in sorted((PRESETS / "index").glob("*.jsonl"))
              for line in f.read_text(encoding="utf-8").splitlines() if line.strip()]
-    corpus, skipped = load_corpus(a.roots, index)
+    if a.export_seeds:
+        import shutil
+        if not out_dir_ok(a.export_seeds):
+            print("sada semínek musí být mimo repo nebo pod data/presets/_local (kopie placených packů)", file=sys.stderr)
+            return 2
+        try:
+            plan = parse_plan(a.seed_plan)
+        except ValueError as e:
+            print(e, file=sys.stderr)
+            return 2
+        picked = pick_seeds(scan_rows(a.roots, index), plan)
+        a.export_seeds.mkdir(parents=True, exist_ok=True)
+        listing = []
+        for row, f in picked:
+            dst = free_path(a.export_seeds, sio.safe_file_stem(f.stem))
+            shutil.copyfile(f, dst)
+            listing.append({"file": dst.name, "role": row.get("role"), "from_folder": f.parent.name})
+        got = collections.Counter(x["role"] for x in listing)
+        print(f"zkopírováno {len(listing)} semínek do {a.export_seeds}: {dict(got)}")
+        for r, n in plan.items():
+            if got[r] < n:
+                print(f"  role {r}: jen {got[r]} z {n} (v --roots není víc vhodných)", file=sys.stderr)
+        return 0 if listing else 1
+    if a.list_roles:
+        rows = scan_rows(a.roots, index)
+        print(json.dumps(dict(collections.Counter(r.get("role", "other") for r, _ in rows)), ensure_ascii=False))
+        return 0
+    corpus, skipped = load_corpus(a.roots, index, a.role, a.from_id)
     if skipped:
         print(f"nečitelných souborů: {dict(skipped)}", file=sys.stderr)
     if not corpus:
-        print("žádný preset z indexu nenalezen v --roots", file=sys.stderr)
+        print("žádný preset nenalezen v --roots", file=sys.stderr)
         return 1
     ranges = build_ranges([cb for _, _, cb in corpus])
     by_role = build_ranges_by_role(corpus)
@@ -283,6 +380,9 @@ def main(argv: list[str] | None = None) -> int:
             fh.writelines(json.dumps(x, ensure_ascii=False) + "\n" for x in logs)
     if rejected:
         print(f"zahozeno {sum(rejected.values())} mutantů: {dict(rejected)}")
+    if a.json:
+        print(json.dumps({"files": [{"file": x["file"], "derived_from": x["derived_from"], "mutations": len(x["mutations"])} for x in logs],
+                          "rejected": dict(rejected), "requested": a.n}, ensure_ascii=False))
     if kept < a.n:
         print(f"vzniklo jen {kept} z {a.n}", file=sys.stderr)
         return 1

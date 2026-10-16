@@ -23,3 +23,6 @@ _sources/
 
 # Plné analýzy presetů z placených packů (redistribution: none) zůstávají jen lokálně
 data/presets/analyzed/
+
+# Local generator config (paths on the user machine)
+tools/vault-app/.env.local

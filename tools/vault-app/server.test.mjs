@@ -3,6 +3,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import http from 'node:http';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -29,7 +30,7 @@ before(async () => {
   await fs.mkdir(path.join(vault, 'tajne'));
   await fs.writeFile(path.join(vault, 'tajne', 'x.md'), '# tajné\n');
   proc = spawn(process.execPath, ['server.mjs'], {
-    cwd: HERE, env: { ...process.env, VAULT_PATH: vault, PORT: String(PORT), VAULT_IGNORE: 'tajne,.obsidian' }, stdio: 'ignore',
+    cwd: HERE, env: { ...process.env, VAULT_PATH: vault, PORT: String(PORT), VAULT_IGNORE: 'tajne,.obsidian', NPOS_SERUM_PRESETS: '', NPOS_SERUM_OUT: '' }, stdio: 'ignore',
   });
   await waitUp();
 });
@@ -108,4 +109,36 @@ test('static pages are served', async () => {
     const r = await get(p);
     assert.equal(r.status, 200, p);
   }
+});
+
+// ── místní generátor presetů: obrana proti cizím stránkám a špatným vstupům (bez Pythonu a bez presetů) ──
+const rawReq = (opts, body) => new Promise((resolve, reject) => {
+  const r = http.request({ host: '127.0.0.1', port: PORT, ...opts }, (res) => { let t = ''; res.on('data', (d) => { t += d; }); res.on('end', () => resolve({ status: res.statusCode, body: t })); });
+  r.on('error', reject); if (body) r.write(body); r.end();
+});
+const post = (body, headers = {}) => rawReq({ path: '/api/generator/run', method: 'POST', headers: { Host: `127.0.0.1:${PORT}`, 'Content-Type': 'application/json', 'X-NPOS': '1', ...headers } }, JSON.stringify(body));
+
+test('generator status says it is not configured when no folders are set', async () => {
+  const r = await rawReq({ path: '/api/generator/status', headers: { 'X-NPOS': '1' } });
+  assert.equal(r.status, 200);
+  const j = JSON.parse(r.body);
+  assert.equal(j.configured, false); assert.equal(j.ready, false);
+});
+
+test('generator refuses foreign Host and Origin and a POST without the custom header or JSON type', async () => {
+  assert.equal((await rawReq({ path: '/api/generator/status', headers: { Host: 'evil.example:' + PORT } })).status, 403);
+  assert.equal((await post({ role: 'bass' }, { Origin: 'https://evil.example' })).status, 403);
+  assert.equal((await post({ role: 'bass' }, { 'X-NPOS': '0' })).status, 403);
+  assert.equal((await post({ role: 'bass' }, { 'Content-Type': 'text/plain' })).status, 403);
+});
+
+test('generator validates input before anything runs: unknown role, bad id, out-of-range numbers, empty body', async () => {
+  for (const b of [{ role: 'rm -rf' }, { role: 'bass', fromId: '../x' }, { role: 'bass', n: 99 }, { role: 'bass', spread: 5 }, { role: 'bass', seed: -1 }, {}]) {
+    assert.equal((await post(b)).status, 400, JSON.stringify(b));
+  }
+  assert.equal((await post({ role: 'bass', n: 2 })).status, 412);      // validní, ale generátor není nastavený
+});
+
+test('generator pages are served by the local server', async () => {
+  for (const p of ['/generator.html', '/generator.js']) assert.equal((await get(p)).status, 200, p);
 });

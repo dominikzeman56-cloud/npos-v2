@@ -163,3 +163,30 @@ def test_derived_preset_keeps_original_author_in_description():
     blob, log = ps.make_one({"fileType": "SerumPreset", "presetName": "Orig", "presetAuthor": "Someone"}, preset(0.3), "id-1", "bass", r, random.Random(2), 2, "GEN bass s2-1")
     m, _ = sio.read_preset(blob)
     assert "Orig" in m["presetDescription"] and "Someone" in m["presetDescription"] and m["presetAuthor"] == "NPOS generated"
+
+
+def test_seed_plan_parsing_and_diverse_picking(tmp_path):
+    assert ps.parse_plan("bass=12,lead=10,stab=8") == {"bass": 12, "lead": 10, "stab": 8}
+    for bad in ("bass", "bass=0", "bass=x", "=3", "bass=101"):
+        with pytest.raises(ValueError):
+            ps.parse_plan(bad)
+    items = []
+    for g, n in (("A", 6), ("B", 2), ("C", 1)):
+        d = tmp_path / g
+        d.mkdir()
+        for i in range(n):
+            f = d / f"BS {g}{i}.SerumPreset"
+            f.write_bytes(b"x")
+            items.append(({"id": f"{g}{i}", "role": "bass"}, f))
+    big = tmp_path / "A" / "BS huge.SerumPreset"
+    big.write_bytes(b"x" * (ps.MAX_SEED_BYTES + 1))
+    gen = tmp_path / "A" / "GEN bass s1-1.SerumPreset"
+    gen.write_bytes(b"x")
+    kit = tmp_path / "C" / "KIT - 808 Basic Kit.SerumPreset"
+    kit.write_bytes(b"x")
+    items += [({"id": "H", "role": "bass"}, big), ({"id": "G", "role": "bass"}, gen), ({"id": "K", "role": "bass"}, kit)]
+    picked = ps.pick_seeds(items, {"bass": 4})
+    names = [f.parent.name for _, f in picked]
+    assert len(picked) == 4 and set(names) == {"A", "B", "C"}          # střídá složky, nebere jednu dokola
+    assert not any(f in (big, gen, kit) for _, f in picked)             # obří soubory, vlastní výstupy a kity ne
+    assert [f for _, f in ps.pick_seeds(items, {"bass": 4})] == [f for _, f in picked]   # deterministické

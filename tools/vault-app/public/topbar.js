@@ -5,6 +5,7 @@
   var TABS = [
     ['/', 'Kánon'], ['/dashboard.html', 'Dashboard'], ['/presets.html', 'Presety'], ['/trenazer.html', 'Trenažér'],
   ];
+  if (/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) TABS.push(['/generator.html', 'Generátor']);   // zapisuje na disk, jen v místním serveru
   var path = location.pathname.replace(/\/index\.html$/, '/');
   var cur = path === '/dal.html' ? 'Co dál?' : (TABS.filter(function (t) { return t[0] === path; })[0] || [])[1] || '';
   var css = document.createElement('style');

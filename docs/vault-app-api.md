@@ -51,6 +51,7 @@ Nasazuj přes `npm run deploy`: `vercel deploy` uvnitř git repa připojí autor
 | `/dashboard.html` | aktuální track, fáze, poznámky, priority, Co dál?, sessions (stav jen v `localStorage`) |
 | `/presets.html` | prohlížeč a stavba presetů (parametry `?id=&q=&fn=&arch=`) |
 | `/trenazer.html` | výukový trenažér syntézy (Web Audio: wavetable, unison, FM/AM, 2 LFO, filtr, zkreslení) a lekce z kánonu; nic neukládá ani neexportuje, jádro v `public/trainer-*.js`, testy `trainer.test.mjs` |
+| `/generator.html` | **jen místní server**: formulář nad `tools/preset_seed.py` (role, počet, síla, seed). Volá `GET /api/generator/status` a `POST /api/generator/run`; oba přijmou jen `Host` a `Origin` 127.0.0.1 nebo localhost, hlavičku `X-NPOS: 1` a JSON, vstupy se validují a Python se spouští bez shellu. Cesty jsou jen z `NPOS_SERUM_PRESETS` a `NPOS_SERUM_OUT` (`.env.local`, mimo git), výstup nikdy nejde do statického exportu ani na web |
 | `/dal.html` | Co dál? (parametry `?p=fáze&s=situace&q=hledání`) |
 
 Hluboký odkaz na nadpis v poznámce: `/#cesta.md::Text nadpisu` (text nadpisu se hledá přesně, zpětné apostrofy se odstraňují).
@@ -73,3 +74,12 @@ Sessions z Dashboardu se exportují tlačítkem **export** jako pole objektů po
 - `lib/scrub-paths.test.mjs`: odstraňování cest při exportu.
 
 CI (`.github/workflows/ci.yml`) pouští `pytest tools`, `tools/check_repo.py` a `npm test`.
+
+## Místní generátor presetů (jen `node server.mjs`)
+
+1. Dej do složky 20 až 30 vlastních Serum 2 presetů (basy, leady, stabs), nebo ji poskládej z větší složky: `py -3.12 tools/preset_seed.py --roots "<složka>" --export-seeds "<nová složka>" --seed-plan bass=12,lead=10,stab=8`.
+2. Vytvoř `tools/vault-app/.env.local` (je v `.gitignore`) se dvěma řádky: `NPOS_SERUM_PRESETS=<složka se semínky>` a `NPOS_SERUM_OUT=<kam se uloží výsledek>`.
+3. Potřebuješ Python 3.12 s `zstandard` (jiný příkaz nastav v `NPOS_PYTHON`, např. `python3`).
+4. `node tools/vault-app/server.mjs`, pak `http://127.0.0.1:4747/generator.html`.
+
+Výstup patří k presetům, které máš na disku; nesdílej ho. Server poslouchá jen na 127.0.0.1, takže ho z jiného počítače nikdo nevyvolá.

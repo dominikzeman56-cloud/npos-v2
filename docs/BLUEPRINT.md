@@ -188,7 +188,7 @@ Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XM
 **`tools/check_repo.py` kontroluje:** frontmatter každého souboru v `knowledge/` (kontrakt v `knowledge/README.md`) · že každý `source_ids` odkaz vede do `sources.jsonl` · platnost `sources.jsonl` proti `core/source.schema.json` · že `data/tracks/<id>` mají `meta.json`.
 
 **Blocklist (absolutní nulová tolerance):**
-- UI pro produkční rozhodování, dashboard, druhý frontend (výjimka: `tools/vault-app`, jen čtení).
+- UI pro produkční rozhodování, dashboard, druhý frontend (výjimka: `tools/vault-app`, jen čtení; od 2026-10-16 smí v místním serveru zapisovat výstup generátoru presetů do složky mimo repo, viz kap. 7.1, a nikdy ve statickém exportu).
 - Stem-separation pipeline (použití stemů, které existují, je povolené).
 - Synth engine pro produkci. **Výjimka (Architekt, 2026-10-16):** výukový trenažér `tools/vault-app/public/trenazer.html`, jednoúčelová stránka Web Audio (oscilátor s wavetable, AM, FM, filtr, LFO, distorze) k učení, jak se parametry projeví. Nic nezapisuje, nevyváží zvuk ani presety, nepřehrává data presetů a nenahrazuje Serum. Receptury v něm nesou míru jistoty a odkaz do kánonu.
 - **Druhý Ableton MCP most** (jediný je Producer Pal); Pal **nezapisuje vnitřní parametry Serum** (zeď Live API); Serum patche jsou binární stav → offline `.SerumPreset` nebo ruční klik.
@@ -237,7 +237,7 @@ Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XM
 - Přidáno: pravidlo pravdivosti, registr zdrojů, `check_repo.py`, schémata `source`, `track-analysis`, `preset-analysis`, protokol měření basového pásma, `basis` a `modulation source`, princip 9.
 - Zastaralé v v1: „Current stage: Skateboard step 1" — kroky 2 a 3 byly dávno hotové.
 
-**v2.3 (2026-10-16)** — kap. 7.1: povolený offline zápis `preset_seed.py` (reálný preset + pár zmutovaných parametrů, výstup jen lokálně). Kap. 9: výjimka z blocklistu pro výukový trenažér syntézy (schválil Architekt v chatu). Nové nástroje: `analyze_fxp_host.py`, `render_preset.py`, `preset_roles.py`, `preset_stats.py`, `check_presets.py`, `serum_preset_io.py`, `preset_seed.py`.
+**v2.3 (2026-10-16)** — vault-app (jen místní server) má stránku `/generator.html`, která spouští `preset_seed.py` nad malou sadou semínek (20 až 30 vlastních presetů) a ukládá výsledek na disk uživatele; Architekt to schválil v chatu; výstup se nenahrává a statický export stránku neobsahuje. kap. 7.1: povolený offline zápis `preset_seed.py` (reálný preset + pár zmutovaných parametrů, výstup jen lokálně). Kap. 9: výjimka z blocklistu pro výukový trenažér syntézy (schválil Architekt v chatu). Nové nástroje: `analyze_fxp_host.py`, `render_preset.py`, `preset_roles.py`, `preset_stats.py`, `check_presets.py`, `serum_preset_io.py`, `preset_seed.py`.
 
 **v2.2 (2026-10-15)** — `knowledge/guides/` (návod na aranž z rozborů), `tools/sync_knowledge.py`, typ `guide` ve frontmatteru. Šablona Ableton: uživatel smazal poznámky o šabloně a označil ji za nedobrou; kap. 8 čeká na rozhodnutí (viz vault `06 Návod na aranž` a `02 Šablona`).
 

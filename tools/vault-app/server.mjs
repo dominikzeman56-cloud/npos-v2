@@ -8,8 +8,10 @@ import { buildIndex, DEFAULT_IGNORE, indexPayload, notePayload, tagsPayload, gra
 import { search } from './public/search-core.js';
 import { loadPresets, loadBuild } from './lib/presets-data.mjs';
 import { loadPool, similar, MODES } from './lib/presets-similar.mjs';
+import { loadEnvFile, genConfig, guard, validate, status as genStatus, generate } from './lib/generator.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
+loadEnvFile(path.join(HERE, '.env.local'));          // volitelné, mimo git: NPOS_SERUM_PRESETS, NPOS_SERUM_OUT, VAULT_PATH
 const VAULT = path.resolve(process.env.VAULT_PATH || 'D:\\ObsidianVault');
 const PORT = Number(process.env.PORT) || 4747;
 const IGNORE = new Set((process.env.VAULT_IGNORE || DEFAULT_IGNORE.join(',')).split(','));
@@ -39,6 +41,12 @@ async function getPool() { // features/audio se mezi dotazy mění jen při nov�
   return pool;
 }
 
+const readBody = (req, max = 10_000) => new Promise((resolve, reject) => {
+  let b = ''; req.on('data', (d) => { b += d; if (b.length > max) { reject(new Error('tělo je příliš velké')); req.destroy(); } });
+  req.on('end', () => resolve(b)); req.on('error', reject);
+});
+let genCache = null, genAt = 0;
+
 const json = (res, data, status = 200) => {
   res.writeHead(status, { 'Content-Type': MIME['.json'], 'Cache-Control': 'no-store' });
   res.end(JSON.stringify(data));
@@ -60,6 +68,23 @@ const server = http.createServer(async (req, res) => {
     const p = url.pathname;
     const q = url.searchParams;
 
+    if (p === '/api/generator/status' || p === '/api/generator/run') {      // jen místní: viz lib/generator.mjs
+      const bad = guard(req, PORT);
+      if (bad) return json(res, { error: bad }, 403);
+      const cfg = genConfig(REPO);
+      if (p === '/api/generator/status') {
+        if (!genCache || Date.now() - genAt > 30_000) { genCache = await genStatus(cfg); genAt = Date.now(); }
+        return json(res, genCache);
+      }
+      if (req.method !== 'POST') return json(res, { error: 'POST' }, 405);
+      let body; try { body = JSON.parse(await readBody(req)); } catch { return json(res, { error: 'neplatný JSON' }, 400); }
+      const v = validate(body);
+      if (v.error) return json(res, { error: v.error }, 400);
+      const st = genCache || await genStatus(cfg);
+      if (!st.ready) return json(res, { error: st.note || 'generátor není nastavený' }, 412);
+      const r = await generate(cfg, v.ok);
+      return json(res, r.body, r.status);
+    }
     if (p === '/api/index') return json(res, indexPayload(idx));
     if (p === '/api/note') {
       const n = idx.notes.get(q.get('path') || '');
