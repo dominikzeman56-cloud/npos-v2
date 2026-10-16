@@ -60,10 +60,16 @@ def descriptors(audio: np.ndarray, protocol: dict | None = None) -> dict[str, An
     seg = x[int((on + t0) * SR):int((on + t1) * SR)]
     mono = seg.mean(axis=1)
     peak = float(np.abs(seg).max()) if len(seg) else 0.0
+    window = "sustain"
+    if peak < 1e-4:   # jednorázové zvuky (kick, snare, hat) doznějí dřív než okno sustainu: změř nástup
+        seg = x[int(on * SR):int((on + 0.4) * SR)]
+        peak = float(np.abs(seg).max()) if len(seg) else 0.0
+        window = "attack"
+        mono = seg.mean(axis=1)
     rms = float(np.sqrt(np.mean(mono ** 2))) if len(mono) else 0.0
-    out: dict[str, Any] = {"peak_db": round(_db(peak), 2), "rms_db": round(_db(rms), 2),
+    out: dict[str, Any] = {"window": window, "peak_db": round(_db(peak), 2), "rms_db": round(_db(rms), 2),
                            "crest_db": round(_db(peak) - _db(rms), 2), "silent": bool(peak < 1e-4)}
-    if out["silent"] or len(mono) < SR // 4:
+    if out["silent"] or len(mono) < SR // 8:
         return out
     win = np.hanning(len(mono))
     spec = np.abs(np.fft.rfft(mono * win)) ** 2
