@@ -61,7 +61,7 @@ if (process.argv.includes('--builds')) {
 }
 
 // UI + vendor libs
-for (const f of ['index.html', 'style.css', 'app.js', 'search-core.js', 'presets.html', 'presets.js', 'dal.html', 'dal.js', 'topbar.js', 'advisor.js', 'dashboard.html', 'dashboard.js', 'skin-samurai.css']) await copy(path.join(HERE, 'public', f), path.join(OUT, f));
+for (const f of ['index.html', 'style.css', 'app.js', 'search-core.js', 'presets.html', 'presets.js', 'dal.html', 'dal.js', 'topbar.js', 'advisor.js', 'dashboard.html', 'dashboard.js', 'skin-samurai.css', 'trenazer.html', 'trenazer.js', 'trainer-core.js', 'trainer-dsp.js', 'trainer-worklet.js']) await copy(path.join(HERE, 'public', f), path.join(OUT, f));
 for (const f of await fs.readdir(path.join(HERE, 'public', 'fonts'))) await copy(path.join(HERE, 'public', 'fonts', f), path.join(OUT, 'fonts', f));
 await copy(path.join(HERE, 'node_modules/markdown-it/dist/markdown-it.min.js'), path.join(OUT, 'vendor/markdown-it.min.js'));
 await copy(path.join(HERE, 'node_modules/d3/dist/d3.min.js'), path.join(OUT, 'vendor/d3.min.js'));

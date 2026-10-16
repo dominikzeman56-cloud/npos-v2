@@ -50,6 +50,7 @@ Nasazuj přes `npm run deploy`: `vercel deploy` uvnitř git repa připojí autor
 | `/` | Kánon (poznámky), levá lišta: Soubory, Hledat, Tagy |
 | `/dashboard.html` | aktuální track, fáze, poznámky, priority, Co dál?, sessions (stav jen v `localStorage`) |
 | `/presets.html` | prohlížeč a stavba presetů (parametry `?id=&q=&fn=&arch=`) |
+| `/trenazer.html` | výukový trenažér syntézy (Web Audio: wavetable, unison, FM/AM, 2 LFO, filtr, zkreslení) a lekce z kánonu; nic neukládá ani neexportuje, jádro v `public/trainer-*.js`, testy `trainer.test.mjs` |
 | `/dal.html` | Co dál? (parametry `?p=fáze&s=situace&q=hledání`) |
 
 Hluboký odkaz na nadpis v poznámce: `/#cesta.md::Text nadpisu` (text nadpisu se hledá přesně, zpětné apostrofy se odstraňují).

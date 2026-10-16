@@ -104,7 +104,7 @@ test('path traversal is refused for static files and /asset', async () => {
 });
 
 test('static pages are served', async () => {
-  for (const p of ['/', '/dashboard.html', '/presets.html', '/dal.html', '/topbar.js']) {
+  for (const p of ['/', '/dashboard.html', '/presets.html', '/dal.html', '/topbar.js', '/trenazer.html', '/trainer-worklet.js']) {
     const r = await get(p);
     assert.equal(r.status, 200, p);
   }

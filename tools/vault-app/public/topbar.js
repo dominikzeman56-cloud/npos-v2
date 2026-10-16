@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   var TABS = [
-    ['/', 'Kánon'], ['/dashboard.html', 'Dashboard'], ['/presets.html', 'Presety'],
+    ['/', 'Kánon'], ['/dashboard.html', 'Dashboard'], ['/presets.html', 'Presety'], ['/trenazer.html', 'Trenažér'],
   ];
   var path = location.pathname.replace(/\/index\.html$/, '/');
   var cur = path === '/dal.html' ? 'Co dál?' : (TABS.filter(function (t) { return t[0] === path; })[0] || [])[1] || '';

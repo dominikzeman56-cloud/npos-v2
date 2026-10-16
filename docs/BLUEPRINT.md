@@ -11,7 +11,7 @@
 
 **Měřítko úspěchu:** lepší rozhodnutí za kratší čas v každé session. Ne počet souborů, ne objem znalostí.
 
-**NPOS je:** kánon znalostí s důkazy a mírou jistoty · datová vrstva (analýzy tracků a presetů se schématem) · sada nástrojů nad tím.
+**NPOS je:** kánon znalostí s důkazy a mírou jistoty · datová vrstva (analýzy tracků a presetů se schématem) · sada nástrojů nad tím. Součástí je i **výukový trenažér syntézy** (kap. 9, výjimka z blocklistu).
 **NPOS není:** encyklopedie · web/dashboard pro produkční rozhodování · chatbot · generátor celých tracků · náhrada sound designu.
 
 **Stav (2026-10-15):** kánon v češtině je napsaný (vault `Hudební produkce`, sekce 00–90: vstup `00 Start`); šablona Ableton mimo kánon (kap. 8); `analyze_track.py` funguje; datová vrstva je téměř prázdná (1 analýza ve schématu) a **je to další práce** (kap. 10).
@@ -190,7 +190,7 @@ Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XM
 **Blocklist (absolutní nulová tolerance):**
 - UI pro produkční rozhodování, dashboard, druhý frontend (výjimka: `tools/vault-app`, jen čtení).
 - Stem-separation pipeline (použití stemů, které existují, je povolené).
-- Synth engine.
+- Synth engine pro produkci. **Výjimka (Architekt, 2026-10-16):** výukový trenažér `tools/vault-app/public/trenazer.html`, jednoúčelová stránka Web Audio (oscilátor s wavetable, AM, FM, filtr, LFO, distorze) k učení, jak se parametry projeví. Nic nezapisuje, nevyváží zvuk ani presety, nepřehrává data presetů a nenahrazuje Serum. Receptury v něm nesou míru jistoty a odkaz do kánonu.
 - **Druhý Ableton MCP most** (jediný je Producer Pal); Pal **nezapisuje vnitřní parametry Serum** (zeď Live API); Serum patche jsou binární stav → offline `.SerumPreset` nebo ruční klik.
 - Upload nevydaných bounců do cizího cloudu (generátory hudby, stem separátory, sample služby).
 - Oživení `neuroman/` orchestrátoru (legacy, v coding session horší než Producer Pal).
@@ -236,6 +236,8 @@ Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XM
 - Změněno: principy 3, 7 a 4, slovníky (`layer function`, `texture`), blocklist (`vault-app` povolen jen ke čtení; druhý MCP most, cloudové uploady a oživení `neuroman/` zakázány).
 - Přidáno: pravidlo pravdivosti, registr zdrojů, `check_repo.py`, schémata `source`, `track-analysis`, `preset-analysis`, protokol měření basového pásma, `basis` a `modulation source`, princip 9.
 - Zastaralé v v1: „Current stage: Skateboard step 1" — kroky 2 a 3 byly dávno hotové.
+
+**v2.3 (2026-10-16)** — kap. 7.1: povolený offline zápis `preset_seed.py` (reálný preset + pár zmutovaných parametrů, výstup jen lokálně). Kap. 9: výjimka z blocklistu pro výukový trenažér syntézy (schválil Architekt v chatu). Nové nástroje: `analyze_fxp_host.py`, `render_preset.py`, `preset_roles.py`, `preset_stats.py`, `check_presets.py`, `serum_preset_io.py`, `preset_seed.py`.
 
 **v2.2 (2026-10-15)** — `knowledge/guides/` (návod na aranž z rozborů), `tools/sync_knowledge.py`, typ `guide` ve frontmatteru. Šablona Ableton: uživatel smazal poznámky o šabloně a označil ji za nedobrou; kap. 8 čeká na rozhodnutí (viz vault `06 Návod na aranž` a `02 Šablona`).
 
