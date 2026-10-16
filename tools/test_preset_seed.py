@@ -8,7 +8,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 import preset_seed as ps  # noqa: E402
 import serum_preset_io as sio  # noqa: E402
 
-pytest.importorskip("cbor2")
 pytest.importorskip("zstandard")
 
 
@@ -96,4 +95,71 @@ def test_output_dir_guard():
     assert ps.out_dir_ok(ps.LOCAL / "generated")
     assert not ps.out_dir_ok(ps.REPO / "data" / "presets" / "index")
     assert not ps.out_dir_ok(ps.REPO / "tools")
-    assert ps.out_dir_ok(Path("D:/somewhere/else") if sys.platform == "win32" else Path("/tmp/x"))
+    assert ps.out_dir_ok(ps.REPO.parent / "elsewhere-output")
+    assert not ps.out_dir_ok(Path(r"\\localhost\share\x"))         # UNC cesta může vést zpět do repa
+
+
+def test_role_ranges_need_ten_presets_and_override_global():
+    bass = [({"role": "bass"}, None, preset(0.02 * i)) for i in range(12)]           # kParamFreq 0..0,22
+    lead = [({"role": "lead"}, None, preset(0.5 + 0.02 * i)) for i in range(12)]     # 0,5..0,72
+    few = [({"role": "pad"}, None, preset(0.9))]
+    by = ps.build_ranges_by_role(bass + lead + few)
+    assert set(by) == {"bass", "lead"}                                              # pad má 1 preset, bez rozsahu
+    g = ps.build_ranges([cb for _, _, cb in bass + lead])
+    rb = ps.ranges_for("bass", g, by)
+    assert rb[("VoiceFilter", "kParamFreq")][1] < 0.3 < g[("VoiceFilter", "kParamFreq")][1]
+    assert ps.ranges_for("pad", g, by) == g
+
+
+def test_sanity_gate():
+    src = {"silent": False, "rms_db": -10.0, "centroid_hz": 200.0}
+    assert ps.sane(src, {"silent": False, "rms_db": -12.0, "centroid_hz": 300.0})[0]
+    assert ps.sane(src, {"silent": True, "rms_db": -60.0})[1] == "ticho"
+    assert not ps.sane(src, {"silent": False, "rms_db": -20.0, "centroid_hz": 200.0})[0]
+    assert not ps.sane(src, {"silent": False, "rms_db": -10.0, "centroid_hz": 700.0})[0]
+    assert not ps.sane(src, {"silent": False, "rms_db": -10.0, "centroid_hz": 50.0})[0]
+
+
+def test_integer_valued_and_curve_params_are_never_mutated():
+    cs = []
+    for i in range(30):
+        cs.append({"Oscillator1": {"plainParams": {"kParamOctave": float(i % 8 - 4), "kParamUnison": float(2 + i % 10), "kParamVolume": 0.3 + 0.01 * i}},
+                   "Env0": {"plainParams": {"kParamCurve1": 30.0 + i, "kParamAttack": 0.001 * (i + 1)}}})
+    r = ps.build_ranges(cs)
+    assert ("Oscillator", "kParamVolume") in r and ("Env", "kParamAttack") in r
+    assert ("Oscillator", "kParamOctave") not in r and ("Oscillator", "kParamUnison") not in r and ("Env", "kParamCurve1") not in r
+
+
+def test_noise_and_sub_oscillators_have_their_own_ranges():
+    cs = [{"Oscillator1": {"plainParams": {"kParamVolume": 0.5 + 0.01 * i}}, "Oscillator3": {"plainParams": {"kParamVolume": 0.05 + 0.002 * i}},
+           "Oscillator4": {"plainParams": {"kParamVolume": 0.2 + 0.004 * i}}} for i in range(30)]
+    r = ps.build_ranges(cs)
+    assert {("Oscillator", "kParamVolume"), ("OscNoise", "kParamVolume"), ("OscSub", "kParamVolume")} <= set(r)
+    assert r[("OscNoise", "kParamVolume")][1] < r[("Oscillator", "kParamVolume")][0]
+
+
+def test_mutation_never_silences_or_inverts_and_fills_k_changes():
+    cs = [{"ModSlot0": {"plainParams": {"kParamAmount": -50.0 + 4 * i}}, "Oscillator0": {"plainParams": {"kParamVolume": 0.01 * i + 0.01}},
+           "VoiceFilter0": {"plainParams": {"kParamFreq": 0.02 * i}}, "LFO0": {"plainParams": {"kParamRate": 0.5 + i}}} for i in range(30)]
+    r = ps.build_ranges(cs)
+    for seed in range(60):
+        cb = {"ModSlot0": {"plainParams": {"kParamAmount": 40.0}}, "Oscillator0": {"plainParams": {"kParamVolume": 0.2}},
+              "VoiceFilter0": {"plainParams": {"kParamFreq": 0.5}}, "LFO0": {"plainParams": {"kParamRate": 5.0}}}
+        before = {m: dict(b["plainParams"]) for m, b in cb.items()}
+        muts = ps.mutate(cb, r, random.Random(seed), k=4, spread=0.6)
+        assert len(muts) >= 3, muts                                    # k se doplňuje, kandidáti na hranici nevadí
+        assert cb["ModSlot0"]["plainParams"]["kParamAmount"] >= 4.0 and cb["Oscillator0"]["plainParams"]["kParamVolume"] >= 0.02
+        assert before["ModSlot0"]["kParamAmount"] > 0 and cb["ModSlot0"]["plainParams"]["kParamAmount"] > 0
+
+
+def test_files_are_never_overwritten(tmp_path):
+    (tmp_path / "GEN bass s1-1 abc.SerumPreset").write_bytes(b"x")
+    p = ps.free_path(tmp_path, "GEN bass s1-1 abc")
+    assert p.name == "GEN bass s1-1 abc (2).SerumPreset"
+
+
+def test_derived_preset_keeps_original_author_in_description():
+    r = ps.build_ranges(corpus())
+    blob, log = ps.make_one({"fileType": "SerumPreset", "presetName": "Orig", "presetAuthor": "Someone"}, preset(0.3), "id-1", "bass", r, random.Random(2), 2, "GEN bass s2-1")
+    m, _ = sio.read_preset(blob)
+    assert "Orig" in m["presetDescription"] and "Someone" in m["presetDescription"] and m["presetAuthor"] == "NPOS generated"

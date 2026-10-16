@@ -3,8 +3,11 @@
 
 Formát: `XferJson\\0` + u64 délka JSON hlavičky + JSON + u32 velikost CBOR + u32 verze (2) + zstd(CBOR).
 Hlavička obsahuje `hash` = md5 zstd těla; plugin soubor s cizím hashem tiše ignoruje, proto se při zápisu přepočítá.
-Minimální kodek, nezávislý na `neuroman/` (BLUEPRINT: ten se neobnovuje). Vlastní CBOR kodek zachovává šířku čísel (float32),
-protože cbor2 by je přepsal na float64 a preset by byl o 80 % větší než ten, co píše Serum. Zápis `.fxp` se nepodporuje.
+Minimální kodek, nezávislý na `neuroman/` (BLUEPRINT: ten se neobnovuje). Vlastní CBOR kodek zachovává šířku čísel (float32);
+cbor2 by je přepsal na float64 a preset by narostl (medián +6 %, největší soubor až +80 %) a neodpovídal tomu, co píše Serum.
+Ověřeno: dekomprimované CBOR tělo a JSON hlavička se po načtení a zápisu shodují bajt po bajtu u všech zkoušených
+presetů (115 z indexu, 600 z Xfer složky). Zstd obal se přebalí s jinou kompresí, takže celý soubor se liší a hash se
+přepočítá. Float16, tagy a neurčité délky v CBOR kodek odmítne (ValueError), Serum je nepoužívá. Zápis `.fxp` se nepodporuje.
 """
 from __future__ import annotations
 
@@ -33,7 +36,7 @@ def _decode(b: bytes, p: int = 0) -> tuple[Any, int]:
         if ai == 20 or ai == 21:
             return ai == 21, p + 1
         if ai == 25:
-            return struct.unpack(">e", b[p + 1:p + 3])[0], p + 3
+            raise ValueError("CBOR float16 se nepodporuje (nešel by zapsat zpět beze změny)")
         if ai == 26:
             return F32(struct.unpack(">f", b[p + 1:p + 5])[0]), p + 5
         if ai == 27:

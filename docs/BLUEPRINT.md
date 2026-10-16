@@ -169,7 +169,7 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 - Zdroje modulace jsou zmapované jen pro doložené rozsahy (Env, LFO, Macro); ostatní ID se **nehádají**.
 - Přečtené hodnoty jsou `measured` s `basis: preset_file`. **Archetyp, funkce vrstvy a „proč“ jsou ruční interpretace** (`estimated`/`hypothesis`), skript je nevyplňuje.
 - Preset pack je zdroj (`kind: preset_pack`) a soubory presetů se do repa nekopírují; do `data/presets` jde jen vlastní analýza.
-- **Povolený offline zápis:** `tools/preset_seed.py` (kodek `tools/serum_preset_io.py`) vezme reálný Serum 2 preset a změní jen pár spojitých parametrů v rozsahu pozorovaném v korpusu. Není to synth engine, náhrada sound designu ani generátor tracků: konstrukci (oscilátory, mod matice, FX) zdědí ze skutečného presetu. Výstup je jen lokální (mimo repo nebo `data/presets/_local/`), odvozený z placených packů se nikdy nenahrává ani necommituje, nese `derived_from` a `hypothesis`; jediné potvrzení je poslech člověka.
+- **Povolený offline zápis:** `tools/preset_seed.py` (kodek `tools/serum_preset_io.py`) vezme reálný Serum 2 preset a změní jen pár spojitých parametrů v rozsahu pozorovaném v korpusu (hodnoty včetně amountů modulací, nikdy tvar křivek obálek, celočíselné parametry ani počet hlasů; amount nemění znaménko). Není to synth engine, náhrada sound designu ani generátor tracků: konstrukci (oscilátory, routing mod matice, FX řetěz) zdědí ze skutečného presetu. Výstup je jen lokální (mimo repo nebo `data/presets/_local/`), odvozený z placených packů se nikdy nenahrává ani necommituje, nese `derived_from` a `hypothesis`; jediné potvrzení je poslech člověka.
 
 ---
 
