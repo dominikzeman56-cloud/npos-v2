@@ -11,6 +11,8 @@
 | `render_preset.py` | hotovo | render presetu jednou notou (Serum 1 `.fxp`, Serum 2 `.SerumPreset`; jen lokálně, `pedalboard`) a deskriptory zvuku → `data/presets/audio*/` (čísla; wav jen v `_local`) |
 | `preset_roles.py` | hotovo | role ze zvuku (kNN nad deskriptory, leave-one-out): rodina bass/tonal/perc/fx ano, podtypy basů ne → `data/presets/roles/` (`estimated`) |
 | `preset_stats.py` | hotovo | medián a kvartily parametrů a zvuku po rolích a packách, kontrast rolí (Cliffovo delta); skupina s n < 10 jen počet → `data/presets/stats/` |
+| `serum_preset_io.py` | hotovo | čtení a zápis `.SerumPreset` (XferJson + zstd + CBOR, přepočet md5 hashe); bez `neuroman/` |
+| `preset_seed.py` | hotovo | startovní bod: reálný Serum 2 preset dané role + pár zmutovaných spojitých parametrů v rozsahu korpusu (p10–p90); výstup jen lokálně (`_local` nebo mimo repo), `derived_from`, `hypothesis`; `--check` vyrenderuje zdroj a mutant |
 | `check_presets.py` | hotovo | konzistence dat presetů (unikátní id, typy, sha256, bez lokálních cest); běží v CI |
 | `vault-app/` | hotovo | read-only prohlížeč vaultu a statický export pro sdílení (jen `Hudební produkce`, za heslem); viz README uvnitř |
 | `rebuild_track_index.py` | plánováno | `data/tracks` + `data/presets` → `data/corpus/*.jsonl` |
