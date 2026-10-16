@@ -38,21 +38,31 @@ NAME_RULES = [
              r"|(^|[\s_])bs([\s_]|$)"),
 ]
 # jemnější role (návrh z jména, první shoda vyhrává; `hypothesis` jako function/archetype)
+# Prefixy balíků: BA_ = bass, SY_ = syntezátor, PD_ = pad, FX_ = fx, DR_ = bicí (Burr Oak); "BA ..." a "TKpatreon" u dalších.
 ROLE_RULES = [
-    ("perc", r"kick|snare|clap|drums|perc|hat"),
-    ("fx", r"riser|buildup|scream|drunk|breathfx|foley|sweep|impact|rattle"),
+    ("perc", r"kick|\bkik\b|snare|clap|drums|perc|hats?\b|toms|cymbal|^dr[_ ]"),
+    ("fx", r"riser|buildup|scream|drunk|breathfx|foley|sweep|impact|rattle|^fx[_ ]|^fx$|transition|reverse"),
     ("chords", r"chord"),
     ("pluck", r"pluck"),
-    ("pad", r"pad|atmos|drone|strings|soft"),
+    ("pad", r"pad|atmos|drone|strings|soft|^pd[_ ]"),
     ("guitar", r"guitar"),
-    ("sub", r"sub|compressed sine|distorted sine"),
-    ("reese", r"reese|evilreese"),
+    ("sub", r"\bsub\b|compressed sine|distorted sine|sinus"),
+    ("reese", r"reese"),
     ("neuro", r"neuro|nruo|wobble|growl"),
     ("stab", r"stab"),
-    ("bass", r"bass|(^|[\s_])bs([\s_]|$)|basline|bassline"),
+    ("seq", r"\barp\b|\bseq\b|\bmel\b|sequence"),
     ("lead", r"lead|lazer|robot|idiot|funky|pulse|(^|[\s_])ld([\s_]|$)"),
+    ("bass", r"bass|(^|[\s_])bs([\s_]|$)|bassline|^ba([_ ]|$)|\b808\b|^serum preset ba\b|^patreon bass"),
+    ("synth", r"^sy[_ ]"),
     ("layer", r"layer|synth|weird|screechy|metallic|thing|noise|annihilation"),
 ]
+
+
+def role_of(name: str) -> str:
+    n = name.lower()
+    return next((r for r, pat in ROLE_RULES if re.search(pat, n)), "other")
+
+
 CROSS_WARP = ("_OSC", "_OSC2", "_SUB", "_NOISE")
 
 
@@ -88,11 +98,6 @@ def cues(a: dict[str, Any]) -> dict[str, Any]:
         "mono": r["voice"].get("kParamMonoToggle") == 1.0,
         "fx_count": len(r["fx"]),
     }
-
-
-def role_of(name: str) -> str:
-    n = name.lower()
-    return next((r for r, pat in ROLE_RULES if re.search(pat, n)), "other")
 
 
 def propose(name: str, c: dict[str, Any]) -> tuple[str, str, list[str]]:

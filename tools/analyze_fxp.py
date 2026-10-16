@@ -15,6 +15,7 @@ Použití:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import struct
@@ -53,7 +54,7 @@ def read_fxp(path: Path) -> dict:
     return {
         "name": name, "fx_id": fx_id_b.decode("latin-1"), "is_serum1": fx_id_b == SERUM1_ID,
         "plugin_version": plug_ver, "format_version": fmt_ver, "num_params": num_params,
-        "chunk_bytes": size, "state_bytes": len(raw),
+        "chunk_bytes": size, "state_bytes": len(raw), "sha256": hashlib.sha256(d).hexdigest()[:16],
         "wavs": sorted({s for s in strs if s.lower().endswith(".wav")}),
         "macros": [m for m in re.findall(r"Macro \d", " ".join(strs))],
     }
@@ -65,7 +66,7 @@ def row(path: Path, source_id: str, group: str) -> dict:
     func = next((f for f, pat in ip.NAME_RULES if __import__("re").search(pat, name.lower())), "other")
     return {"id": ap.slugify(f"{source_id}-{group[:32]}-{path.stem}"), "source_id": source_id, "name": name, "group": group,
             "file": path.name, "synth": "Serum1 (fxp)", "function": func, "role": ip.role_of(name), "confidence": "hypothesis",
-            "cues_basis": "fxp_container", "container": {k: a[k] for k in ("fx_id", "is_serum1", "plugin_version", "num_params", "state_bytes", "wavs")},
+            "cues_basis": "fxp_container", "container": {k: a[k] for k in ("fx_id", "is_serum1", "plugin_version", "num_params", "state_bytes", "sha256", "wavs")},
             "convert": "otevřít v Serum 2 a uložit jako .SerumPreset pro plnou analýzu"}
 
 
@@ -79,14 +80,20 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("paths", type=Path, nargs="+")
     p.add_argument("--source-id", required=True)
     p.add_argument("--out", type=Path)
+    p.add_argument("--dedupe", action="store_true", help="vynechat soubory s identickým obsahem (sha256), první vyhrává")
     a = p.parse_args(argv)
     files = []
     for x in a.paths:
         files += [(f, f.relative_to(x).parts[0] if len(f.relative_to(x).parts) > 1 else "") for f in sorted(x.rglob("*.fxp"))] if x.is_dir() else [(x, x.parent.name)]
     rows, bad = [], []
+    seen = set()
     for f, g in files:
         try:
-            rows.append(row(f, a.source_id, g))
+            r = row(f, a.source_id, g)
+            if a.dedupe and r["container"]["sha256"] in seen:
+                continue
+            seen.add(r["container"]["sha256"])
+            rows.append(r)
         except (ValueError, OSError) as e:
             bad.append(f"{f.name}: {e}")
     for b in bad:

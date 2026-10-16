@@ -14,7 +14,7 @@ const ARCH = {
   'osc-warp-body': ['tělo z warpu jiným oscilátorem', 'kandidát, archetyp 16'],
   'unclassified': ['nezařazeno', ''],
 };
-const FN = { bass: 'bass', reese: 'reese', neuro: 'neuro', sub: 'sub', stab: 'stab', lead: 'lead', pluck: 'pluck', chords: 'chords', pad: 'pad',
+const FN = { bass: 'bass', reese: 'reese', neuro: 'neuro', sub: 'sub', stab: 'stab', seq: 'arp / seq', synth: 'synth', lead: 'lead', pluck: 'pluck', chords: 'chords', pad: 'pad',
   layer: 'vrstva / textura', guitar: 'kytara', perc: 'perkuse', fx: 'FX', other: 'jiné' }; // role = návrh z jména (hypothesis)
 const WARP = { kPD_OSC: 'PD z osc', kPD_OSC2: 'PD z osc (2)', kPD_NOISE: 'PD ze šumu', kSync: 'Sync', kFM_OSC: 'FM z osc', kFM_OSC2: 'FM z osc (2)',
   kFM_SUB: 'FM ze subu', kFM_NOISE: 'FM ze šumu', kAM_OSC: 'AM z osc', kRM_OSC: 'RM z osc', kRM_OSC2: 'RM z osc (2)' };
