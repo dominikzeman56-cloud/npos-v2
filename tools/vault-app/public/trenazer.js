@@ -189,6 +189,7 @@ async function startAudio() {
   node.connect(drvG, 2); drvG.connect(pre1.gain);
   trim.connect(dcAn); trim.connect(dc); dc.connect(an); an.connect(master); master.connect(comp); comp.connect(ctx.destination);
   nodes = { f1, f2, cutG, pre1, sh1, between, pre2, sh2, trim, drvG, dcAn, dc, an, master };
+  bufs = { td: new Float32Array(an.fftSize), fd: new Float32Array(an.frequencyBinCount), dcd: new Float32Array(dcAn.fftSize) };
   ensureTable(S.table);
   curves = {};
   await ctx.resume();
@@ -252,14 +253,29 @@ function repLoop() {
 
 // ── kreslení ───────────────────────────────────────────────────────────────────────────────────────────────────
 const cv = { scope: $('#scope'), spec: $('#spec'), frame: $('#frame') };
-function fit(c) { const r = c.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); const w = Math.round(r.width * d), h = Math.round(r.height * d); if (c.width !== w || c.height !== h) { c.width = w; c.height = h; } return [c.getContext('2d'), c.width, c.height, d]; }
+const dims = new Map();                              // rozměry canvasů se čtou z ResizeObserveru, ne z layoutu v každém snímku
+const ro = new ResizeObserver((es) => { for (const e of es) dims.set(e.target, [e.contentRect.width, e.contentRect.height]); });
+for (const c of Object.values(cv)) ro.observe(c);
+function fit(c) {
+  const [cw, ch] = dims.get(c) || [c.clientWidth, c.clientHeight], d = Math.min(1.5, devicePixelRatio || 1);
+  const w = Math.max(1, Math.round(cw * d)), h = Math.max(1, Math.round(ch * d));
+  if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+  return [c.getContext('2d'), c.width, c.height, d];
+}
 const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || '#3eea9a';
-function draw() {
+let bufs = null, lastHtml = '', lastDraw = 0, lastLive = 0, frameNo = 0, accentAt = -1e9, accentVal = '#3eea9a';
+function draw(now) {
   if (!ctx) return;
+  requestAnimationFrame(draw);
+  const live = anyOn();                              // při hře 30 snímků za sekundu, v klidu 4 (obálka se doznívá ještě 1,5 s)
+  if (live) lastLive = now;
+  if (now - lastDraw < (live || now - lastLive < 1500 ? 33 : 250)) return;
+  lastDraw = now;
   const an = nodes.an, sr = ctx.sampleRate, f0 = curF0();
-  const td = new Float32Array(an.fftSize); an.getFloatTimeDomainData(td);
-  const fd = new Float32Array(an.frequencyBinCount); an.getFloatFrequencyData(fd);
-  const accent = css('--sam-green') || '#3eea9a';
+  const td = bufs.td; an.getFloatTimeDomainData(td);
+  const fd = bufs.fd; an.getFloatFrequencyData(fd);
+  if (now - accentAt > 2000) { accentVal = css('--sam-green') || '#3eea9a'; accentAt = now; }
+  const accent = accentVal;
   // vlna: 3 periody od vzestupného průchodu nulou
   { const [g, W, H] = fit(cv.scope); g.clearRect(0, 0, W, H); g.fillStyle = '#05080a'; g.fillRect(0, 0, W, H);
     g.strokeStyle = 'rgba(255,255,255,.08)'; g.beginPath(); g.moveTo(0, H / 2); g.lineTo(W, H / 2); g.stroke();
@@ -285,6 +301,7 @@ function draw() {
       g.strokeStyle = css('--accent') || accent; g.lineWidth = 1.5; g.beginPath();
       for (let x = 0; x < W; x++) { const i = Math.floor((x / W) * SIZE); const v = m[a * (SIZE + 1) + i] * (1 - fr) + m[(a + 1) * (SIZE + 1) + i] * fr; const y = H / 2 - v * (H / 2 - 4); x ? g.lineTo(x, y) : g.moveTo(x, y); }
       g.stroke(); } }
+  if (++frameNo % 5 === 0) {                         // čísla a sloupce stačí aktualizovat zhruba šestkrát za sekundu
   // harmonické
   { const bh = sr / an.fftSize, peak = (k) => { const c = Math.round((k * f0) / bh); let m = -200; for (let b = Math.max(1, c - 2); b <= c + 2; b++) m = Math.max(m, fd[b] ?? -200); return m; };
     const h1 = peak(1), bars = $('#bars'); if (!bars.children.length) for (let k = 1; k <= 8; k++) bars.insertAdjacentHTML('beforeend', `<div><span class="bar"><i></i></span>H${k}<b></b></div>`);
@@ -292,10 +309,10 @@ function draw() {
   // čtení
   { const meanPk = (buf) => { const per = sr / f0, len = buf.length, m = Math.max(1, Math.floor(len / per)) * per | 0, from = len - Math.min(len, m);   // celé periody, jinak neúplná perioda ukazuje falešný offset
       let mean = 0, pk = 0; for (let i = from; i < len; i++) { mean += buf[i]; pk = Math.max(pk, Math.abs(buf[i])); } return [mean / (len - from), pk]; };
-    const dcd = new Float32Array(nodes.dcAn.fftSize); nodes.dcAn.getFloatTimeDomainData(dcd);
+    const dcd = bufs.dcd; nodes.dcAn.getFloatTimeDomainData(dcd);
     const [before, pk] = meanPk(dcd), [after] = meanPk(td);
-    $('#read').innerHTML = `<span>f0 <b>${f0.toFixed(1)} Hz</b> (${noteName(curNote)})</span><span>DC před blokem <b class="${Math.abs(before) > 0.02 ? 'warn' : ''}">${before.toFixed(3)}</b></span><span>DC za blokem <b>${after.toFixed(3)}</b></span><span>špička <b class="${pk > 0.98 ? 'warn' : ''}">${pk > 0 ? (20 * Math.log10(pk)).toFixed(1) + ' dBFS' : '–'}</b></span><span>LFO1 <b>${lfoRate(0).toFixed(2)} Hz</b></span><span>LFO2 <b>${lfoRate(1).toFixed(2)} Hz</b></span>`; }
-  requestAnimationFrame(draw);
+    const html = `<span>f0 <b>${f0.toFixed(1)} Hz</b> (${noteName(curNote)})</span><span>DC před blokem <b class="${Math.abs(before) > 0.02 ? 'warn' : ''}">${before.toFixed(3)}</b></span><span>DC za blokem <b>${after.toFixed(3)}</b></span><span>špička <b class="${pk > 0.98 ? 'warn' : ''}">${pk > 0 ? (20 * Math.log10(pk)).toFixed(1) + ' dBFS' : '–'}</b></span><span>LFO1 <b>${lfoRate(0).toFixed(2)} Hz</b></span><span>LFO2 <b>${lfoRate(1).toFixed(2)} Hz</b></span>`; if (html !== lastHtml) { $('#read').innerHTML = html; lastHtml = html; } }
+  }
 }
 
 // ── lekce z kánonu ─────────────────────────────────────────────────────────────────────────────────────────────
