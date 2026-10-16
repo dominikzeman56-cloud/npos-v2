@@ -298,6 +298,91 @@ def test_run_survives_failure_in_host_or_measurement(tmp_path):
     assert [r["name"] for r in idx] == ["Ok"] and len(bad) == 2 and any("boom.fxp" in b for b in bad)
 
 
+# ─── --by-folder: zdroje po složkách ───────────────────────────────────────────────────────────────────────────
+
+@pytest.fixture
+def s1root(tmp_path):
+    root = tmp_path / "S1 Presets"
+    for d in ("Alfa", "beta", "Píčius", "Done", "gpt"):
+        (root / d).mkdir(parents=True)
+    make_fxp(root / "Alfa" / "a1.fxp", name="Alfa One", st=state(1))
+    (root / "Alfa" / "sub").mkdir()
+    make_fxp(root / "Alfa" / "sub" / "a2.fxp", name="Alfa Two", st=state(2))
+    make_fxp(root / "beta" / "b1.fxp", name="Alfa One", st=state(1))              # stejný obsah jako Alfa/a1 → duplikát
+    make_fxp(root / "beta" / "b2.fxp", name="Beta Two", st=state(3))
+    make_fxp(root / "Píčius" / "p1.fxp", name="Pi", st=state(4))
+    make_fxp(root / "Done" / "d1.fxp", name="Done One", st=state(5))              # už zapsaný jinde → vynechat
+    make_fxp(root / "gpt" / "g1.fxp", name="G", st=state(6))                      # vynechaná složka
+    make_fxp(root / "loose.fxp", name="Loose", st=state(7))
+    return root
+
+
+HOST = FakeHost({n: SIMPLE for n in ("Alfa One", "Alfa Two", "Beta Two", "Pi", "Done One", "G", "Loose")})
+
+
+def test_run_skip_and_stats(tmp_path):
+    (tmp_path / "p").mkdir()
+    make_fxp(tmp_path / "p" / "one.fxp", name="One", st=state(1))
+    make_fxp(tmp_path / "p" / "two.fxp", name="Two", st=state(2))
+    skip = {fh.fx.read_fxp(tmp_path / "p" / "one.fxp")["sha256"]}
+    stats = {}
+    idx, _, _ = fh.run([tmp_path / "p"], "s1-x", FakeHost({"One": SIMPLE, "Two": SIMPLE}), skip=skip, stats=stats, log=lambda *_: None)
+    assert [r["name"] for r in idx] == ["Two"] and stats == {"files": 2, "duplicates": 1}
+    assert len(skip) == 2                                                          # doplněno o zpracované
+
+
+def test_by_folder_splits_sources_dedupes_across_folders_and_writes_outputs(s1root, tmp_path):
+    done_sha = fh.fx.read_fxp(s1root / "Done" / "d1.fxp")["sha256"]
+    out = tmp_path / "out"
+    summary, bad = fh.by_folder(s1root, HOST, "s1-", out, {"gpt"}, {done_sha}, log=lambda *_: None)
+    assert not bad
+    assert [(s["id"], s["presets"], s["duplicates"]) for s in summary] == [
+        ("s1-alfa", 2, 0), ("s1-beta", 1, 1), ("s1-picius", 1, 0), ("s1-root", 1, 0)]   # Done: jen duplikáty → bez zdroje
+    alfa = [json.loads(line) for line in (out / "fxp" / "s1-alfa.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert {r["group"] for r in alfa} == {"", "sub"} and all(r["source_id"] == "s1-alfa" for r in alfa)
+    assert (out / "features" / "s1-alfa.jsonl").exists() and (out / "_local" / "s1-alfa-host").is_dir()
+    assert not (out / "fxp" / "s1-done.jsonl").exists() and not (out / "fxp" / "s1-gpt.jsonl").exists()
+
+
+def test_by_folder_dry_run_writes_nothing(s1root, tmp_path):
+    summary, _ = fh.by_folder(s1root, HOST, "s1-", tmp_path / "out", {"gpt"}, set(), log=lambda *_: None, write=False)
+    assert sum(s["presets"] for s in summary) == 6 and not (tmp_path / "out").exists()
+
+
+def test_by_folder_refuses_colliding_source_ids(tmp_path):
+    root = tmp_path / "r"
+    for d in ("Abc", "ABC!"):
+        (root / d).mkdir(parents=True)
+    make_fxp(root / "Abc" / "x.fxp", name="Alfa One", st=state(1))
+    make_fxp(root / "ABC!" / "y.fxp", name="Alfa One", st=state(2))
+    with pytest.raises(ValueError, match="s1-abc"):
+        fh.by_folder(root, HOST, "s1-", tmp_path / "out", set(), set(), log=lambda *_: None)
+
+
+def test_source_entry_has_no_author_and_no_wavetable_or_parameter_claims():
+    item = {"id": "s1-alfa", "folder": "Alfa", "files": 12, "presets": 9, "duplicates": 3, "bad": 1}
+    e = fh.source_entry(item, "2026-10-16")
+    assert e["author"] == "bez autora" and e["redistribution"] == "none" and e["basis"] == "preset_file"
+    assert e["title"] == "Alfa — Serum 1 presety (.fxp; složka Alfa)" and e["verified_on"] == "2026-10-16"
+    assert "12 .fxp" in e["notes"] and "9 po deduplikaci" in e["notes"] and "1 nečitelných" in e["notes"]
+    assert "Autorství nepotvrzeno" in e["notes"]
+    root = fh.source_entry({**item, "id": "s1-root", "folder": "(root)"}, "2026-10-16")
+    assert root["title"] == "Serum 1 presety (.fxp; soubory přímo ve složce S1 Presets)"
+
+
+def test_main_by_folder_writes_summary_and_sources(s1root, tmp_path, monkeypatch):
+    monkeypatch.setattr(fh, "S1Host", lambda plugin=None: HOST)
+    done = tmp_path / "done.jsonl"
+    done.write_text(json.dumps({"container": {"sha256": fh.fx.read_fxp(s1root / "Done" / "d1.fxp")["sha256"]}}) + "\n", encoding="utf-8")
+    rc = fh.main(["--by-folder", str(s1root), "--out-dir", str(tmp_path / "out"), "--skip-folder", "gpt", "--exclude-index", str(done),
+                  "--summary", str(tmp_path / "sum.json"), "--sources-out", str(tmp_path / "src.jsonl")])
+    assert rc == 0
+    assert [s["id"] for s in json.loads((tmp_path / "sum.json").read_text(encoding="utf-8"))] == ["s1-alfa", "s1-beta", "s1-picius", "s1-root"]
+    assert len((tmp_path / "src.jsonl").read_text(encoding="utf-8").splitlines()) == 4
+    assert fh.main(["--by-folder", str(tmp_path / "nope")]) == 2
+    assert fh.main(["--by-folder", str(s1root), "--exclude-index", str(tmp_path / "nope.jsonl")]) == 2
+
+
 # ─── main(): bezpečný zápis ────────────────────────────────────────────────────────────────────────────────────
 
 @pytest.fixture

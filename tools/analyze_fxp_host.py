@@ -49,7 +49,9 @@ import rebuild_preset_indexes as rpi  # noqa: E402
 DEFAULT_PLUGIN = r"C:\Program Files\Common Files\VST3\Serum.vst3\Contents\x86_64-win\Serum.vst3"
 STATE_MAGIC = b"VC2!"
 READER = "serum1_host"
-EXPECTED_STATES = {172736, 34016, 33872, 28232}  # velikosti stavu .fxp, které načtení do hostu ověřeně zvládlo
+# velikosti stavu .fxp (různé verze Serum 1), které host načte a vrátí věrohodné hodnoty; 172736 je ověřeno proti Serum 2,
+# 20704/21524/21528 (nejstarší) a ostatní jen na plausibilitu rozložení (osc, unison, FX, mod sloty)
+EXPECTED_STATES = {172736, 34016, 33872, 28232, 21528, 21524, 20704}
 
 # ─── JUCE base64 (MemoryBlock::toBase64Encoding): "<bajty>." + 6bitové znaky od LSB ────────────────────────────
 
@@ -322,20 +324,30 @@ def load_index(path: Path) -> list[dict]:
 
 
 def run(paths: list[Path], source_id: str, host: Any, match: list[dict] | None = None, dump_dir: Path | None = None,
-        limit: int | None = None, log=print) -> tuple[list[dict], list[dict], list[str]]:
-    """Vrátí (index_rows, feature_rows, chyby). `host` má load_fxp(bytes) a read(); pořadí podle `match`, jinak podle cest."""
+        limit: int | None = None, log=print, skip: set[str] | None = None,
+        stats: dict[str, int] | None = None) -> tuple[list[dict], list[dict], list[str]]:
+    """Vrátí (index_rows, feature_rows, chyby). `host` má load_fxp(bytes) a read(); pořadí podle `match`, jinak podle cest.
+
+    `skip` jsou sha256 už zpracovaných souborů (jiný pack, dřívější složka): přeskočí se a po běhu se do množiny doplní
+    všechny sha256 z tohoto běhu. `stats` dostane počet .fxp (`files`) a vynechaných duplikátů (`duplicates`)."""
     pinned = {r["container"]["sha256"]: r for r in match} if match else None
+    st = stats if stats is not None else {}
+    st.update(files=0, duplicates=0)
     todo: list[tuple[Path, dict, dict]] = []
     seen: set[str] = set()
     bad: list[str] = []
     for f, group in discover(paths):
+        st["files"] += 1
         try:
             c = fx.read_fxp(f)
         except (ValueError, OSError) as e:
             bad.append(f"{f.name}: {e}")
             continue
         sha = c["sha256"]
-        if sha in seen or (pinned is not None and sha not in pinned):
+        if sha in seen or (skip is not None and sha in skip):
+            st["duplicates"] += 1
+            continue
+        if pinned is not None and sha not in pinned:
             continue
         seen.add(sha)
         # do repa jen počet odkazů na wavetably (jména a cesty patří k placeným packům a jdou jen do dumpu v _local/)
@@ -348,6 +360,8 @@ def run(paths: list[Path], source_id: str, host: Any, match: list[dict] | None =
             base = {"id": ap.slugify(f"{source_id}-{group[:32]}-{f.stem}"), "source_id": source_id, "name": name,
                     "group": group, "file": f.name, "container": container}
         todo.append((f, base, c))
+    if skip is not None:
+        skip.update(seen)
     if pinned is not None:
         bad += [f"{r['id']}: soubor se sha256 {s} nenalezen v zadaných cestách" for s, r in pinned.items() if s not in seen]
         order = {r["container"]["sha256"]: i for i, r in enumerate(match)}
@@ -397,6 +411,68 @@ def write_jsonl(path: Path, rows: list[dict]) -> None:
     os.replace(tmp, path)
 
 
+def write_jsonl_text(path: Path, text: str) -> None:
+    """Totéž jako write_jsonl, ale pro hotový text (souhrn JSON); vždy končí jedním novým řádkem."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(text.rstrip("\n") + "\n", encoding="utf-8", newline="\n")
+    os.replace(tmp, path)
+
+
+def slug_ascii(text: str) -> str:
+    """Název složky → část id (bez diakritiky, jen a-z0-9 a pomlčky)."""
+    import unicodedata
+    return ap.slugify(unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode())
+
+
+def source_entry(item: dict, today: str) -> dict:
+    """Záznam pro knowledge/sources.jsonl: autor není znám (název složky není důkaz), jen počty a způsob čtení."""
+    root_files = item["folder"] == "(root)"
+    where = "soubory přímo ve složce S1 Presets" if root_files else f"složka {item['folder']}"
+    return {"id": item["id"], "kind": "preset_pack",
+            "title": f"Serum 1 presety (.fxp; {where})" if root_files else f"{item['folder']} — Serum 1 presety (.fxp; {where})",
+            "author": "bez autora", "access": "local_file", "verified_by": "local_file", "verified_on": today,
+            "redistribution": "none", "basis": "preset_file",
+            "notes": (f"Serum 2 Presets/Presets/S1 Presets{'' if root_files else '/' + item['folder']}; {item['files']} .fxp, "
+                      f"{item['presets']} po deduplikaci podle sha256 ({item['duplicates']} duplikátů vůči jiné složce nebo packu"
+                      f"{', ' + str(item['bad']) + ' nečitelných' if item['bad'] else ''}). Autorství nepotvrzeno: název složky není důkaz, "
+                      "uživatel potvrdil jen Teddy Killerz, Burr Oak a Redpill. Kontejner čte analyze_fxp.py; oscilátory, filtr, zapnutá FX "
+                      "a amounty mod matice čte analyze_fxp_host.py přes hostované Serum 1 (reader serum1_host); zdroj/cíl modulace, "
+                      "pořadí FX, mono a křivky LFO se nečtou.")}
+
+
+def by_folder(root: Path, host: Any, id_prefix: str, out_dir: Path, skip_folders: set[str], exclude: set[str], log=print,
+              write: bool = True) -> tuple[list[dict], list[str]]:
+    """Každá složka první úrovně v `root` (a .fxp přímo v `root` jako „(root)“) je jeden zdroj `<prefix><slug>`.
+
+    Duplikáty podle sha256 se vynechají vůči `exclude` (už zapsané indexy) i vůči dřívějším složkám (abecedně bez ohledu
+    na velikost písmen, „(root)“ nakonec). Zapisuje `<out_dir>/fxp/<id>.jsonl`, `<out_dir>/features/<id>.jsonl` a dumpy do
+    `<out_dir>/_local/<id>-host/`; vrací (souhrn po zdrojích, chyby)."""
+    entries = sorted(root.iterdir(), key=lambda x: x.name.lower())
+    groups = [(e.name, [e]) for e in entries if e.is_dir() and e.name not in skip_folders]
+    loose = [e for e in entries if e.is_file() and e.suffix.lower() == ".fxp"]
+    if loose:
+        groups.append(("(root)", loose))
+    skip, summary, bad_all, ids = set(exclude), [], [], set()
+    for name, paths in groups:
+        sid = id_prefix + (slug_ascii(name) if name != "(root)" else "root")
+        if sid in ids:
+            raise ValueError(f"id zdroje {sid} vzniklo z víc složek (přejmenuj nebo přidej --skip-folder)")
+        ids.add(sid)
+        stats: dict[str, int] = {}
+        log(f"{sid}: {name}")
+        idx, feats, bad = run(paths, sid, host, dump_dir=out_dir / "_local" / f"{sid}-host" if write else None,
+                              log=log, skip=skip, stats=stats)
+        bad_all += [f"{sid}: {b}" for b in bad]
+        if idx and write:
+            write_jsonl(out_dir / "fxp" / f"{sid}.jsonl", idx)
+            write_jsonl(out_dir / "features" / f"{sid}.jsonl", feats)
+        if idx or stats["files"]:
+            summary.append({"id": sid, "folder": name, "files": stats["files"], "presets": len(idx),
+                            "duplicates": stats["duplicates"], "bad": len(bad)})
+    return [s for s in summary if s["presets"]], bad_all
+
+
 def main(argv: list[str] | None = None) -> int:
     for s in (sys.stdout, sys.stderr):
         try:
@@ -404,8 +480,16 @@ def main(argv: list[str] | None = None) -> int:
         except (AttributeError, ValueError):
             pass
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("paths", type=Path, nargs="+", help="složka(y) nebo .fxp soubory")
-    p.add_argument("--source-id", required=True)
+    p.add_argument("paths", type=Path, nargs="*", help="složka(y) nebo .fxp soubory")
+    p.add_argument("--source-id", help="id zdroje (bez --by-folder povinné)")
+    p.add_argument("--by-folder", type=Path, metavar="ROOT", help="každá složka první úrovně v ROOT je jeden zdroj (viz by_folder)")
+    p.add_argument("--id-prefix", default="s1-", help="předpona id zdrojů při --by-folder")
+    p.add_argument("--out-dir", type=Path, default=Path(__file__).resolve().parent.parent / "data" / "presets",
+                   help="kam píše --by-folder (fxp/, features/, _local/)")
+    p.add_argument("--skip-folder", action="append", default=[], help="složka v ROOT, která se vynechá (lze opakovat)")
+    p.add_argument("--exclude-index", type=Path, action="append", default=[], help="index, jehož sha256 se vynechají (lze opakovat)")
+    p.add_argument("--summary", type=Path, help="JSON souhrn po zdrojích (--by-folder)")
+    p.add_argument("--sources-out", type=Path, help="návrh záznamů pro knowledge/sources.jsonl (--by-folder)")
     p.add_argument("--match-index", type=Path, help="stávající index (JSONL): stejná sada souborů (podle sha256) a stejná id/group/name")
     p.add_argument("--out-index", type=Path, help="kompaktní index řádky (do repa, data/presets/fxp/<id>.jsonl)")
     p.add_argument("--out-features", type=Path, help="feature vektory (do repa, data/presets/features/<id>.jsonl)")
@@ -416,6 +500,36 @@ def main(argv: list[str] | None = None) -> int:
     a = p.parse_args(argv)
 
     # levné kontroly dřív než ~19 s start pluginu
+    if a.by_folder:
+        if not a.by_folder.is_dir():
+            print(f"neexistuje: {a.by_folder}", file=sys.stderr)
+            return 2
+        exclude: set[str] = set()
+        for ex in a.exclude_index:
+            try:
+                exclude |= {r["container"]["sha256"] for r in load_index(ex)}
+            except (OSError, json.JSONDecodeError, KeyError) as e:
+                print(f"--exclude-index {ex} nejde přečíst: {e}", file=sys.stderr)
+                return 2
+        try:
+            host = S1Host(a.plugin)
+        except RuntimeError as e:
+            print(f"chyba: {e}", file=sys.stderr)
+            return 2
+        summary, bad = by_folder(a.by_folder, host, a.id_prefix, a.out_dir, set(a.skip_folder), exclude)
+        for b in bad:
+            print("chyba:", b, file=sys.stderr)
+        print(f"{len(summary)} zdrojů, {sum(s['presets'] for s in summary)} presetů, {len(bad)} chyb")
+        if a.summary:
+            a.summary.parent.mkdir(parents=True, exist_ok=True)
+            write_jsonl_text(a.summary, json.dumps(summary, ensure_ascii=False, indent=1))
+        if a.sources_out:
+            from datetime import date
+            write_jsonl(a.sources_out, [source_entry(s, date.today().isoformat()) for s in summary])
+        return 1 if bad else 0
+    if not a.paths or not a.source_id:
+        print("zadej cesty a --source-id (nebo --by-folder ROOT)", file=sys.stderr)
+        return 2
     missing = [str(x) for x in a.paths if not x.exists()]
     if missing:
         print("neexistuje:", ", ".join(missing), file=sys.stderr)
