@@ -41,6 +41,8 @@ NAME_RULES = [
 # Prefixy balíků: BA_ = bass, SY_ = syntezátor, PD_ = pad, FX_ = fx, DR_ = bicí (Burr Oak); "BA ..." a "TKpatreon" u dalších.
 ROLE_RULES = [
     ("perc", r"kick|\bkik\b|snare|clap|drums|perc|hats?\b|toms|cymbal|^dr[_ ]"),
+    # konvence "<AUTOR>_Bass_<název>" a "SERUM PRESET BASS <název>": po "Bass" je jen jméno zvuku, ne role
+    ("bass", r"_bass_|preset bass "),
     ("fx", r"riser|buildup|scream|drunk|breathfx|foley|sweep|impact|rattle|^fx[_ ]|^fx$|transition|reverse"),
     ("chords", r"chord"),
     ("pluck", r"pluck"),

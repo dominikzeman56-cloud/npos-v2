@@ -32,3 +32,10 @@ def test_rejects_garbage(tmp_path):
         fx.read_fxp(tmp_path / "x.fxp")
     with pytest.raises(ValueError):
         fx.read_fxp(make(tmp_path / "bank.fxp", kind=b"FBCh"))
+
+
+def test_bass_prefix_wins_over_descriptive_word():
+    import index_presets as ip
+    assert ip.role_of("REDPILL_Bass_lazer") == "bass"
+    assert ip.role_of("REDPILL_Bass_screamingbass") == "bass"
+    assert ip.role_of("TK LD 05.23 - 1") == "lead"
