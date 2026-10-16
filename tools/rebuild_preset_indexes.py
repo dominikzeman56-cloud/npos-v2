@@ -74,7 +74,7 @@ def features(reading: dict) -> dict:
         "lfo_points": sum(len(l["curve"]["x"]) for l in lfos if l.get("curve")),
         "env_count": len(reading.get("envs", [])),
         "macro_count": len(reading.get("macros", [])),
-        "mono": int(reading.get("voice", {}).get("kParamMonoToggle") == 1),
+        "mono": int(reading.get("voice", {}).get("kParamMonoToggle") == 1 or reading.get("voice", {}).get("kParamPolyCount") == 1),  # same rule as index_presets.cues()
     }
     for name in FX_KINDS.values():
         v[f"fx_{name}"] = 0

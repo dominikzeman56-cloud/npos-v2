@@ -7,6 +7,7 @@ dependencies = []
 
 [project.optional-dependencies]
 serum = ["cbor2", "zstandard"]   # tools/analyze_preset.py
+host = ["pedalboard"]   # tools/analyze_fxp_host.py (hostuje Serum 1 VST3; pedalboard je GPL-3.0, jen lokální nástroj, nepatří do dev/CI)
 dev = ["pytest", "numpy", "scipy", "cbor2", "zstandard"]   # pytest tools (stejné jako CI)
 
 [tool.pytest.ini_options]
