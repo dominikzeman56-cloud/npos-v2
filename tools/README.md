@@ -13,6 +13,7 @@
 | `preset_stats.py` | hotovo | medián a kvartily parametrů a zvuku po rolích a packách, kontrast rolí (Cliffovo delta); skupina s n < 10 jen počet → `data/presets/stats/` |
 | `serum_preset_io.py` | hotovo | čtení a zápis `.SerumPreset` (XferJson + zstd + CBOR, přepočet md5 hashe); bez `neuroman/` |
 | `preset_seed.py` | hotovo | startovní bod: reálný Serum 2 preset dané role + pár zmutovaných spojitých parametrů (rozsah p10–p90 z presetů role od 10 kusů, jinak z celého korpusu; bez celočíselných, křivek obálek, bez obrácení znaménka); výstup jen lokálně (`_local` nebo mimo repo), `derived_from`, `hypothesis`; `--check` vyrenderuje zdroj a mutant a zahodí nepovedené (potřebuje lokálně `pedalboard`, GPL-3.0) ; `--export-seeds` poskládá malou sadu semínek (20–30), místní stránka `/generator.html` ve vault-app |
+| `als_stats.py` | hotovo | struktura Live setů (`.als`, jen čtení): počty tracků, skupin, returnů, Utility s ubraným gainem, HP na kicku, pluginy → `data/als/als-stats.json` (jen čísla, bez cest a názvů; vlastní tvorba zvlášť, skupina n < 10 jen počet); VST EQ nečte |
 | `check_presets.py` | hotovo | konzistence dat presetů (unikátní id, typy, sha256, bez lokálních cest); běží v CI |
 | `vault-app/` | hotovo | read-only prohlížeč vaultu a statický export pro sdílení (jen `Hudební produkce`, za heslem); viz README uvnitř |
 | `rebuild_track_index.py` | plánováno | `data/tracks` + `data/presets` → `data/corpus/*.jsonl` |

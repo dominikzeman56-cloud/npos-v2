@@ -177,6 +177,7 @@ Pravidla: `lessons` nejvýš 5 a proveditelné v jedné session · `recreate_wor
 
 **Stav (2026-10-15):** šablona `NEUROFUNK_TEMPLATE_FINAL` byla uživatelem označena za nedobrou a **není součástí kánonu NPOS**. Poznámky o šabloně byly smazány; vault `02 Šablona` zůstává jako **archivní poznámka** (kritika dogmat v10 a pasti sestavování `.als` v ní jsou užitečné, ale nejsou závazné). Nová šablona vznikne až z ověřených rozhodnutí (rozbory, `data/`), ne obráceně.
 Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XML se nepřenáší z cizích setů (pády).
+**Stav (2026-10-17):** nová šablona je ve fázi návrhu (základ: kurz Pythius, jeden zdroj, hodnoty nesou štítek). `tools/als_stats.py` jen čte strukturu `.als` (lokální kurzy a vlastní projekty) a do `data/als/` zapisuje čísla bez cest a názvů; vlastní projekty se počítají zvlášť a nejsou důkaz. Šablona se staví ručně v Live s Producer Pal; z `.als` se nic negeneruje.
 
 ---
 
