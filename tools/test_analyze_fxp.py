@@ -9,7 +9,7 @@ import pytest  # noqa: E402
 import analyze_fxp as fx  # noqa: E402
 
 
-def make(path: Path, name="Main Bass", fx_id=b"XfsX", state=b"\0\0\0\0Analog\x.wav\0Macro 1\0Macro 2\0", kind=b"FPCh"):
+def make(path: Path, name="Main Bass", fx_id=b"XfsX", state=b"\0\0\0\0Analog_x.wav\0Macro 1\0Macro 2\0", kind=b"FPCh"):
     z = zlib.compress(state)
     d = b"CcnK" + struct.pack(">I", 0) + kind + struct.pack(">I", 1) + fx_id + struct.pack(">II", 1, 1) + name.encode().ljust(28, b"\0") + struct.pack(">I", len(z)) + z
     path.write_bytes(d)
