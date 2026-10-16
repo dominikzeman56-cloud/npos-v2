@@ -54,3 +54,13 @@ def test_vector_transforms_and_missing():
     keys = [k for k, _ in pr.FEATURES]
     assert v[keys.index("centroid_hz")] == 3.0 and v[keys.index("side_minus_mid_db")] == -40.0
     assert v[keys.index("attack")] == 1.0 and v[keys.index("rms_db")] is None
+
+
+def test_duplicate_sha_and_serum1_host_modulation_must_be_null(tmp_path):
+    row = {"source_id": "s", "reader": "serum1_host", "cues": {"lfo_to_filter": 0, "silent_mod_osc": None}, "container": {"sha256": "abc"}}
+    write(tmp_path / "fxp" / "s.jsonl", [{"id": "s1", **row}, {"id": "s2", **row}])
+    write(tmp_path / "features" / "s.jsonl", [{"id": "s1", "reader": "serum1_host", "features": {"mod_lfo": 0, "mod_env": None}}])
+    errs = " | ".join(cp.check(tmp_path))
+    for needle in ("s2 má stejný sha256 jako s1", "cues.lfo_to_filter má být null", "s1.mod_lfo má být null"):
+        assert needle in errs, needle
+    assert "mod_env" not in errs
