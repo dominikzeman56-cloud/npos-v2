@@ -91,3 +91,28 @@ def test_render_with_real_plugin():
         pytest.skip("vzorový preset chybí")
     d = rp.descriptors(r.render(user.read_bytes()))
     assert d["silent"] is False and d["band_sub_pct"] + d["band_low_pct"] > 20
+
+
+def test_upper_motion_separates_moving_formant_from_static_tone():
+    t = np.arange(int(3.0 * SR)) / SR
+    static = sum(np.sin(2 * np.pi * 41.2 * k * t) / k for k in range(1, 30))
+    # "growl": jas nad subem se mění 3x za sekundu (vyšší harmonické zesilují a slábnou)
+    lfo = 0.5 + 0.5 * np.sin(2 * np.pi * 3.0 * t)
+    moving = sum(np.sin(2 * np.pi * 41.2 * k * t) / k * (lfo if k > 4 else 1.0) for k in range(1, 30))
+    a = rp.descriptors(np.stack([static, static]) * 0.1)
+    b = rp.descriptors(np.stack([moving, moving]) * 0.1)
+    assert b["upper_motion"] > 3 * a["upper_motion"]
+    assert abs(b["upper_motion_hz"] - 3.0) < 0.6
+    noise = rp.descriptors(tone(0, noise=True))
+    assert noise["upper_flatness"] > 0.5 > a["upper_flatness"]
+
+
+def test_redescribe_from_wav(tmp_path):
+    from scipy.io import wavfile
+    (tmp_path / "w" / "src").mkdir(parents=True)
+    wavfile.write(tmp_path / "w" / "src" / "p1.wav", SR, (tone(41.2).T * 32767).astype(np.int16))
+    jp = tmp_path / "a.jsonl"
+    jp.write_text(json.dumps({"id": "p1", "source_id": "src", "protocol": rp.PROTOCOL, "audio": {}}) + "\n", encoding="utf-8")
+    n, missing = rp.redescribe([jp], tmp_path / "w")
+    row = json.loads(jp.read_text(encoding="utf-8"))
+    assert n == 1 and not missing and row["audio"]["band_sub_pct"] > 90 and row["audio_basis"] == "wav16"

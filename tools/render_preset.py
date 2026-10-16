@@ -36,6 +36,8 @@ import analyze_track as at  # noqa: E402  (bass_modulation, mid_side_db)
 SR = at.SR  # 48 000 Hz, stejné jako analýza tracků
 PROTOCOL = {"note": 28, "note_name": "E1", "f0_hz": 41.2, "velocity": 100, "hold_s": 2.0, "tail_s": 1.0, "sr": SR,
             "bpm": 174, "onset_s": 0.1, "window_s": [0.25, 2.0], "channels": 2}   # okno je od nástupu noty
+# druhý protokol: leady, pady a synthy se posuzují ve své poloze, ne na E1 (tam zní jako basa)
+PROTOCOL_HIGH = {**PROTOCOL, "note": 60, "note_name": "C4", "f0_hz": 261.63}
 S2_PLUGIN = r"C:\Program Files\Common Files\VST3\Serum2.vst3\Contents\x86_64-win\Serum2.vst3"
 S1_PLUGIN = hostmod.DEFAULT_PLUGIN
 BANDS = (("sub", 0, 60), ("low", 60, 200), ("mid", 200, 2000), ("high", 2000, 8000), ("air", 8000, SR / 2))
@@ -96,6 +98,46 @@ def descriptors(audio: np.ndarray, protocol: dict | None = None) -> dict[str, An
     out["am_depth"] = round(float(env.std() / max(env.mean(), 1e-12)), 3)
     m_db, s_db = at.mid_side_db(seg, 60.0, 20000.0)
     out["side_minus_mid_db"] = round(float(s_db - m_db), 2)
+    out.update(upper_descriptors(mono, f, spec))
+    return out
+
+
+def upper_descriptors(mono: np.ndarray, f: np.ndarray, spec: np.ndarray, split_hz: float = 120.0) -> dict[str, Any]:
+    """Co se děje NAD subem. U jedné noty E1 drží většinu výkonu sub, takže reese/neuro/basa se v procentech pásem
+    neliší; liší se horní harmonické a jejich pohyb v čase (formant, který jezdí = growl; ustálené bití = reese)."""
+    out: dict[str, Any] = {}
+    hi = f >= split_hz
+    p_hi = float(spec[hi].sum())
+    total = float(spec.sum()) + 1e-30
+    out["upper_db"] = round(10.0 * np.log10(max(p_hi / total, 1e-12)), 2)
+    if p_hi <= 1e-20:
+        return out
+    out["upper_centroid_hz"] = round(float((f[hi] * spec[hi]).sum() / p_hi), 1)
+    band = (f >= split_hz) & (f <= 8000.0)
+    s = spec[band] + 1e-20
+    out["upper_flatness"] = round(float(np.exp(np.mean(np.log(s))) / np.mean(s)), 4)   # 0 = tónové, 1 = šum
+    # pohyb v čase: centroid nad split_hz po rámcích (2048 / hop 512)
+    ff, _t, z = sig.stft(mono, fs=SR, nperseg=2048, noverlap=2048 - 512)
+    mag = np.abs(z) ** 2
+    h = ff >= split_hz
+    ph = mag[h].sum(axis=0)
+    ok = ph > ph.max() * 1e-3 if ph.size else np.array([], dtype=bool)
+    if ok.sum() >= 8:
+        c = (ff[h, None] * mag[h]).sum(axis=0)[ok] / ph[ok]
+        out["upper_centroid_std_hz"] = round(float(c.std()), 1)
+        out["upper_motion"] = round(float(c.std() / max(c.mean(), 1e-9)), 3)     # relativní pohyb formantu
+        fps = SR / 512.0
+        cc = c - c.mean()
+        if len(cc) >= 16 and cc.std() > 0:
+            fr = np.fft.rfftfreq(len(cc), 1.0 / fps)
+            mg = np.abs(np.fft.rfft(cc * np.hanning(len(cc))))
+            b = (fr >= 0.5) & (fr <= 30.0)
+            if b.any():
+                out["upper_motion_hz"] = round(float(fr[b][int(np.argmax(mg[b]))]), 2)
+        # spektrální tok nad split_hz: průměrná změna spektra mezi rámci (normalizovaná)
+        m = mag[h][:, ok]
+        m = m / (m.sum(axis=0, keepdims=True) + 1e-20)
+        out["upper_flux"] = round(float(np.abs(np.diff(m, axis=1)).sum(axis=0).mean()), 4)
     return out
 
 
@@ -146,12 +188,13 @@ def s2_state(raw_state: bytes, preset: bytes) -> bytes:
 
 
 class Renderer:
-    def __init__(self, kind: str, plugin_path: str | None = None):
+    def __init__(self, kind: str, plugin_path: str | None = None, protocol: dict | None = None):
         try:
             from pedalboard import load_plugin
         except ImportError as e:  # pragma: no cover
             raise RuntimeError("chybí pedalboard (pip install pedalboard)") from e
         self.kind = kind
+        self.protocol = protocol or PROTOCOL
         if kind == "s2":
             self.plugin = load_plugin(plugin_path or os.environ.get("SERUM2_VST3") or S2_PLUGIN, plugin_name="Serum 2")
         else:
@@ -162,10 +205,11 @@ class Renderer:
 
     def _play(self) -> np.ndarray:
         """Jedna nota; reset=False (kolem 0,1 s místo ~6 s), proto na začátku all-sound-off a all-notes-off."""
-        n, v, on, hold = PROTOCOL["note"], PROTOCOL["velocity"], PROTOCOL["onset_s"], PROTOCOL["hold_s"]
+        pr = self.protocol
+        n, v, on, hold = pr["note"], pr["velocity"], pr["onset_s"], pr["hold_s"]
         msgs = [(bytes([0xB0, 120, 0]), 0.0), (bytes([0xB0, 123, 0]), 0.0),
                 (bytes([0x90, n, v]), on), (bytes([0x80, n, 0]), on + hold)]
-        a = self.plugin(msgs, duration=on + hold + PROTOCOL["tail_s"], sample_rate=SR, num_channels=2, reset=False)
+        a = self.plugin(msgs, duration=on + hold + pr["tail_s"], sample_rate=SR, num_channels=2, reset=False)
         return np.asarray(a, dtype=np.float32)
 
     def render(self, data: bytes) -> np.ndarray:
@@ -223,11 +267,11 @@ def run(renderer: Renderer, pairs: list[tuple[Path, dict]], source_id: str, wav_
     for i, (f, r) in enumerate(pairs[:limit] if limit else pairs):
         try:
             a = renderer.render(f.read_bytes())
-            d = descriptors(a)
+            d = descriptors(a, renderer.protocol)
         except Exception as e:  # noqa: BLE001 - jeden vadný preset nezastaví dávku
             bad.append(f"{f.name}: {type(e).__name__}: {e}")
             continue
-        rows.append({"id": r["id"], "source_id": source_id, "reader": f"render_{renderer.kind}", "protocol": PROTOCOL,
+        rows.append({"id": r["id"], "source_id": source_id, "reader": f"render_{renderer.kind}", "protocol": renderer.protocol,
                      "audio": d})
         if wav_dir is not None:
             from scipy.io import wavfile
@@ -238,6 +282,29 @@ def run(renderer: Renderer, pairs: list[tuple[Path, dict]], source_id: str, wav_
     return rows, bad
 
 
+def redescribe(jsonl_paths: list[Path], wav_root: Path, log=print) -> tuple[int, list[str]]:
+    """Přepočítá deskriptory z uložených wav (bez pluginu) a přepíše `audio` v řádcích. Vrací (počet, chybějící wav)."""
+    from scipy.io import wavfile
+    n, missing = 0, []
+    for jp in jsonl_paths:
+        rows = [json.loads(line) for line in jp.read_text(encoding="utf-8").splitlines() if line.strip()]
+        for r in rows:
+            w = wav_root / r["source_id"] / f"{r['id']}.wav"
+            if not w.exists():
+                missing.append(str(w))
+                continue
+            sr, a = wavfile.read(w)
+            if sr != SR:
+                missing.append(f"{w} (sr {sr})")
+                continue
+            r["audio"] = descriptors(a.T.astype(np.float64) / 32767.0, r.get("protocol"))
+            r["audio_basis"] = "wav16"   # přepočet z 16bit wav, ne z float renderu
+            n += 1
+        write_jsonl(jp, rows)
+        log(f"  {jp.name}: {len(rows)} řádků")
+    return n, missing
+
+
 def main(argv: list[str] | None = None) -> int:
     for s in (sys.stdout, sys.stderr):
         try:
@@ -245,15 +312,23 @@ def main(argv: list[str] | None = None) -> int:
         except (AttributeError, ValueError):
             pass
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("kind", choices=("s1", "s2"))
+    p.add_argument("kind", choices=("s1", "s2", "rewav"), help="rewav = přepočet deskriptorů z uložených wav (paths = audio/*.jsonl)")
     p.add_argument("paths", type=Path, nargs="+")
-    p.add_argument("--source-id", required=True)
-    p.add_argument("--match-index", type=Path, required=True)
-    p.add_argument("--out", type=Path, required=True)
+    p.add_argument("--source-id")
+    p.add_argument("--match-index", type=Path)
+    p.add_argument("--out", type=Path)
+    p.add_argument("--wav-root", type=Path, default=Path("data/presets/_local/audio"))
     p.add_argument("--wav-dir", type=Path, help="jen lokálně (data/presets/_local/audio/…), placené packy se nesdílejí")
     p.add_argument("--plugin")
+    p.add_argument("--high", action="store_true", help="nota C4 místo E1 (PROTOCOL_HIGH; výstup patří do data/presets/audio-c4/)")
     p.add_argument("--limit", type=int)
     a = p.parse_args(argv)
+    if a.kind == "rewav":
+        n, missing = redescribe(a.paths, a.wav_root)
+        print(f"{n} přepočteno, {len(missing)} wav chybí")
+        return 1 if missing else 0
+    if not (a.source_id and a.match_index and a.out):
+        p.error("s1/s2 potřebují --source-id, --match-index a --out")
     if a.wav_dir and "_local" not in a.wav_dir.parts:
         print("--wav-dir musí být pod _local (gitignored)", file=sys.stderr)
         return 2
@@ -263,7 +338,7 @@ def main(argv: list[str] | None = None) -> int:
         print("žádný soubor neodpovídá indexu", file=sys.stderr)
         return 1
     try:
-        r = Renderer(a.kind, a.plugin)
+        r = Renderer(a.kind, a.plugin, PROTOCOL_HIGH if a.high else PROTOCOL)
     except (RuntimeError, ImportError, ValueError) as e:
         print(f"chyba: {e}", file=sys.stderr)
         return 2
