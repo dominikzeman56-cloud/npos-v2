@@ -30,7 +30,7 @@ import index_presets as ip  # noqa: E402
 
 # složky plných dumpů mimo git (zpětná kompatibilita s dřívějšími názvy)
 DUMP_DIR = {"letsynthesize-preset-files": "letsynthesize"}
-COMPARE = ("id", "name", "group", "function", "archetype", "confidence", "cues", "fx_chain")
+COMPARE = ("id", "name", "group", "function", "role", "archetype", "confidence", "cues", "fx_chain")
 
 
 FX_KINDS = {"FXDistortion": "distortion", "FXFilter": "filter", "FXComp": "comp", "FXEQ": "eq", "FXReverb": "reverb", "FXDelay": "delay",
@@ -90,7 +90,7 @@ def feature_rows(rows: list[dict], dump_dir: Path) -> list[dict]:
         if not f.exists():
             continue
         reading = json.loads(f.read_text(encoding="utf-8")).get("reading", {})
-        out.append({"id": r["id"], "source_id": r["source_id"], "function": r["function"], "archetype": r["archetype"],
+        out.append({"id": r["id"], "source_id": r["source_id"], "function": r["function"], "role": r.get("role", "other"), "archetype": r["archetype"],
                     "confidence": "hypothesis", "basis": "preset_file", "features": features(reading)})
     return out
 

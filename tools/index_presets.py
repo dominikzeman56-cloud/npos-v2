@@ -37,6 +37,22 @@ NAME_RULES = [
     ("body", r"bass|reese|neuro|nruo|stab|annihilation|weird|screechy|metallic|noise|synth layer|thing|growl|wobble"
              r"|(^|[\s_])bs([\s_]|$)"),
 ]
+# jemnější role (návrh z jména, první shoda vyhrává; `hypothesis` jako function/archetype)
+ROLE_RULES = [
+    ("perc", r"kick|snare|clap|drums|perc|hat"),
+    ("fx", r"riser|buildup|scream|drunk|breathfx|foley|sweep|impact|rattle"),
+    ("chords", r"chord"),
+    ("pluck", r"pluck"),
+    ("pad", r"pad|atmos|drone|strings|soft"),
+    ("guitar", r"guitar"),
+    ("sub", r"sub|compressed sine|distorted sine"),
+    ("reese", r"reese|evilreese"),
+    ("neuro", r"neuro|nruo|wobble|growl"),
+    ("stab", r"stab"),
+    ("bass", r"bass|(^|[\s_])bs([\s_]|$)|basline|bassline"),
+    ("lead", r"lead|lazer|robot|idiot|funky|pulse|(^|[\s_])ld([\s_]|$)"),
+    ("layer", r"layer|synth|weird|screechy|metallic|thing|noise|annihilation"),
+]
 CROSS_WARP = ("_OSC", "_OSC2", "_SUB", "_NOISE")
 
 
@@ -72,6 +88,11 @@ def cues(a: dict[str, Any]) -> dict[str, Any]:
         "mono": r["voice"].get("kParamMonoToggle") == 1.0,
         "fx_count": len(r["fx"]),
     }
+
+
+def role_of(name: str) -> str:
+    n = name.lower()
+    return next((r for r, pat in ROLE_RULES if re.search(pat, n)), "other")
 
 
 def propose(name: str, c: dict[str, Any]) -> tuple[str, str, list[str]]:
@@ -123,7 +144,7 @@ def index(root: Path | list[Path], source_id: str, dump_dir: Path | None) -> tup
         c = cues(a)
         func, arch, why = propose(a["name"], c)
         rows.append({"id": pid, "source_id": source_id, "name": a["name"], "group": group, "file": f.name,
-                     "synth": a["synth"], "tags": a["tags"], "function": func, "archetype": arch,
+                     "synth": a["synth"], "tags": a["tags"], "function": func, "role": role_of(a["name"]), "archetype": arch,
                      "confidence": "hypothesis", "cues_basis": "preset_file", "cues": c, "why": why,
                      "fx_chain": a["fx_chain"]})
         full.append(a)
@@ -134,7 +155,7 @@ def index(root: Path | list[Path], source_id: str, dump_dir: Path | None) -> tup
     if dump_dir:
         dump_dir.mkdir(parents=True, exist_ok=True)
         for r, a in zip(rows, full):
-            a.update(id=r["id"], function=r["function"], archetype=r["archetype"])
+            a.update(id=r["id"], function=r["function"], role=r["role"], archetype=r["archetype"])
             (dump_dir / f"{r['id']}.json").write_text(json.dumps(a, ensure_ascii=False, indent=2) + "\n",
                                                       encoding="utf-8", newline="\n")
     return rows, bad

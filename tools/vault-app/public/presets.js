@@ -14,7 +14,8 @@ const ARCH = {
   'osc-warp-body': ['tělo z warpu jiným oscilátorem', 'kandidát, archetyp 16'],
   'unclassified': ['nezařazeno', ''],
 };
-const FN = { sub: 'sub', body: 'tělo (body)', movement: 'pohyb', noise: 'šum', texture: 'textura', lead: 'lead', pad: 'pad', fx: 'FX', other: 'jiné' };
+const FN = { bass: 'bass', reese: 'reese', neuro: 'neuro', sub: 'sub', stab: 'stab', lead: 'lead', pluck: 'pluck', chords: 'chords', pad: 'pad',
+  layer: 'vrstva / textura', guitar: 'kytara', perc: 'perkuse', fx: 'FX', other: 'jiné' }; // role = návrh z jména (hypothesis)
 const WARP = { kPD_OSC: 'PD z osc', kPD_OSC2: 'PD z osc (2)', kPD_NOISE: 'PD ze šumu', kSync: 'Sync', kFM_OSC: 'FM z osc', kFM_OSC2: 'FM z osc (2)',
   kFM_SUB: 'FM ze subu', kFM_NOISE: 'FM ze šumu', kAM_OSC: 'AM z osc', kRM_OSC: 'RM z osc', kRM_OSC2: 'RM z osc (2)' };
 const warpName = (w) => WARP[w] || w.replace(/^k/, '');
@@ -51,7 +52,7 @@ const TESTS = {
   xw: (p) => !F.xw || (F.xw === 'any' ? p.cues.cross_warp.length > 0 : F.xw === 'none' ? p.cues.cross_warp.length === 0 : p.cues.cross_warp.includes(F.xw)),
   uni: (p) => !F.uni || uniBucket(p.cues.max_unison) === F.uni,
   mono: (p) => !F.mono || (F.mono === 'mono') === !!p.cues.mono,
-  fn: (p) => !F.fn.size || F.fn.has(p.function),
+  fn: (p) => !F.fn.size || F.fn.has(p.role),
   arch: (p) => !F.arch.size || F.arch.has(p.archetype),
 };
 const passes = (p, skip) => Object.entries(TESTS).every(([k, t]) => k === skip || t(p));
@@ -74,7 +75,7 @@ function renderFacets() {
   fillSelect($('#uni'), 'uni', [['', 'vše'], ['1', '1 hlas', un.get('1') || 0], ['2-4', '2–4 hlasy', un.get('2-4') || 0], ['5+', '5 a víc', un.get('5+') || 0]]);
   const mo = countBy('mono', (p) => (p.cues.mono ? 'mono' : 'poly'));
   fillSelect($('#mono'), 'mono', [['', 'vše'], ['mono', 'mono', mo.get('mono') || 0], ['poly', 'poly', mo.get('poly') || 0]]);
-  const fn = countBy('fn', (p) => p.function);
+  const fn = countBy('fn', (p) => p.role);
   $('#fn').innerHTML = Object.keys(FN).filter((k) => fn.has(k) || F.fn.has(k))
     .map((k) => `<button type="button" class="chip${F.fn.has(k) ? ' on' : ''}" data-fn="${k}" aria-pressed="${F.fn.has(k)}">${esc(FN[k])}<span class="n">${fn.get(k) || 0}</span></button>`).join('');
   const ar = countBy('arch', (p) => p.archetype);
@@ -118,7 +119,7 @@ function rowHtml(p) {
   const arch = p.archetype === 'unclassified' ? '' : `<span class="tag" style="background:var(--accent-bg);color:var(--link)">${esc(p.archetype)}</span>`;
   return `<button type="button" class="row" data-id="${esc(p.id)}" aria-current="${p.id === SEL}">
     <span class="nm">${esc(p.name)}</span>
-    <span class="mt"><span class="tag">${esc(FN[p.function] || p.function)}</span>${arch}${bits ? `<span>${esc(bits)}</span>` : ''}</span></button>`;
+    <span class="mt"><span class="tag">${esc(FN[p.role] || p.role)}</span>${arch}${bits ? `<span>${esc(bits)}</span>` : ''}</span></button>`;
 }
 function renderList() {
   const list = DATA.presets.filter((p) => passes(p)).sort((a, b) => a.name.localeCompare(b.name, 'cs'));
@@ -348,7 +349,7 @@ async function renderDetail() {
   if (!p) { el.innerHTML = '<div class="pick">Vyber preset ze seznamu.</div>'; return; }
   const head = `<button class="back-list" type="button" id="backlist">← Seznam</button>
     <div class="dh"><h2>${esc(p.name)}</h2>
-      <div class="l"><div class="tags"><span class="tag">${esc(FN[p.function] || p.function)}</span>${archTag(p)}<span class="tag hyp" title="Funkce a archetyp jsou návrh z heuristiky (jméno + stopy v souboru)">hypotéza</span></div>
+      <div class="l"><div class="tags"><span class="tag">${esc(FN[p.role] || p.role)}</span>${archTag(p)}<span class="tag hyp" title="Funkce a archetyp jsou návrh z heuristiky (jméno + stopy v souboru)">hypotéza</span></div>
         <div class="cues">${cueList(p).map(esc).join(' <span class="dim">·</span> ')}</div></div>
       <div class="r">${(p.why || []).length ? `<div class="why">Proč tenhle návrh: ${esc(p.why.join('; '))}</div>` : ''}
         <div class="meta">${esc(p.synth || '')}${(p.tags || []).length ? ' · tagy ve Seru: ' + esc(p.tags.join(', ')) : ''}</div></div></div>`;
