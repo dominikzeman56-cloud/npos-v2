@@ -27,6 +27,7 @@ Všechny vracejí JSON s `Cache-Control: no-store`, pokud není uvedeno jinak.
 | `GET /api/graph` | | `{ nodes: [{ id, name, group, deg }], links: [[zdroj, cíl]] }` |
 | `GET /api/next-step` | | strom „Co dál?“ (`knowledge/guides/next-step.json`): `phases`, `items` |
 | `GET /api/presets` | | kompaktní index presetů (`data/presets/index/*.jsonl`) s metadaty packů |
+| `GET /api/presets/similar` | `id`, `mode` (`params` výchozí / `audio`), `k` (výchozí 8, max 30) | nejbližší presety: z-skóre přes sdílené veličiny `features/*.jsonl` (min. 8) nebo deskriptory renderu jedné noty `audio/*.jsonl` (min. 10); `{id, mode, note, similar:[{id,name,pack,source_id,role,d,n}]}`; 404 neznámé id, 400 neznámý `mode`; nejde o poslech |
 | `GET /api/preset` | `id` (`^[a-z0-9][a-z0-9-]*$`) | stavba presetu z lokálního dumpu; `404`, pokud id neexistuje nebo má neplatný tvar |
 | `GET /asset` | `path` (relativní k vaultu) | obrázek, PDF a podobné soubory z vaultu; `403` mimo vault a pro složky z `VAULT_IGNORE` |
 | `GET /vendor/markdown-it.min.js`, `/vendor/d3.min.js` | | knihovny z `node_modules` |
@@ -36,7 +37,7 @@ Index se přestaví automaticky po změně souboru ve vaultu (sledování soubor
 
 ## Statický export
 
-`site/` obsahuje stránky, `data/vault.json` (index + poznámky + tagy + graf), `data/presets.json`, `data/next-step.json` a volitelně `data/builds/`. Z exportu se odstraňují lokální cesty (`D:\…`, viz `lib/scrub-paths.mjs`). Složky `workshop videos` a `ai-memory-vault` se nevyvážejí, stejně tak poznámky s `share: false`.
+`site/` obsahuje stránky, `data/vault.json` (index + poznámky + tagy + graf), `data/presets.json`, `data/similar.json` (předpočítaní sousedé obou režimů; jen čísla, jména a titulky packů, žádné audio ani wavetably), `data/next-step.json` a volitelně `data/builds/`. Z exportu se odstraňují lokální cesty (`D:\…`, viz `lib/scrub-paths.mjs`). Složky `workshop videos` a `ai-memory-vault` se nevyvážejí, stejně tak poznámky s `share: false`.
 
 Přístup na Vercelu hlídá `deploy/middleware.js` (Basic Auth proti `VAULT_PASSWORD`).
 
@@ -67,6 +68,7 @@ Sessions z Dashboardu se exportují tlačítkem **export** jako pole objektů po
 
 - `server.test.mjs`: spustí server na náhodném portu proti dočasnému vaultu a ověří endpointy, `VAULT_IGNORE` a odmítnutí `..`.
 - `lib/presets-data.test.mjs`: `buildView`, validace id, načtení indexu.
+- `lib/presets-similar.test.mjs`: vzdálenost, minimum sdílených veličin, režim audio, obsah exportu.
 - `lib/scrub-paths.test.mjs`: odstraňování cest při exportu.
 
 CI (`.github/workflows/ci.yml`) pouští `pytest tools`, `tools/check_repo.py` a `npm test`.

@@ -83,6 +83,19 @@ test('GET /api/presets returns the compact index, /api/preset validates the id',
   assert.equal((await get('/api/preset?id=neexistuje-xyz')).status, 404);
 });
 
+test('GET /api/presets/similar returns neighbours for a known preset and validates input', async () => {
+  const id = (await (await get('/api/presets')).json()).presets[0].id;
+  const r = await get(`/api/presets/similar?id=${encodeURIComponent(id)}&k=3`);
+  assert.equal(r.status, 200);
+  const d = await r.json();
+  assert.equal(d.mode, 'params');
+  assert.match(d.note, /ne poslech/);
+  assert.ok(d.similar.length > 0 && d.similar.length <= 3);
+  assert.ok(d.similar.every((x) => x.id !== id && Number.isFinite(x.d) && x.n >= 8));
+  assert.equal((await get('/api/presets/similar?id=neexistuje-xyz')).status, 404);
+  assert.equal((await get(`/api/presets/similar?id=${encodeURIComponent(id)}&mode=wav`)).status, 400);
+});
+
 test('path traversal is refused for static files and /asset', async () => {
   assert.equal((await get('/asset?path=' + encodeURIComponent('../secret.txt'))).status, 403);
   assert.equal((await get('/asset?path=' + encodeURIComponent('tajne/x.md'))).status, 403);

@@ -24,6 +24,7 @@ const uniBucket = (n) => (n <= 1 ? '1' : n <= 4 ? '2-4' : '5+');
 let DATA = { packs: [], presets: [] };
 let SEL = null;
 const BUILDS = new Map();
+const SIM = { mode: lsGet('simmode', 'params'), static: undefined, live: new Map() };
 const F = { q: '', pack: '', xw: '', uni: '', mono: '', fn: new Set(), arch: new Set() };
 
 /* ---------- URL state ---------- */
@@ -353,7 +354,8 @@ async function renderDetail() {
         <div class="cues">${cueList(p).map(esc).join(' <span class="dim">·</span> ')}</div></div>
       <div class="r">${(p.why || []).length ? `<div class="why">Proč tenhle návrh: ${esc(p.why.join('; '))}</div>` : ''}
         <div class="meta">${esc(p.synth || '')}${(p.tags || []).length ? ' · tagy ve Seru: ' + esc(p.tags.join(', ')) : ''}</div></div></div>`;
-  el.innerHTML = head + '<div id="bd" class="dim">Načítám stavbu…</div>';
+  el.innerHTML = head + '<div id="sim" class="sim"></div><div id="bd" class="dim">Načítám stavbu…</div>';
+  renderSimilar(SEL);
   $('#backlist').onclick = () => { history.length > 1 ? history.back() : select(null, false); };
   const myId = SEL;
   const b = await loadBuildFor(myId);
@@ -362,6 +364,41 @@ async function renderDetail() {
   $('#bd').innerHTML = b ? renderBuild(b)
     : '<div class="dim">Stavba presetu tu není k dispozici (je jen v lokálním režimu, <code>node server.mjs</code>).</div>'
       + '<div class="sec"><h3>FX řetěz</h3>' + ((p.fx_chain || []).length ? `<ol class="fxl">${p.fx_chain.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>` : '<div class="dim">bez FX</div>') + '</div>';
+}
+
+/* ---------- Podobné presety ---------- */
+// Vzdálenost = z-skóre přes sdílené klíče features/ (parametry ze souboru) nebo deskriptorů renderu jedné noty (audio/).
+// Statický export má sousedy předpočítané v /data/similar.json, lokální server je počítá v /api/presets/similar.
+const SIM_NOTE = 'podobnost parametrů/zvuku z jedné noty, ne poslech';
+async function loadSimilar(id, mode) {
+  if (SIM.static === undefined) {
+    try { const r = await fetch('/data/similar.json'); SIM.static = r.ok && (r.headers.get('content-type') || '').includes('json') ? await r.json() : null; } catch { SIM.static = null; }
+  }
+  if (SIM.static) return (SIM.static[mode]?.[id] || []).map((x) => ({ ...x, pack: SIM.static.packs?.[x.source_id] || x.source_id }));
+  const key = mode + ':' + id;
+  if (!SIM.live.has(key)) {
+    let out = [];
+    try { const r = await fetch(`/api/presets/similar?id=${encodeURIComponent(id)}&mode=${mode}`); if (r.ok) out = (await r.json()).similar || []; } catch { /* offline */ }
+    SIM.live.set(key, out);
+  }
+  return SIM.live.get(key);
+}
+function simItem(s) {
+  const inList = DATA.presets.some((x) => x.id === s.id);
+  const mt = `<span class="tag">${esc(FN[s.role] || s.role || '')}</span><span>${esc(s.pack)}</span><span class="dist" title="0 = stejný vektor; počítáno přes ${s.n} sdílených veličin">vzdálenost ${s.d.toFixed(2)} · ${s.n} veličin</span>`;
+  return inList ? `<li><button type="button" class="it" data-sim="${esc(s.id)}"><span class="nm">${esc(s.name)}</span><span class="mt">${mt}</span></button></li>`
+    : `<li><div class="it"><span class="nm">${esc(s.name)}</span><span class="mt">${mt}</span></div></li>`;
+}
+async function renderSimilar(id) {
+  const el = $('#sim');
+  if (!el) return;
+  const modes = [['params', 'parametry'], ['audio', 'zvuk (E1)']];
+  const head = `<div class="sh"><h3>Podobné</h3><div class="modes">${modes.map(([m, l]) => `<button type="button" class="chip${SIM.mode === m ? ' on' : ''}" data-simmode="${m}" aria-pressed="${SIM.mode === m}">${l}</button>`).join('')}</div><span class="snote">${SIM_NOTE}</span></div>`;
+  el.innerHTML = head + '<div class="dim" style="margin-top:6px">Počítám…</div>';
+  const list = await loadSimilar(id, SIM.mode);
+  if (SEL !== id) return;
+  el.innerHTML = head + (list.length ? `<ol>${list.map(simItem).join('')}</ol>`
+    : `<div class="dim" style="margin-top:6px">${SIM.mode === 'audio' ? 'Pro tenhle preset není vyrenderovaný zvuk z jedné noty.' : 'Pro tenhle preset nejsou parametry k porovnání.'}</div>`);
 }
 
 /* ---------- selection / render ---------- */
@@ -390,6 +427,12 @@ function bind() {
   $('#fn').addEventListener('click', (e) => { const b = e.target.closest('[data-fn]'); if (!b) return; const k = b.dataset.fn; F.fn.has(k) ? F.fn.delete(k) : F.fn.add(k); render(); });
   $('#arch').addEventListener('click', (e) => { const b = e.target.closest('[data-arch]'); if (!b) return; const k = b.dataset.arch; F.arch.has(k) ? F.arch.delete(k) : F.arch.add(k); render(); });
   $('#list').addEventListener('click', (e) => { const r = e.target.closest('.row'); if (r) select(r.dataset.id); });
+  $('#detail').addEventListener('click', (e) => {
+    const m = e.target.closest('[data-simmode]');
+    if (m) { SIM.mode = m.dataset.simmode; lsSet('simmode', SIM.mode); renderSimilar(SEL); return; }
+    const b = e.target.closest('[data-sim]');
+    if (b) select(b.dataset.sim);
+  });
   $('#reset').addEventListener('click', () => { Object.assign(F, { q: '', pack: '', xw: '', uni: '', mono: '', fn: new Set(), arch: new Set() }); $('#q').value = ''; render(); });
   const sk = $('#skin'); sk.value = lsGet('skin', 'samurai'); // skin switcher (shared with the vault: localStorage vault.skin)
   sk.addEventListener('change', () => { lsSet('skin', sk.value); applyTheme(); });

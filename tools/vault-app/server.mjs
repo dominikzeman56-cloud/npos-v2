@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { buildIndex, DEFAULT_IGNORE, indexPayload, notePayload, tagsPayload, graphPayload } from './lib/vault-index.mjs';
 import { search } from './public/search-core.js';
 import { loadPresets, loadBuild } from './lib/presets-data.mjs';
+import { loadPool, similar, MODES } from './lib/presets-similar.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const VAULT = path.resolve(process.env.VAULT_PATH || 'D:\\ObsidianVault');
@@ -29,6 +30,13 @@ let idx = null;
 async function rebuild() {
   idx = await buildIndex({ vault: VAULT, ignore: IGNORE });
   console.log(`[index] ${idx.notes.size} notes, ${idx.rels.length} files, ${idx.tags.size} tags`);
+}
+
+const REPO = path.resolve(HERE, '..', '..');
+let pool = null, poolAt = 0;
+async function getPool() { // features/audio se mezi dotazy mění jen při novém běhu nástrojů, minuta stačí
+  if (!pool || Date.now() - poolAt > 60_000) { pool = await loadPool(REPO); poolAt = Date.now(); }
+  return pool;
 }
 
 const json = (res, data, status = 200) => {
@@ -62,6 +70,13 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/graph') return json(res, graphPayload(idx));
     if (p === '/api/next-step') return sendFile(res, path.resolve(HERE, '..', '..', 'knowledge', 'guides', 'next-step.json'), { 'Cache-Control': 'no-store' });
     if (p === '/api/presets') return json(res, await loadPresets(path.resolve(HERE, '..', '..')));
+    if (p === '/api/presets/similar') {
+      const mode = q.get('mode') || 'params';
+      if (!MODES.includes(mode)) return json(res, { error: 'mode must be one of ' + MODES.join(', ') }, 400);
+      const k = Number(q.get('k')) || 8;
+      const out = similar(await getPool(), q.get('id') || '', { mode, k });
+      return out ? json(res, { id: q.get('id'), mode, note: 'podobnost parametrů/zvuku z jedné noty, ne poslech', similar: out }) : json(res, { error: 'not found' }, 404);
+    }
     if (p === '/api/preset') { const b = await loadBuild(path.resolve(HERE, '..', '..'), q.get('id')); return b ? json(res, b) : json(res, { error: 'not found' }, 404); }
     if (p === '/asset') {
       const rel = (q.get('path') || '').replace(/\\/g, '/');

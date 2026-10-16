@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { buildIndex, DEFAULT_IGNORE, indexPayload, notePayload, tagsPayload, graphPayload } from './lib/vault-index.mjs';
 import { scrubDeep } from './lib/scrub-paths.mjs';
 import { loadPresets, loadBuild } from './lib/presets-data.mjs';
+import { loadPool, similarAll } from './lib/presets-similar.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const arg = (name, def) => { const i = process.argv.indexOf('--' + name); return i > 0 ? process.argv[i + 1] : def; };
@@ -45,6 +46,9 @@ await fs.writeFile(path.join(OUT, 'data', 'vault.json'), JSON.stringify(db));
 // preset index (compact index only; full dumps in data/presets/_local are never read)
 const presets = await loadPresets(path.resolve(HERE, '..', '..'));
 await fs.writeFile(path.join(OUT, 'data', 'presets.json'), JSON.stringify(presets));
+// nejbližší sousedé (čísla z features/ a audio/, žádné audio ani wavetably) pro presety, které prohlížeč zobrazuje
+const sim = similarAll(await loadPool(path.resolve(HERE, '..', '..')), presets.presets.map((p) => p.id));
+await fs.writeFile(path.join(OUT, 'data', 'similar.json'), JSON.stringify(sim));
 await copy(path.resolve(HERE, '..', '..', 'knowledge', 'guides', 'next-step.json'), path.join(OUT, 'data', 'next-step.json'));
 // Builds (full parameter detail of paid packs) stay local unless explicitly requested: node export-static.mjs --builds
 let builds = 0;
@@ -83,6 +87,7 @@ for (const n of idx.notes.values()) {
 const size = (await fs.stat(path.join(OUT, 'data', 'vault.json'))).size;
 console.log(`Exported from: ${VAULT}`);
 console.log(`Excluded dirs: ${EXCLUDE.join(', ') || '-'}   (share:false notes honored)`);
+console.log(`Similar presets: ${Object.keys(sim.params).length} (params), ${Object.keys(sim.audio).length} (audio)`);
 console.log(`Preset builds in export: ${builds}${builds ? '  (!! paid-pack detail, shared behind the password)' : ' (local only)'}`);
 console.log(`Notes: ${idx.notes.size}, images: ${assets.length}, vault.json: ${(size / 1024).toFixed(0)} KB`);
 console.log(`Links to anything outside the export (shown as dead links): ${brokenOut} (${excludedTargets.size} distinct targets)`);
