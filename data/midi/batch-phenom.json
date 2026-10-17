@@ -1,0 +1,58 @@
+{
+ "basis": "midi_notes",
+ "confidence": "naměřeno",
+ "label": "phenom",
+ "note": "Role z názvů stop jsou hypotéza. Podpis = vzdálenosti mezi nástupy v nejčastějším taktu. Bez názvů projektů.",
+ "failed": {},
+ "skipped_large": 0,
+ "summary": {
+  "n_projects": 36,
+  "kick": {
+   "projects_with_role": 33,
+   "signatures_by_projects": {
+    "10-6": 16,
+    "16": 11,
+    "2-14": 1,
+    "7-3-6": 1,
+    "3-3-2-3-3-2": 1,
+    "10-2-4": 1,
+    "7-9": 1,
+    "3-3-1-2-1-6": 1
+   },
+   "share_with_3_gap": 0.061
+  },
+  "snare": {
+   "projects_with_role": 33,
+   "signatures_by_projects": {
+    "8-8": 23,
+    "6-10": 5,
+    "16": 4,
+    "2-2-12": 1
+   },
+   "share_with_3_gap": 0.03
+  },
+  "bass": {
+   "projects_with_role": 10,
+   "signatures_by_projects": {
+    "16": 7,
+    "8-8": 2,
+    "2-2-6-6": 1
+   },
+   "share_with_3_gap": 0.0
+  },
+  "sub": {
+   "projects_with_role": 7
+  },
+  "tempo": {
+   "174": 8,
+   "172": 2,
+   "176": 1
+  },
+  "last_midi_bar": {
+   "n": 36,
+   "q1": 17.0,
+   "median": 25.5,
+   "q3": 47.0
+  }
+ }
+}

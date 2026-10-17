@@ -16,6 +16,7 @@
 | `als_stats.py` | hotovo | struktura Live setů (`.als`, jen čtení): počty tracků, skupin, returnů, Utility s ubraným gainem, HP na kicku, pluginy → `data/als/als-stats.json` (jen čísla, bez cest a názvů; vlastní tvorba zvlášť, skupina n < 10 jen počet); VST EQ nečte |
 | `midi_stats.py` | hotovo | MIDI vzory z klipů v `.als` (jen reference) a z `.mid` packů: hustota, mřížka, kroky mezi tóny, pauzy → `data/midi/midi-stats.json` (jen čísla, bez cest a názvů packů; role z názvů = hypotéza; call/response se neměří; skupina n < 10 vzorů nebo < 3 zdroje jen počet) |
 | `midi_project.py` | hotovo | rozbor MIDI jednoho `.als`: vzory po stopách v mřížce 1/16 a kde se v aranži použijí; `--bars 33-64` spojí klipy do aranžního času a vypíše mřížku po taktech (jen čtení, výstup na obrazovku nebo JSON) |
+| `midi_batch.py` | hotovo | dávka přes celou složku `.als`: nejčastější takt kicku, snaru a basy po projektech a jeho „podpis mezer“ → `data/midi/batch-*.json` (souhrn bez názvů), podrobnosti po projektech jen lokálně (`data/midi/_local`, gitignorováno); soubory nad `--max-mb` se přeskočí; role z názvů = hypotéza |
 | `check_presets.py` | hotovo | konzistence dat presetů (unikátní id, typy, sha256, bez lokálních cest); běží v CI |
 | `vault-app/` | hotovo | read-only prohlížeč vaultu a statický export pro sdílení (jen `Hudební produkce`, za heslem); viz README uvnitř |
 | `rebuild_track_index.py` | plánováno | `data/tracks` + `data/presets` → `data/corpus/*.jsonl` |
