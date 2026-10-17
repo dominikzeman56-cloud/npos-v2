@@ -49,3 +49,21 @@ def test_analyze_project_and_dedupe_copies(tmp_path):
     assert len(sets) == 1 and bad == 0
     r = B.analyze_project(sets[0])
     assert r["roles"]["kick"][0]["signature"] == "7-9" and r["last_midi_bar"] == 4
+
+
+def test_chop_summary_counts_projects_without_names():
+    pr = lambda n: {"roles": {}, "tempo": 174, "last_midi_bar": 64, "audio_clips": 50, "chopped_tracks": n, "chopped_clips": 30 * n,
+                    "chopped_roles": {"bass": 1} if n else {}}
+    agg = B.aggregate([pr(1)] * 6 + [pr(0)] * 6)
+    ac = agg["audio_chops"]
+    assert ac["projects_with_audio_clips"] == 12 and ac["projects_with_chopped_tracks"] == 6 and ac["share_with_chopped_tracks"] == 0.5
+    assert ac["projects_by_chopped_role"]["bass"] == 6 and ac["chopped_clips"] == {"n": 6}
+
+
+def test_analyze_project_reports_chopped_audio(tmp_path):
+    clips = "".join(f'<AudioClip><CurrentStart Value="{i * 0.5}"/><CurrentEnd Value="{i * 0.5 + 0.25}"/><Name Value="c"/></AudioClip>' for i in range(10))
+    xml = f'<Ableton><LiveSet><Tracks><AudioTrack Id="1"><Name><EffectiveName Value="Bass Resample"/></Name>{clips}</AudioTrack></Tracks></LiveSet></Ableton>'
+    p = tmp_path / "a.als"
+    p.write_bytes(gzip.compress(xml.encode()))
+    r = B.analyze_project(p)
+    assert r["chopped_tracks"] == 1 and r["chopped_clips"] == 10 and r["chopped_roles"] == {"bass": 1}

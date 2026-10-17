@@ -83,7 +83,12 @@ def analyze_project(path: Path) -> dict:
             roles.setdefault(role, []).append({"track": name, "grid": dom[0], "repeats": dom[1], "bars": dom[2],
                                                "signature": gap_signature(dom[0]),
                                                "pitches": sorted({pp for b in tl.values() for pp in b["pitches"]})})
-    return {"tracks": base["tracks"], "groups": base["groups"], "tempo": base["tempo"], "last_midi_bar": last, "roles": roles}
+    ac = P.audio_clips(root)
+    chops = P.chopped_tracks(ac)
+    chop_roles = Counter(r for r in (role_of_track(c["track"]) or ("hat" if "hat" in c["track"].lower() else None) for c in chops) if r)
+    return {"tracks": base["tracks"], "groups": base["groups"], "tempo": base["tempo"], "last_midi_bar": last, "roles": roles,
+            "audio_clips": len(ac), "chopped_tracks": len(chops), "chopped_clips": sum(c["clips"] for c in chops),
+            "chopped_roles": dict(chop_roles)}
 
 
 def file_key(p: Path) -> str:
@@ -130,6 +135,16 @@ def aggregate(projects: list[dict]) -> dict:
             entry["signatures_by_projects"] = dict(sigs.most_common(8))
             entry["share_with_3_gap"] = round(sum(1 for pr in have if any("3-3" in r["signature"] for r in pr["roles"][role])) / len(have), 3)
         out[role] = entry
+    with_audio = [pr for pr in projects if pr.get("audio_clips")]
+    if len(with_audio) >= MIN_PROJECTS:
+        ch = [pr for pr in with_audio if pr["chopped_tracks"] > 0]
+        out["audio_chops"] = {
+            "projects_with_audio_clips": len(with_audio),
+            "projects_with_chopped_tracks": len(ch),
+            "share_with_chopped_tracks": round(len(ch) / len(with_audio), 3),
+            "chopped_clips": M.quant([float(pr["chopped_clips"]) for pr in ch]) if len(ch) >= MIN_PROJECTS else {"n": len(ch)},
+            "projects_by_chopped_role": {r: sum(1 for pr in ch if pr["chopped_roles"].get(r)) for r in ("kick", "snare", "hat", "bass", "sub")},
+        }
     tempos = Counter(round(pr["tempo"]) for pr in projects if pr["tempo"])
     out["tempo"] = dict(tempos.most_common(6))
     bars = sorted(pr["last_midi_bar"] for pr in projects if pr["last_midi_bar"])
