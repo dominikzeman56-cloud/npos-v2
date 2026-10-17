@@ -67,6 +67,46 @@ def clips(root: ET.Element) -> list[dict]:
     return out
 
 
+def audio_clips(root: ET.Element) -> list[dict]:
+    """Audio klipy v aranži (resamply a nasekané samply): začátek, délka v dobách, název klipu a vzorku."""
+    out = []
+    ls = root.find("LiveSet")
+    tn = ls.find("Tracks") if ls is not None else None
+    for t in (list(tn) if tn is not None else []):
+        if t.tag != "AudioTrack":
+            continue
+        for clip in t.iter("AudioClip"):
+            start, end = A.val(clip, "CurrentStart"), A.val(clip, "CurrentEnd")
+            if start is None or end is None:
+                continue
+            sample = A.val(clip, "SampleRef/FileRef/Name") or A.val(clip, "SampleRef/FileRef/RelativePath") or ""
+            out.append({"track": A.track_name(t), "start": float(start), "length": float(end) - float(start),
+                        "name": A.val(clip, "Name") or "", "sample": sample.replace("\\", "/").rsplit("/", 1)[-1],
+                        "muted": A.val(clip, "Disabled") == "true"})
+    return out
+
+
+def audio_as_hits(ac: list[dict]) -> list[dict]:
+    """Každý audio klip jako jeden 'úder' na jeho začátku, aby šla použít stejná časová osa jako u MIDI."""
+    return [{"track": c["track"], "start": c["start"], "length": max(c["length"], 0.01), "loop": max(c["length"], 0.01),
+             "notes": [(0.0, c["length"], 60, 100)], "muted": c["muted"], "loop_on": False, "start_rel": 0.0} for c in ac]
+
+
+def chopped_tracks(ac: list[dict], min_clips: int = 8, max_median_beats: float = 1.5) -> list[dict]:
+    """Audio stopy s mnoha krátkými klipy = nasekaný (rytmicky seskládaný) sampl nebo resample."""
+    by: dict[str, list[dict]] = {}
+    for c in ac:
+        by.setdefault(c["track"], []).append(c)
+    out = []
+    for name, items in by.items():
+        lens = sorted(c["length"] for c in items)
+        med = lens[len(lens) // 2]
+        if len(items) >= min_clips and med <= max_median_beats:
+            samples = sorted({c["sample"] or c["name"] for c in items})
+            out.append({"track": name, "clips": len(items), "median_beats": round(med, 3), "samples": samples[:4], "n_samples": len(samples)})
+    return sorted(out, key=lambda r: -r["clips"])
+
+
 def timeline(cl: list[dict], track: str, include_muted: bool = False) -> dict[int, dict]:
     """Spojí klipy jedné stopy do aranžního času: takt -> mřížka 1/16 a výšky. Opakuje smyčky do konce klipu."""
     bars: dict[int, dict] = {}
@@ -142,11 +182,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("als", type=Path)
     ap.add_argument("--track", help="jen stopy, jejichž název obsahuje tento text")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--audio", action="store_true", help="u --bars přidá i audio stopy (každý klip = jeden úder na začátku)")
+    ap.add_argument("--chops", action="store_true", help="vypíše audio stopy s mnoha krátkými klipy (nasekané samply a resamply)")
     ap.add_argument("--bars", help="rozsah taktů, např. 33-64: vypíše aranžní mřížku po taktech (klipy spojené a smyčky rozbalené)")
     a = ap.parse_args(argv)
+    if a.chops:
+        for r in chopped_tracks(audio_clips(A.read_set(a.als))):
+            print(f"{r['track'][:40]:40} klipů {r['clips']:4}  medián délky {r['median_beats']:g} dob  vzorků {r['n_samples']}: {', '.join(r['samples'])}")
+        return 0
     if a.bars:
         lo, _, hi = a.bars.partition("-")
-        cl = clips(A.read_set(a.als))
+        rt = A.read_set(a.als)
+        cl = clips(rt) + (audio_as_hits(audio_clips(rt)) if a.audio else [])
         for name in sorted({c["track"] for c in cl if not a.track or a.track.lower() in c["track"].lower()}):
             tl = timeline(cl, name)
             if not tl:

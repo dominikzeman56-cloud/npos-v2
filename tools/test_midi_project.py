@@ -71,3 +71,31 @@ def test_runs_compress_equal_bars():
     cl = P.clips(doc2(mk(0, 16, 4, [0, 2])))
     r = P.runs(P.timeline(cl, "Kick"), 1, 5)
     assert r[0][:2] == (1, 4) and r[1][:2] == (5, 5) and set(r[1][2]) == {"."}
+
+
+def audio_doc(clips_xml):
+    return ET.fromstring('<Ableton><LiveSet><Tracks><AudioTrack Id="1"><Name><EffectiveName Value="Chops"/></Name>' + clips_xml
+                         + '</AudioTrack></Tracks></LiveSet></Ableton>')
+
+
+def aclip(start, end, name="c", sample="bass resample.wav"):
+    return (f'<AudioClip><CurrentStart Value="{start}"/><CurrentEnd Value="{end}"/><Name Value="{name}"/>'
+            f'<SampleRef><FileRef><Name Value="{sample}"/></FileRef></SampleRef></AudioClip>')
+
+
+def test_audio_clips_read_start_length_and_sample():
+    ac = P.audio_clips(audio_doc(aclip(4, 4.5) + aclip(8, 12, "long")))
+    assert [(c["start"], c["length"], c["sample"]) for c in ac] == [(4.0, 0.5, "bass resample.wav"), (8.0, 4.0, "bass resample.wav")]
+
+
+def test_chopped_tracks_need_many_short_clips():
+    ac = P.audio_clips(audio_doc("".join(aclip(i * 0.5, i * 0.5 + 0.25) for i in range(10))))
+    r = P.chopped_tracks(ac)
+    assert r and r[0]["clips"] == 10 and r[0]["median_beats"] == 0.25 and r[0]["n_samples"] == 1
+    assert P.chopped_tracks(P.audio_clips(audio_doc(aclip(0, 8)))) == []
+
+
+def test_audio_hits_use_the_same_timeline():
+    ac = P.audio_clips(audio_doc(aclip(0, 0.25) + aclip(2.5, 2.75)))
+    tl = P.timeline(P.audio_as_hits(ac), "Chops")
+    assert "".join(tl[1]["cells"]) == "x.........x....."
