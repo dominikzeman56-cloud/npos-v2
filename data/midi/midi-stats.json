@@ -1,0 +1,1874 @@
+{
+ "basis": "midi_notes",
+ "confidence": "naměřeno",
+ "note": "Popisné veličiny vzorů. Role z názvů stop a souborů jsou hypotéza. Call/response se neměří. Vlastní tvorba je vyloučena.",
+ "failed": {
+  "als": {
+   "PermissionError": 1
+  },
+  "mid": {
+   "ValueError": 76,
+   "IndexError": 1
+  }
+ },
+ "sources": {
+  "als_reference": {
+   "all": {
+    "n_patterns": 881,
+    "n_sources": 100,
+    "bars": {
+     "n": 881,
+     "q1": 2.0,
+     "median": 3.0,
+     "q3": 6.0
+    },
+    "density": {
+     "n": 881,
+     "q1": 2.0,
+     "median": 4.0,
+     "q3": 6.125
+    },
+    "onbeat": {
+     "n": 881,
+     "q1": 0.333,
+     "median": 0.5,
+     "q3": 0.75
+    },
+    "eighth": {
+     "n": 881,
+     "q1": 0.0,
+     "median": 0.25,
+     "q3": 0.5
+    },
+    "sixteenth": {
+     "n": 881,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.25
+    },
+    "triplet": {
+     "n": 881,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.0
+    },
+    "off_grid": {
+     "n": 881,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.0
+    },
+    "median_dur": {
+     "n": 881,
+     "q1": 0.354,
+     "median": 0.5,
+     "q3": 1.0
+    },
+    "pitch_range": {
+     "n": 614,
+     "q1": 0.0,
+     "median": 4.0,
+     "q3": 12.0
+    },
+    "distinct_pitches": {
+     "n": 614,
+     "q1": 1.0,
+     "median": 3.0,
+     "q3": 4.0
+    },
+    "repeat": {
+     "n": 595,
+     "q1": 0.0,
+     "median": 0.571,
+     "q3": 1.0
+    },
+    "step": {
+     "n": 595,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.333
+    },
+    "leap": {
+     "n": 595,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.093
+    },
+    "legato": {
+     "n": 860,
+     "q1": 0.0,
+     "median": 0.5,
+     "q3": 1.0
+    },
+    "bar_repeat": {
+     "n": 711,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.25
+    },
+    "empty_bars": {
+     "n": 881,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.094
+    },
+    "longest_rest_beats": {
+     "n": 881,
+     "q1": 1.0,
+     "median": 2.0,
+     "q3": 4.5
+    },
+    "share_with_any_sixteenth": 0.402,
+    "share_with_any_triplet": 0.045,
+    "share_with_any_off_grid": 0.151,
+    "slots16_share": [
+     0.157,
+     0.012,
+     0.073,
+     0.021,
+     0.14,
+     0.012,
+     0.082,
+     0.04,
+     0.102,
+     0.021,
+     0.097,
+     0.013,
+     0.126,
+     0.011,
+     0.07,
+     0.023
+    ]
+   },
+   "by_role": {
+    "bass": {
+     "n_patterns": 204,
+     "n_sources": 45,
+     "bars": {
+      "n": 204,
+      "q1": 2.0,
+      "median": 3.0,
+      "q3": 6.0
+     },
+     "density": {
+      "n": 204,
+      "q1": 2.0,
+      "median": 4.0,
+      "q3": 5.5
+     },
+     "onbeat": {
+      "n": 204,
+      "q1": 0.363,
+      "median": 0.5,
+      "q3": 0.535
+     },
+     "eighth": {
+      "n": 204,
+      "q1": 0.029,
+      "median": 0.274,
+      "q3": 0.5
+     },
+     "sixteenth": {
+      "n": 204,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.273
+     },
+     "triplet": {
+      "n": 204,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 204,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 204,
+      "q1": 0.5,
+      "median": 0.75,
+      "q3": 1.1
+     },
+     "pitch_range": {
+      "n": 204,
+      "q1": 0.0,
+      "median": 2.0,
+      "q3": 8.0
+     },
+     "distinct_pitches": {
+      "n": 204,
+      "q1": 1.0,
+      "median": 3.0,
+      "q3": 4.0
+     },
+     "repeat": {
+      "n": 203,
+      "q1": 0.0,
+      "median": 0.762,
+      "q3": 1.0
+     },
+     "step": {
+      "n": 203,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.333
+     },
+     "leap": {
+      "n": 203,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "legato": {
+      "n": 203,
+      "q1": 0.4,
+      "median": 0.96,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 181,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "empty_bars": {
+      "n": 204,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.25
+     },
+     "longest_rest_beats": {
+      "n": 204,
+      "q1": 1.0,
+      "median": 2.312,
+      "q3": 4.781
+     },
+     "share_with_any_sixteenth": 0.392,
+     "share_with_any_triplet": 0.069,
+     "share_with_any_off_grid": 0.108,
+     "slots16_share": [
+      0.146,
+      0.011,
+      0.084,
+      0.019,
+      0.128,
+      0.007,
+      0.101,
+      0.037,
+      0.105,
+      0.024,
+      0.1,
+      0.01,
+      0.116,
+      0.006,
+      0.08,
+      0.025
+     ]
+    },
+    "drums": {
+     "n_patterns": 267,
+     "n_sources": 69,
+     "bars": {
+      "n": 267,
+      "q1": 1.0,
+      "median": 2.0,
+      "q3": 4.0
+     },
+     "density": {
+      "n": 267,
+      "q1": 3.0,
+      "median": 5.0,
+      "q3": 11.75
+     },
+     "onbeat": {
+      "n": 267,
+      "q1": 0.286,
+      "median": 0.5,
+      "q3": 0.75
+     },
+     "eighth": {
+      "n": 267,
+      "q1": 0.091,
+      "median": 0.25,
+      "q3": 0.4
+     },
+     "sixteenth": {
+      "n": 267,
+      "q1": 0.0,
+      "median": 0.029,
+      "q3": 0.25
+     },
+     "triplet": {
+      "n": 267,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 267,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 267,
+      "q1": 0.25,
+      "median": 0.25,
+      "q3": 0.5
+     },
+     "legato": {
+      "n": 265,
+      "q1": 0.0,
+      "median": 0.118,
+      "q3": 0.422
+     },
+     "bar_repeat": {
+      "n": 187,
+      "q1": 0.0,
+      "median": 0.111,
+      "q3": 0.714
+     },
+     "empty_bars": {
+      "n": 267,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "longest_rest_beats": {
+      "n": 267,
+      "q1": 0.51,
+      "median": 1.0,
+      "q3": 2.0
+     },
+     "share_with_any_sixteenth": 0.509,
+     "share_with_any_triplet": 0.007,
+     "share_with_any_off_grid": 0.184,
+     "slots16_share": [
+      0.152,
+      0.012,
+      0.069,
+      0.024,
+      0.144,
+      0.016,
+      0.062,
+      0.051,
+      0.09,
+      0.021,
+      0.103,
+      0.017,
+      0.135,
+      0.014,
+      0.061,
+      0.025
+     ]
+    },
+    "harmony": {
+     "n_patterns": 39,
+     "n_sources": 18,
+     "bars": {
+      "n": 39,
+      "q1": 2.0,
+      "median": 4.0,
+      "q3": 8.0
+     },
+     "density": {
+      "n": 39,
+      "q1": 1.125,
+      "median": 2.0,
+      "q3": 4.0
+     },
+     "onbeat": {
+      "n": 39,
+      "q1": 0.619,
+      "median": 1.0,
+      "q3": 1.0
+     },
+     "eighth": {
+      "n": 39,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.1
+     },
+     "sixteenth": {
+      "n": 39,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "triplet": {
+      "n": 39,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 39,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 39,
+      "q1": 3.5,
+      "median": 7.931,
+      "q3": 12.125
+     },
+     "pitch_range": {
+      "n": 39,
+      "q1": 12.0,
+      "median": 23.0,
+      "q3": 26.5
+     },
+     "distinct_pitches": {
+      "n": 39,
+      "q1": 4.0,
+      "median": 5.0,
+      "q3": 9.5
+     },
+     "repeat": {
+      "n": 27,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.333
+     },
+     "step": {
+      "n": 27,
+      "q1": 0.0,
+      "median": 0.2,
+      "q3": 0.509
+     },
+     "leap": {
+      "n": 27,
+      "q1": 0.0,
+      "median": 0.2,
+      "q3": 0.354
+     },
+     "legato": {
+      "n": 27,
+      "q1": 0.708,
+      "median": 1.0,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 34,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.471
+     },
+     "empty_bars": {
+      "n": 39,
+      "q1": 0.0,
+      "median": 0.25,
+      "q3": 0.5
+     },
+     "longest_rest_beats": {
+      "n": 39,
+      "q1": 4.0,
+      "median": 8.0,
+      "q3": 8.034
+     },
+     "share_with_any_sixteenth": 0.103,
+     "share_with_any_triplet": 0.0,
+     "share_with_any_off_grid": 0.103,
+     "slots16_share": [
+      0.599,
+      0.011,
+      0.034,
+      0.011,
+      0.051,
+      0.0,
+      0.023,
+      0.017,
+      0.056,
+      0.017,
+      0.045,
+      0.011,
+      0.034,
+      0.006,
+      0.073,
+      0.011
+     ]
+    },
+    "lead": {
+     "n_patterns": 55,
+     "n_sources": 22,
+     "bars": {
+      "n": 55,
+      "q1": 2.0,
+      "median": 4.0,
+      "q3": 7.5
+     },
+     "density": {
+      "n": 55,
+      "q1": 1.75,
+      "median": 3.0,
+      "q3": 4.5
+     },
+     "onbeat": {
+      "n": 55,
+      "q1": 0.487,
+      "median": 0.6,
+      "q3": 1.0
+     },
+     "eighth": {
+      "n": 55,
+      "q1": 0.0,
+      "median": 0.368,
+      "q3": 0.471
+     },
+     "sixteenth": {
+      "n": 55,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "triplet": {
+      "n": 55,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 55,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 55,
+      "q1": 0.5,
+      "median": 1.0,
+      "q3": 2.5
+     },
+     "pitch_range": {
+      "n": 55,
+      "q1": 7.0,
+      "median": 12.0,
+      "q3": 24.0
+     },
+     "distinct_pitches": {
+      "n": 55,
+      "q1": 3.0,
+      "median": 4.0,
+      "q3": 8.0
+     },
+     "repeat": {
+      "n": 55,
+      "q1": 0.0,
+      "median": 0.111,
+      "q3": 1.0
+     },
+     "step": {
+      "n": 55,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.25
+     },
+     "leap": {
+      "n": 55,
+      "q1": 0.0,
+      "median": 0.056,
+      "q3": 0.5
+     },
+     "legato": {
+      "n": 55,
+      "q1": 0.0,
+      "median": 0.5,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 51,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.208
+     },
+     "empty_bars": {
+      "n": 55,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.25
+     },
+     "longest_rest_beats": {
+      "n": 55,
+      "q1": 1.75,
+      "median": 3.987,
+      "q3": 7.0
+     },
+     "share_with_any_sixteenth": 0.2,
+     "share_with_any_triplet": 0.036,
+     "share_with_any_off_grid": 0.145,
+     "slots16_share": [
+      0.225,
+      0.0,
+      0.097,
+      0.011,
+      0.1,
+      0.008,
+      0.101,
+      0.006,
+      0.141,
+      0.003,
+      0.108,
+      0.006,
+      0.116,
+      0.002,
+      0.07,
+      0.006
+     ]
+    },
+    "other": {
+     "n_patterns": 267,
+     "n_sources": 47,
+     "bars": {
+      "n": 267,
+      "q1": 2.0,
+      "median": 2.0,
+      "q3": 6.0
+     },
+     "density": {
+      "n": 267,
+      "q1": 2.0,
+      "median": 4.0,
+      "q3": 5.75
+     },
+     "onbeat": {
+      "n": 267,
+      "q1": 0.32,
+      "median": 0.5,
+      "q3": 0.725
+     },
+     "eighth": {
+      "n": 267,
+      "q1": 0.0,
+      "median": 0.25,
+      "q3": 0.48
+     },
+     "sixteenth": {
+      "n": 267,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.286
+     },
+     "triplet": {
+      "n": 267,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 267,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 267,
+      "q1": 0.469,
+      "median": 0.561,
+      "q3": 1.0
+     },
+     "pitch_range": {
+      "n": 267,
+      "q1": 0.0,
+      "median": 3.0,
+      "q3": 12.0
+     },
+     "distinct_pitches": {
+      "n": 267,
+      "q1": 1.0,
+      "median": 3.0,
+      "q3": 4.0
+     },
+     "repeat": {
+      "n": 263,
+      "q1": 0.0,
+      "median": 0.545,
+      "q3": 1.0
+     },
+     "step": {
+      "n": 263,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.4
+     },
+     "leap": {
+      "n": 263,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.043
+     },
+     "legato": {
+      "n": 263,
+      "q1": 0.0,
+      "median": 0.646,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 220,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.016
+     },
+     "empty_bars": {
+      "n": 267,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.178
+     },
+     "longest_rest_beats": {
+      "n": 267,
+      "q1": 1.0,
+      "median": 2.0,
+      "q3": 5.75
+     },
+     "share_with_any_sixteenth": 0.393,
+     "share_with_any_triplet": 0.071,
+     "share_with_any_off_grid": 0.172,
+     "slots16_share": [
+      0.139,
+      0.014,
+      0.065,
+      0.021,
+      0.154,
+      0.013,
+      0.088,
+      0.037,
+      0.112,
+      0.018,
+      0.088,
+      0.013,
+      0.131,
+      0.012,
+      0.07,
+      0.024
+     ]
+    },
+    "stab": {
+     "n_patterns": 15,
+     "n_sources": 10,
+     "bars": {
+      "n": 15,
+      "q1": 1.0,
+      "median": 2.0,
+      "q3": 2.0
+     },
+     "density": {
+      "n": 15,
+      "q1": 3.0,
+      "median": 4.0,
+      "q3": 5.5
+     },
+     "onbeat": {
+      "n": 15,
+      "q1": 0.268,
+      "median": 0.5,
+      "q3": 0.6
+     },
+     "eighth": {
+      "n": 15,
+      "q1": 0.053,
+      "median": 0.2,
+      "q3": 0.45
+     },
+     "sixteenth": {
+      "n": 15,
+      "q1": 0.0,
+      "median": 0.167,
+      "q3": 0.325
+     },
+     "triplet": {
+      "n": 15,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 15,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 15,
+      "q1": 0.25,
+      "median": 0.672,
+      "q3": 0.875
+     },
+     "pitch_range": {
+      "n": 15,
+      "q1": 0.0,
+      "median": 1.0,
+      "q3": 4.5
+     },
+     "distinct_pitches": {
+      "n": 15,
+      "q1": 1.0,
+      "median": 2.0,
+      "q3": 3.0
+     },
+     "repeat": {
+      "n": 13,
+      "q1": 0.667,
+      "median": 0.917,
+      "q3": 1.0
+     },
+     "step": {
+      "n": 13,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.167
+     },
+     "leap": {
+      "n": 13,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "legato": {
+      "n": 13,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.917
+     },
+     "bar_repeat": {
+      "n": 10,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "empty_bars": {
+      "n": 15,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "longest_rest_beats": {
+      "n": 15,
+      "q1": 1.0,
+      "median": 1.5,
+      "q3": 2.75
+     },
+     "share_with_any_sixteenth": 0.6,
+     "share_with_any_triplet": 0.067,
+     "share_with_any_off_grid": 0.067,
+     "slots16_share": [
+      0.165,
+      0.017,
+      0.041,
+      0.025,
+      0.116,
+      0.017,
+      0.074,
+      0.074,
+      0.05,
+      0.091,
+      0.083,
+      0.025,
+      0.091,
+      0.041,
+      0.066,
+      0.025
+     ]
+    },
+    "sub": {
+     "n_patterns": 34,
+     "n_sources": 16,
+     "bars": {
+      "n": 34,
+      "q1": 2.0,
+      "median": 4.0,
+      "q3": 5.5
+     },
+     "density": {
+      "n": 34,
+      "q1": 1.542,
+      "median": 4.0,
+      "q3": 6.0
+     },
+     "onbeat": {
+      "n": 34,
+      "q1": 0.404,
+      "median": 0.5,
+      "q3": 0.5
+     },
+     "eighth": {
+      "n": 34,
+      "q1": 0.2,
+      "median": 0.481,
+      "q3": 0.5
+     },
+     "sixteenth": {
+      "n": 34,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.15
+     },
+     "triplet": {
+      "n": 34,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 34,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 34,
+      "q1": 0.5,
+      "median": 0.625,
+      "q3": 1.5
+     },
+     "pitch_range": {
+      "n": 34,
+      "q1": 0.0,
+      "median": 0.5,
+      "q3": 5.0
+     },
+     "distinct_pitches": {
+      "n": 34,
+      "q1": 1.0,
+      "median": 1.5,
+      "q3": 3.0
+     },
+     "repeat": {
+      "n": 34,
+      "q1": 0.324,
+      "median": 0.857,
+      "q3": 1.0
+     },
+     "step": {
+      "n": 34,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.15
+     },
+     "leap": {
+      "n": 34,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "legato": {
+      "n": 34,
+      "q1": 0.571,
+      "median": 0.945,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 28,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "empty_bars": {
+      "n": 34,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.286
+     },
+     "longest_rest_beats": {
+      "n": 34,
+      "q1": 1.0,
+      "median": 1.531,
+      "q3": 3.875
+     },
+     "share_with_any_sixteenth": 0.265,
+     "share_with_any_triplet": 0.059,
+     "share_with_any_off_grid": 0.088,
+     "slots16_share": [
+      0.169,
+      0.007,
+      0.087,
+      0.014,
+      0.142,
+      0.002,
+      0.101,
+      0.029,
+      0.101,
+      0.012,
+      0.108,
+      0.01,
+      0.113,
+      0.002,
+      0.087,
+      0.014
+     ]
+    }
+   }
+  },
+  "mid_packs": {
+   "all": {
+    "n_patterns": 1369,
+    "n_sources": 28,
+    "bars": {
+     "n": 1369,
+     "q1": 4.0,
+     "median": 8.0,
+     "q3": 8.0
+    },
+    "density": {
+     "n": 1369,
+     "q1": 1.875,
+     "median": 3.375,
+     "q3": 6.0
+    },
+    "onbeat": {
+     "n": 1369,
+     "q1": 0.5,
+     "median": 0.667,
+     "q3": 1.0
+    },
+    "eighth": {
+     "n": 1369,
+     "q1": 0.0,
+     "median": 0.222,
+     "q3": 0.4
+    },
+    "sixteenth": {
+     "n": 1369,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.0
+    },
+    "triplet": {
+     "n": 1369,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.0
+    },
+    "off_grid": {
+     "n": 1369,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.0
+    },
+    "median_dur": {
+     "n": 1369,
+     "q1": 0.5,
+     "median": 1.354,
+     "q3": 4.0
+    },
+    "pitch_range": {
+     "n": 1333,
+     "q1": 8.0,
+     "median": 15.0,
+     "q3": 25.0
+    },
+    "distinct_pitches": {
+     "n": 1333,
+     "q1": 4.0,
+     "median": 6.0,
+     "q3": 10.0
+    },
+    "repeat": {
+     "n": 1318,
+     "q1": 0.0,
+     "median": 0.1,
+     "q3": 0.515
+    },
+    "step": {
+     "n": 1318,
+     "q1": 0.012,
+     "median": 0.199,
+     "q3": 0.4
+    },
+    "leap": {
+     "n": 1318,
+     "q1": 0.0,
+     "median": 0.143,
+     "q3": 0.4
+    },
+    "legato": {
+     "n": 1354,
+     "q1": 0.547,
+     "median": 1.0,
+     "q3": 1.0
+    },
+    "bar_repeat": {
+     "n": 1362,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.0
+    },
+    "empty_bars": {
+     "n": 1369,
+     "q1": 0.0,
+     "median": 0.0,
+     "q3": 0.25
+    },
+    "longest_rest_beats": {
+     "n": 1369,
+     "q1": 1.75,
+     "median": 4.0,
+     "q3": 8.0
+    },
+    "share_with_any_sixteenth": 0.21,
+    "share_with_any_triplet": 0.056,
+    "share_with_any_off_grid": 0.091,
+    "slots16_share": [
+     0.241,
+     0.012,
+     0.062,
+     0.022,
+     0.097,
+     0.015,
+     0.087,
+     0.017,
+     0.114,
+     0.019,
+     0.07,
+     0.017,
+     0.118,
+     0.015,
+     0.078,
+     0.014
+    ]
+   },
+   "by_role": {
+    "bass": {
+     "n_patterns": 456,
+     "n_sources": 21,
+     "bars": {
+      "n": 456,
+      "q1": 4.0,
+      "median": 8.0,
+      "q3": 8.0
+     },
+     "density": {
+      "n": 456,
+      "q1": 1.0,
+      "median": 2.375,
+      "q3": 4.25
+     },
+     "onbeat": {
+      "n": 456,
+      "q1": 0.447,
+      "median": 0.625,
+      "q3": 1.0
+     },
+     "eighth": {
+      "n": 456,
+      "q1": 0.0,
+      "median": 0.222,
+      "q3": 0.394
+     },
+     "sixteenth": {
+      "n": 456,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.059
+     },
+     "triplet": {
+      "n": 456,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 456,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 456,
+      "q1": 0.75,
+      "median": 1.354,
+      "q3": 3.5
+     },
+     "pitch_range": {
+      "n": 456,
+      "q1": 4.0,
+      "median": 8.0,
+      "q3": 13.0
+     },
+     "distinct_pitches": {
+      "n": 456,
+      "q1": 3.0,
+      "median": 4.0,
+      "q3": 5.0
+     },
+     "repeat": {
+      "n": 456,
+      "q1": 0.0,
+      "median": 0.267,
+      "q3": 0.645
+     },
+     "step": {
+      "n": 456,
+      "q1": 0.0,
+      "median": 0.198,
+      "q3": 0.4
+     },
+     "leap": {
+      "n": 456,
+      "q1": 0.0,
+      "median": 0.066,
+      "q3": 0.311
+     },
+     "legato": {
+      "n": 456,
+      "q1": 0.571,
+      "median": 1.0,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 453,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "empty_bars": {
+      "n": 456,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.25
+     },
+     "longest_rest_beats": {
+      "n": 456,
+      "q1": 2.0,
+      "median": 4.0,
+      "q3": 6.0
+     },
+     "share_with_any_sixteenth": 0.272,
+     "share_with_any_triplet": 0.061,
+     "share_with_any_off_grid": 0.101,
+     "slots16_share": [
+      0.247,
+      0.008,
+      0.057,
+      0.027,
+      0.097,
+      0.019,
+      0.084,
+      0.015,
+      0.11,
+      0.021,
+      0.072,
+      0.02,
+      0.12,
+      0.016,
+      0.076,
+      0.011
+     ]
+    },
+    "drums": {
+     "n_patterns": 36,
+     "n_sources": 6,
+     "bars": {
+      "n": 36,
+      "q1": 4.0,
+      "median": 8.0,
+      "q3": 8.0
+     },
+     "density": {
+      "n": 36,
+      "q1": 1.5,
+      "median": 2.688,
+      "q3": 4.573
+     },
+     "onbeat": {
+      "n": 36,
+      "q1": 0.365,
+      "median": 0.593,
+      "q3": 1.0
+     },
+     "eighth": {
+      "n": 36,
+      "q1": 0.0,
+      "median": 0.25,
+      "q3": 0.363
+     },
+     "sixteenth": {
+      "n": 36,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.129
+     },
+     "triplet": {
+      "n": 36,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 36,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 36,
+      "q1": 0.5,
+      "median": 1.25,
+      "q3": 2.648
+     },
+     "legato": {
+      "n": 36,
+      "q1": 0.557,
+      "median": 1.0,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 35,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.022
+     },
+     "empty_bars": {
+      "n": 36,
+      "q1": 0.0,
+      "median": 0.062,
+      "q3": 0.401
+     },
+     "longest_rest_beats": {
+      "n": 36,
+      "q1": 2.094,
+      "median": 4.63,
+      "q3": 8.0
+     },
+     "share_with_any_sixteenth": 0.361,
+     "share_with_any_triplet": 0.139,
+     "share_with_any_off_grid": 0.222,
+     "slots16_share": [
+      0.237,
+      0.014,
+      0.068,
+      0.04,
+      0.079,
+      0.006,
+      0.119,
+      0.023,
+      0.113,
+      0.017,
+      0.085,
+      0.014,
+      0.116,
+      0.009,
+      0.052,
+      0.009
+     ]
+    },
+    "harmony": {
+     "n_patterns": 196,
+     "n_sources": 11,
+     "bars": {
+      "n": 196,
+      "q1": 8.0,
+      "median": 8.0,
+      "q3": 16.0
+     },
+     "density": {
+      "n": 196,
+      "q1": 2.125,
+      "median": 3.75,
+      "q3": 6.0
+     },
+     "onbeat": {
+      "n": 196,
+      "q1": 0.667,
+      "median": 1.0,
+      "q3": 1.0
+     },
+     "eighth": {
+      "n": 196,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.333
+     },
+     "sixteenth": {
+      "n": 196,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "triplet": {
+      "n": 196,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 196,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 196,
+      "q1": 2.0,
+      "median": 4.0,
+      "q3": 8.0
+     },
+     "pitch_range": {
+      "n": 196,
+      "q1": 19.0,
+      "median": 24.0,
+      "q3": 31.0
+     },
+     "distinct_pitches": {
+      "n": 196,
+      "q1": 9.0,
+      "median": 11.0,
+      "q3": 13.0
+     },
+     "repeat": {
+      "n": 196,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.203
+     },
+     "step": {
+      "n": 196,
+      "q1": 0.0,
+      "median": 0.233,
+      "q3": 0.458
+     },
+     "leap": {
+      "n": 196,
+      "q1": 0.0,
+      "median": 0.167,
+      "q3": 0.5
+     },
+     "legato": {
+      "n": 196,
+      "q1": 1.0,
+      "median": 1.0,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 196,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.079
+     },
+     "empty_bars": {
+      "n": 196,
+      "q1": 0.0,
+      "median": 0.25,
+      "q3": 0.5
+     },
+     "longest_rest_beats": {
+      "n": 196,
+      "q1": 4.0,
+      "median": 8.0,
+      "q3": 8.0
+     },
+     "share_with_any_sixteenth": 0.041,
+     "share_with_any_triplet": 0.051,
+     "share_with_any_off_grid": 0.071,
+     "slots16_share": [
+      0.449,
+      0.001,
+      0.046,
+      0.0,
+      0.088,
+      0.001,
+      0.049,
+      0.001,
+      0.134,
+      0.0,
+      0.047,
+      0.007,
+      0.099,
+      0.001,
+      0.076,
+      0.0
+     ]
+    },
+    "lead": {
+     "n_patterns": 458,
+     "n_sources": 21,
+     "bars": {
+      "n": 458,
+      "q1": 4.0,
+      "median": 8.0,
+      "q3": 8.0
+     },
+     "density": {
+      "n": 458,
+      "q1": 2.25,
+      "median": 3.75,
+      "q3": 7.945
+     },
+     "onbeat": {
+      "n": 458,
+      "q1": 0.364,
+      "median": 0.556,
+      "q3": 1.0
+     },
+     "eighth": {
+      "n": 458,
+      "q1": 0.0,
+      "median": 0.25,
+      "q3": 0.4
+     },
+     "sixteenth": {
+      "n": 458,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.06
+     },
+     "triplet": {
+      "n": 458,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 458,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 458,
+      "q1": 0.5,
+      "median": 0.833,
+      "q3": 2.0
+     },
+     "pitch_range": {
+      "n": 458,
+      "q1": 10.0,
+      "median": 17.0,
+      "q3": 31.0
+     },
+     "distinct_pitches": {
+      "n": 458,
+      "q1": 5.0,
+      "median": 7.0,
+      "q3": 11.0
+     },
+     "repeat": {
+      "n": 443,
+      "q1": 0.0,
+      "median": 0.093,
+      "q3": 0.4
+     },
+     "step": {
+      "n": 443,
+      "q1": 0.032,
+      "median": 0.188,
+      "q3": 0.4
+     },
+     "leap": {
+      "n": 443,
+      "q1": 0.0,
+      "median": 0.182,
+      "q3": 0.493
+     },
+     "legato": {
+      "n": 443,
+      "q1": 0.359,
+      "median": 0.824,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 455,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "empty_bars": {
+      "n": 458,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.25
+     },
+     "longest_rest_beats": {
+      "n": 458,
+      "q1": 1.5,
+      "median": 3.5,
+      "q3": 7.0
+     },
+     "share_with_any_sixteenth": 0.264,
+     "share_with_any_triplet": 0.059,
+     "share_with_any_off_grid": 0.096,
+     "slots16_share": [
+      0.188,
+      0.019,
+      0.064,
+      0.028,
+      0.096,
+      0.02,
+      0.092,
+      0.024,
+      0.112,
+      0.027,
+      0.066,
+      0.022,
+      0.118,
+      0.02,
+      0.081,
+      0.021
+     ]
+    },
+    "other": {
+     "n_patterns": 154,
+     "n_sources": 9,
+     "bars": {
+      "n": 154,
+      "q1": 8.0,
+      "median": 8.0,
+      "q3": 8.0
+     },
+     "density": {
+      "n": 154,
+      "q1": 2.906,
+      "median": 4.438,
+      "q3": 7.219
+     },
+     "onbeat": {
+      "n": 154,
+      "q1": 0.523,
+      "median": 1.0,
+      "q3": 1.0
+     },
+     "eighth": {
+      "n": 154,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.333
+     },
+     "sixteenth": {
+      "n": 154,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "triplet": {
+      "n": 154,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 154,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 154,
+      "q1": 0.5,
+      "median": 3.0,
+      "q3": 4.0
+     },
+     "pitch_range": {
+      "n": 154,
+      "q1": 20.0,
+      "median": 24.0,
+      "q3": 34.0
+     },
+     "distinct_pitches": {
+      "n": 154,
+      "q1": 9.0,
+      "median": 11.0,
+      "q3": 14.0
+     },
+     "repeat": {
+      "n": 154,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.222
+     },
+     "step": {
+      "n": 154,
+      "q1": 0.022,
+      "median": 0.2,
+      "q3": 0.395
+     },
+     "leap": {
+      "n": 154,
+      "q1": 0.026,
+      "median": 0.302,
+      "q3": 0.544
+     },
+     "legato": {
+      "n": 154,
+      "q1": 0.619,
+      "median": 1.0,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 154,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "empty_bars": {
+      "n": 154,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.25
+     },
+     "longest_rest_beats": {
+      "n": 154,
+      "q1": 2.0,
+      "median": 4.0,
+      "q3": 8.0
+     },
+     "share_with_any_sixteenth": 0.084,
+     "share_with_any_triplet": 0.039,
+     "share_with_any_off_grid": 0.071,
+     "slots16_share": [
+      0.294,
+      0.016,
+      0.066,
+      0.014,
+      0.092,
+      0.01,
+      0.082,
+      0.012,
+      0.119,
+      0.01,
+      0.064,
+      0.011,
+      0.12,
+      0.013,
+      0.063,
+      0.014
+     ]
+    },
+    "stab": {
+     "n_patterns": 4,
+     "n_sources": 2,
+     "note": "méně než 10 vzorů nebo 3 zdroje: jen počet"
+    },
+    "sub": {
+     "n_patterns": 65,
+     "n_sources": 3,
+     "bars": {
+      "n": 65,
+      "q1": 2.0,
+      "median": 4.0,
+      "q3": 8.0
+     },
+     "density": {
+      "n": 65,
+      "q1": 3.25,
+      "median": 4.5,
+      "q3": 7.5
+     },
+     "onbeat": {
+      "n": 65,
+      "q1": 0.5,
+      "median": 0.533,
+      "q3": 0.667
+     },
+     "eighth": {
+      "n": 65,
+      "q1": 0.25,
+      "median": 0.429,
+      "q3": 0.5
+     },
+     "sixteenth": {
+      "n": 65,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "triplet": {
+      "n": 65,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "off_grid": {
+      "n": 65,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "median_dur": {
+      "n": 65,
+      "q1": 0.5,
+      "median": 0.5,
+      "q3": 1.0
+     },
+     "pitch_range": {
+      "n": 65,
+      "q1": 3.0,
+      "median": 8.0,
+      "q3": 12.0
+     },
+     "distinct_pitches": {
+      "n": 65,
+      "q1": 2.0,
+      "median": 4.0,
+      "q3": 5.0
+     },
+     "repeat": {
+      "n": 65,
+      "q1": 0.385,
+      "median": 0.714,
+      "q3": 0.89
+     },
+     "step": {
+      "n": 65,
+      "q1": 0.0,
+      "median": 0.125,
+      "q3": 0.25
+     },
+     "leap": {
+      "n": 65,
+      "q1": 0.0,
+      "median": 0.008,
+      "q3": 0.154
+     },
+     "legato": {
+      "n": 65,
+      "q1": 0.889,
+      "median": 1.0,
+      "q3": 1.0
+     },
+     "bar_repeat": {
+      "n": 65,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "empty_bars": {
+      "n": 65,
+      "q1": 0.0,
+      "median": 0.0,
+      "q3": 0.0
+     },
+     "longest_rest_beats": {
+      "n": 65,
+      "q1": 1.0,
+      "median": 1.5,
+      "q3": 2.5
+     },
+     "share_with_any_sixteenth": 0.108,
+     "share_with_any_triplet": 0.0,
+     "share_with_any_off_grid": 0.0,
+     "slots16_share": [
+      0.161,
+      0.0,
+      0.086,
+      0.006,
+      0.136,
+      0.0,
+      0.116,
+      0.004,
+      0.111,
+      0.003,
+      0.126,
+      0.002,
+      0.131,
+      0.004,
+      0.113,
+      0.001
+     ]
+    }
+   }
+  }
+ }
+}
