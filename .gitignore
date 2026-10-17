@@ -29,3 +29,6 @@ tools/vault-app/.env.local
 
 # podrobné MIDI rozbory po projektech (názvy projektů a packů), jen lokálně
 data/midi/_local/
+
+# analýzy stemů (energie po taktech z cizích stemů), jen lokálně
+data/stems/_local/
