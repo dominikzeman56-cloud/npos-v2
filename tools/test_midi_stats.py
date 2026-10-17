@@ -122,3 +122,10 @@ def test_legato_is_share_of_notes_that_fill_the_gap():
     full = M.describe(n((0, 1, 36), (1, 1, 38), (2, 1, 36), (3, 1, 40), (4, .5, 36)), 8.0)
     stac = M.describe(n((0, .25, 36), (1, .25, 38), (2, .25, 36), (3, .25, 40), (4, .25, 36)), 8.0)
     assert full["legato"] == 1.0 and stac["legato"] == 0.0
+
+
+def test_progression_and_songstarter_roles():
+    assert M.role_of("Liquid Chord Progressions / Am7") == "harmony"
+    assert M.role_of("Dance Floor Progressions / 01 Cmin") == "harmony"
+    assert M.role_of("KULTURE Songstarter 03") == "songstarter"
+    assert M.role_of("Songstarter 03 - Bass") == "bass"

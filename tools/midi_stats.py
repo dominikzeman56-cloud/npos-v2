@@ -44,7 +44,8 @@ ROLE_RULES = [
     ("bass", re.compile(r"bass|reese|neuro|growl|wobble|talk|riff|\bmid\b", re.I)),
     ("stab", re.compile(r"stab|hit", re.I)),
     ("lead", re.compile(r"lead|melod|hook|arp|pluck|synth|vocal", re.I)),
-    ("harmony", re.compile(r"chord|pad|string|key|piano|organ|harm", re.I)),
+    ("harmony", re.compile(r"chord|cords|progression|pad|string|key|piano|rhodes|organ|harm", re.I)),
+    ("songstarter", re.compile(r"song\s*starter|construction", re.I)),
 ]
 
 
