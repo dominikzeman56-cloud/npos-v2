@@ -62,7 +62,53 @@ def clips(root: ET.Element) -> list[dict]:
                     if key is not None and ev.get("IsEnabled") != "false" and a <= s < b:
                         notes.append((s - a, float(ev.get("Duration", "0")), int(key), int(float(ev.get("Velocity", "100")))))
             out.append({"track": A.track_name(t), "start": float(start), "length": float(end) - float(start) if end else b - a,
-                        "loop": b - a, "notes": sorted(notes), "muted": A.val(clip, "Disabled") == "true"})
+                        "loop": b - a, "notes": sorted(notes), "muted": A.val(clip, "Disabled") == "true",
+                        "loop_on": A.val(clip, "Loop/LoopOn") != "false", "start_rel": float(A.val(clip, "Loop/StartRelative") or 0)})
+    return out
+
+
+def timeline(cl: list[dict], track: str, include_muted: bool = False) -> dict[int, dict]:
+    """Spojí klipy jedné stopy do aranžního času: takt -> mřížka 1/16 a výšky. Opakuje smyčky do konce klipu."""
+    bars: dict[int, dict] = {}
+    for c in cl:
+        if c["track"] != track or (c["muted"] and not include_muted):
+            continue
+        loop = c["loop"]
+        for t, _d, pitch, _v in c["notes"]:
+            first = t - c["start_rel"]
+            if first < 0:
+                first += loop
+            k = 0
+            while True:
+                off = first + k * loop
+                if off >= c["length"] - 1e-6 or (k > 0 and not c["loop_on"]):
+                    break
+                pos = c["start"] + off
+                b = bars.setdefault(int(pos // 4) + 1, {"cells": ["."] * 16, "pitches": set()})
+                step = (pos % 4) * 4
+                i = round(step)
+                if abs(step - i) < 0.12 and i < 16:
+                    b["cells"][i] = "x"
+                else:
+                    b["cells"][min(15, int(step))] = "+"
+                b["pitches"].add(pitch)
+                k += 1
+                if loop <= 0:
+                    break
+    return bars
+
+
+def runs(tl: dict[int, dict], first: int, last: int) -> list[tuple[int, int, str, str]]:
+    """Souvislé takty se stejnou mřížkou a stejnými výškami se spojí do jednoho řádku."""
+    out: list[tuple[int, int, str, str]] = []
+    for bar in range(first, last + 1):
+        b = tl.get(bar)
+        grid_s = "".join(b["cells"]) if b else "." * 16
+        pit = " ".join(pitch_name(p) for p in sorted(b["pitches"])) if b else ""
+        if out and out[-1][2] == grid_s and out[-1][3] == pit and out[-1][1] == bar - 1:
+            out[-1] = (out[-1][0], bar, grid_s, pit)
+        else:
+            out.append((bar, bar, grid_s, pit))
     return out
 
 
@@ -96,7 +142,19 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("als", type=Path)
     ap.add_argument("--track", help="jen stopy, jejichž název obsahuje tento text")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--bars", help="rozsah taktů, např. 33-64: vypíše aranžní mřížku po taktech (klipy spojené a smyčky rozbalené)")
     a = ap.parse_args(argv)
+    if a.bars:
+        lo, _, hi = a.bars.partition("-")
+        cl = clips(A.read_set(a.als))
+        for name in sorted({c["track"] for c in cl if not a.track or a.track.lower() in c["track"].lower()}):
+            tl = timeline(cl, name)
+            if not tl:
+                continue
+            print(f"\n== {name}")
+            for f, l, g, pit in runs(tl, int(lo), int(hi or lo)):
+                print(f"  takty {f}" + (f"-{l}" if l != f else "") + f": {g}  {pit}")
+        return 0
     try:
         rep = report(clips(A.read_set(a.als)), a.track)
     except (OSError, EOFError, ET.ParseError) as e:
