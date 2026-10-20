@@ -33,8 +33,8 @@ def grid(notes: list[tuple[float, float, int, int]], length: float) -> str:
     cells = ["."] * n
     for s, _d, _p, _v in notes:
         i = round(s * 4)
-        if abs(s * 4 - i) < 0.12 and 0 <= i < n:
-            cells[i] = "x"
+        if abs(s * 4 - i) < 0.12 and 0 <= i <= n:
+            cells[i % n] = "x"  # těsně před koncem smyčky = první šestnáctina dalšího průchodu
         elif 0 <= int(s * 4) < n:
             cells[int(s * 4)] = "+"
     return "".join(cells)
@@ -47,7 +47,7 @@ def clips(root: ET.Element) -> list[dict]:
     for t in (list(tn) if tn is not None else []):
         if t.tag != "MidiTrack":
             continue
-        for clip in t.iter("MidiClip"):
+        for clip in t.findall(".//ArrangerAutomation/Events/MidiClip"):  # jen aranž, ne klipy v Session View
             start = A.val(clip, "CurrentStart")
             end = A.val(clip, "CurrentEnd")
             a = float(A.val(clip, "Loop/LoopStart") or 0)
@@ -124,6 +124,8 @@ def timeline(cl: list[dict], track: str, include_muted: bool = False) -> dict[in
                 if off >= c["length"] - 1e-6 or (k > 0 and not c["loop_on"]):
                     break
                 pos = c["start"] + off
+                if abs(pos * 4 - round(pos * 4)) < 0.12:
+                    pos = round(pos * 4) / 4  # těsně před taktem = první šestnáctina dalšího taktu
                 b = bars.setdefault(int(pos // 4) + 1, {"cells": ["."] * 16, "pitches": set()})
                 step = (pos % 4) * 4
                 i = round(step)

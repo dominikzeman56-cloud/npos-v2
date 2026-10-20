@@ -40,8 +40,8 @@ def clip(start, end, loop, times, key):
 
 
 def test_analyze_project_and_dedupe_copies(tmp_path):
-    xml = ('<Ableton><LiveSet><Tracks><MidiTrack Id="1"><Name><EffectiveName Value="Kick"/></Name>' + clip(0, 16, 4, [0, 1.75], 36)
-           + '</MidiTrack></Tracks><MainTrack><DeviceChain><Mixer><Tempo><Manual Value="174"/></Tempo></Mixer></DeviceChain></MainTrack></LiveSet></Ableton>')
+    xml = ('<Ableton><LiveSet><Tracks><MidiTrack Id="1"><Name><EffectiveName Value="Kick"/></Name><ArrangerAutomation><Events>' + clip(0, 16, 4, [0, 1.75], 36)
+           + '</Events></ArrangerAutomation></MidiTrack></Tracks><MainTrack><DeviceChain><Mixer><Tempo><Manual Value="174"/></Tempo></Mixer></DeviceChain></MainTrack></LiveSet></Ableton>')
     data = gzip.compress(ET.tostring(ET.fromstring(xml)))
     (tmp_path / "a.als").write_bytes(data)
     (tmp_path / "a Copy.als").write_bytes(data)
