@@ -7,12 +7,13 @@ def ev(t, d=0.5):
     return f'<MidiNoteEvent Time="{t}" Duration="{d}" Velocity="100" IsEnabled="true"/>'
 
 
-def doc(clips):
+def doc(clips, session=""):
     body = "".join(
         f'<MidiClip><CurrentStart Value="{s}"/><CurrentEnd Value="{e}"/><Loop><LoopStart Value="0"/><LoopEnd Value="{ln}"/></Loop>'
         f'<Notes><KeyTracks><KeyTrack><Notes>{"".join(ev(t) for t in ts)}</Notes><MidiKey Value="{k}"/></KeyTrack></KeyTracks></Notes></MidiClip>'
         for s, e, ln, ts, k in clips)
-    return ET.fromstring(f'<Ableton><LiveSet><Tracks><MidiTrack Id="1"><Name><EffectiveName Value="Bass"/></Name>{body}</MidiTrack></Tracks></LiveSet></Ableton>')
+    return ET.fromstring(f'<Ableton><LiveSet><Tracks><MidiTrack Id="1"><Name><EffectiveName Value="Bass"/></Name>'
+                         f'<ClipSlotList><ClipSlot>{session}</ClipSlot></ClipSlotList><ArrangerAutomation><Events>{body}</Events></ArrangerAutomation></MidiTrack></Tracks></LiveSet></Ableton>')
 
 
 def test_grid_marks_hits_and_off_grid():
@@ -32,7 +33,10 @@ def test_same_pattern_gets_one_id_and_positions():
 
 
 def test_track_filter_and_clips_without_arrangement_skipped():
-    cl = P.clips(doc([(0, 4, 4, [0], 38)]))
+    session = ('<MidiClip><CurrentStart Value="0"/><CurrentEnd Value="4"/><Loop><LoopStart Value="0"/><LoopEnd Value="4"/></Loop>'
+               f'<Notes><KeyTracks><KeyTrack><Notes>{ev(1)}</Notes><MidiKey Value="40"/></KeyTrack></KeyTracks></Notes></MidiClip>')
+    cl = P.clips(doc([(0, 4, 4, [0], 38)], session))
+    assert len(cl) == 1 and cl[0]["notes"] == [(0.0, 0.5, 38, 100)]
     assert P.report(cl, "zzz") == {} and "Bass" in P.report(cl, "bas")
 
 
@@ -44,8 +48,8 @@ def mk(start, end, loop, times, key=36, loop_on="true", rel=0):
 
 
 def doc2(*clips_xml):
-    return ET.fromstring('<Ableton><LiveSet><Tracks><MidiTrack Id="1"><Name><EffectiveName Value="Kick"/></Name>' + "".join(clips_xml)
-                         + '</MidiTrack></Tracks></LiveSet></Ableton>')
+    return ET.fromstring('<Ableton><LiveSet><Tracks><MidiTrack Id="1"><Name><EffectiveName Value="Kick"/></Name><ArrangerAutomation><Events>'
+                         + "".join(clips_xml) + '</Events></ArrangerAutomation></MidiTrack></Tracks></LiveSet></Ableton>')
 
 
 def test_timeline_unrolls_loop_to_clip_end():
@@ -99,3 +103,9 @@ def test_audio_hits_use_the_same_timeline():
     ac = P.audio_clips(audio_doc(aclip(0, 0.25) + aclip(2.5, 2.75)))
     tl = P.timeline(P.audio_as_hits(ac), "Chops")
     assert "".join(tl[1]["cells"]) == "x.........x....."
+
+
+def test_note_just_before_bar_end_is_next_downbeat():
+    assert P.grid([(3.97, .25, 36, 100), (1.98, .25, 36, 100)], 4.0) == "x.......x......."
+    tl = P.timeline(P.clips(doc2(mk(0, 8, 8, [3.97], loop_on="false"))), "Kick")
+    assert list(tl) == [2] and "".join(tl[2]["cells"]) == "x..............."

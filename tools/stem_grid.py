@@ -20,6 +20,12 @@ import numpy as np
 import soundfile as sf
 from scipy.signal import butter, sosfiltfilt
 
+try:
+    import midi_common as C
+except ImportError:  # spuštěno z kořene repa
+    sys.path.insert(0, str(Path(__file__).parent))
+    import midi_common as C
+
 ENV_HZ = 1000
 BANDS = {"kick": (30.0, 150.0), "snare": (1500.0, 6000.0), "bass": (30.0, 300.0)}
 
@@ -131,13 +137,7 @@ def runs(active: list[bool]) -> list[tuple[int, int]]:
 
 
 def gap_signature(cells: str) -> str:
-    hits = [i for i, c in enumerate(cells) if c == "x"]
-    if not hits:
-        return ""
-    if len(hits) == 1:
-        return "16"
-    gaps = [b - a for a, b in zip(hits, hits[1:])] + [16 - hits[-1] + hits[0]]
-    return "-".join(str(g) for g in gaps)
+    return C.gap_signature(cells, hit="x")
 
 
 def analyze(directory: Path, bpm: float, files: dict[str, Path] | None = None) -> dict:

@@ -20,7 +20,7 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
       - name: Install
-        run: python -m pip install pytest numpy scipy cbor2 zstandard
+        run: python -m pip install pytest numpy scipy cbor2 zstandard soundfile
       - name: Tests
         run: python -m pytest tools -q
       - name: Repo check (sources, knowledge, preset indexes, tracks, corpus)

@@ -27,6 +27,12 @@ import xml.etree.ElementTree as ET
 from collections import Counter
 from pathlib import Path
 
+try:
+    import midi_common as C
+except ImportError:  # spuštěno z kořene repa
+    sys.path.insert(0, str(Path(__file__).parent))
+    import midi_common as C
+
 MIN_N = 10
 KICK_RE = re.compile(r"(?<![a-z])(kick|kck|bd)(?![a-z])", re.I)
 # Eq8 Mode: 0 = low cut 48 dB, 1 = low cut 12 dB
@@ -151,15 +157,7 @@ def analyze(root: ET.Element) -> dict:
 
 
 def quant(xs: list[float]) -> dict:
-    s = sorted(xs)
-    n = len(s)
-
-    def q(p: float) -> float:
-        i = (n - 1) * p
-        lo, hi = int(math.floor(i)), int(math.ceil(i))
-        return round(s[lo] + (s[hi] - s[lo]) * (i - lo), 2)
-
-    return {"n": n, "min": s[0], "q1": q(0.25), "median": q(0.5), "q3": q(0.75), "max": s[-1]}
+    return C.quant(xs, digits=2, extremes=True)
 
 
 def summarize(rows: list[dict]) -> dict:

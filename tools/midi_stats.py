@@ -30,9 +30,11 @@ from pathlib import Path
 
 try:
     import als_stats as A
+    import midi_common as C
 except ImportError:  # spuštěno z kořene repa
     sys.path.insert(0, str(Path(__file__).parent))
     import als_stats as A
+    import midi_common as C
 
 MIN_PATTERNS = 10
 MIN_SOURCES = 3
@@ -132,18 +134,8 @@ def als_patterns(root: ET.Element) -> list[tuple[str, list[tuple[float, float, i
             b = float(A.val(clip, "Loop/LoopEnd") or 0)
             if b <= a:
                 continue
-            notes = []
-            for kt in clip.findall("Notes/KeyTracks/KeyTrack"):
-                key = A.val(kt, "MidiKey")
-                if key is None:
-                    continue
-                for ev in kt.findall("Notes/MidiNoteEvent"):
-                    if ev.get("IsEnabled") == "false":
-                        continue
-                    s = float(ev.get("Time", "0"))
-                    if a <= s < b:
-                        notes.append((s - a, float(ev.get("Duration", "0")), int(key), int(float(ev.get("Velocity", "100")))))
-            out.append((name, sorted(notes), b - a))
+            notes = C.clip_notes(clip, a, b, A.val)
+            out.append((name, notes, b - a))
     return out
 
 
@@ -227,16 +219,7 @@ def fingerprint(notes: list[tuple[float, float, int, int]]) -> str:
 
 # ---------- agregace ----------
 
-def quant(xs: list[float]) -> dict:
-    s = sorted(xs)
-    n = len(s)
-
-    def q(p: float) -> float:
-        i = (n - 1) * p
-        lo, hi = int(math.floor(i)), int(math.ceil(i))
-        return round(s[lo] + (s[hi] - s[lo]) * (i - lo), 3)
-
-    return {"n": n, "q1": q(0.25), "median": q(0.5), "q3": q(0.75)}
+quant = C.quant
 
 
 def summarize(rows: list[dict]) -> dict:

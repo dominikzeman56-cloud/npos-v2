@@ -19,8 +19,8 @@ Rozhodovací systém a datový stroj pro produkci neurofunku/DnB v Ableton Live.
 | strojově čitelný kánon | `knowledge/` |
 | schémata | `core/*.schema.json` |
 | data | `data/` (tracky, presety, sessions, korpus) |
-| nástroje | `tools/` (`analyze_track.py`, `check_repo.py`, `vault-app/`) |
+| nástroje | `tools/` (přehled se stavem v [`tools/README.md`](tools/README.md)) |
 
-**Kontrola:** `python tools/check_repo.py`
+**Kontrola:** `python tools/check_repo.py` (Python 3.12 jako v CI, minimum 3.11; testy: `pip install pytest numpy scipy cbor2 zstandard soundfile` (= extra `dev` v `pyproject.toml`) a `python -m pytest tools -q`)
 
-**Stav (2026-10-15):** kánon v češtině hotový, šablona Ableton mimo kánon, datová vrstva se teprve plní (BLUEPRINT kap. 10).
+**Stav (2026-10-17):** kánon v češtině hotový, šablona Ableton mimo kánon, datová vrstva se teprve plní (BLUEPRINT kap. 10).

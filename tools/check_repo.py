@@ -32,6 +32,23 @@ RULE_LABELS = {"consensus", "conditional", "school", "dogma_unverified"}
 REQUIRED = ("id", "type", "title", "status", "confidence", "source_type", "source_ids", "updated")
 EMPTY_OK = {"personal_observation", "other"}
 FUNCTIONS = {"sub", "body", "movement", "noise", "texture", "lead", "pad", "fx", "other"}
+LOCAL_PATH = re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:(?:\\\\|\\|/)[^\s\"']*")
+
+
+def local_paths(root: Path) -> list[str]:
+    """Lokální cesty (např. D:\\...) v commitovaných datech mimo presety: data/tracks/**/*.json a data/local-sources.json.
+    Zatím jen upozornění (existující soubory je obsahují); presety hlídá přísněji tools/check_presets.py."""
+    files = sorted((root / "data" / "tracks").rglob("*.json")) + [root / "data" / "local-sources.json"]
+    out = []
+    for f in files:
+        if not f.is_file() or "_local" in f.parts:
+            continue
+        hits = LOCAL_PATH.findall(f.read_text(encoding="utf-8"))
+        if hits:
+            out.append(f"{f.relative_to(root).as_posix()}: lokální cesta v commitovaném souboru ({len(hits)}×, např. {hits[0][:40]!r})")
+    return out
+
+
 INDEX_KEYS = ("id", "source_id", "name", "file", "function", "archetype", "confidence", "cues_basis", "cues")
 
 
@@ -297,6 +314,9 @@ def main() -> int:
             json.loads(s.read_text(encoding="utf-8"))
         except json.JSONDecodeError as e:
             errors.append(f"{s.name}: neplatný JSON ({e})")
+
+    # --- lokální cesty v datech (zatím jen upozornění)
+    warnings.extend(local_paths(ROOT))
 
     for w in warnings:
         print(f"warning: {w}")

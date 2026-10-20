@@ -24,11 +24,13 @@ from pathlib import Path
 
 try:
     import als_stats as A
+    import midi_common as C
     import midi_project as P
     import midi_stats as M
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent))
     import als_stats as A
+    import midi_common as C
     import midi_project as P
     import midi_stats as M
 
@@ -46,15 +48,7 @@ def role_of_track(name: str) -> str | None:
     return r if r in ("bass", "sub") else None
 
 
-def gap_signature(cells: str) -> str:
-    """Vzdálenosti mezi nástupy v jednom taktu (v šestnáctinách), s návratem na začátek taktu: 'x...x..x' -> '4-3-1'."""
-    hits = [i for i, c in enumerate(cells) if c in "x+"]
-    if not hits:
-        return ""
-    if len(hits) == 1:
-        return "16"
-    gaps = [b - a for a, b in zip(hits, hits[1:])] + [16 - hits[-1] + hits[0]]
-    return "-".join(str(g) for g in gaps)
+gap_signature = C.gap_signature
 
 
 def dominant_bar(tl: dict[int, dict]) -> tuple[str, int, int] | None:
