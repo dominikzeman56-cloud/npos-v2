@@ -17,9 +17,11 @@ from pathlib import Path
 
 try:
     import als_stats as A
+    import midi_common as C
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent))
     import als_stats as A
+    import midi_common as C
 
 NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
@@ -54,15 +56,9 @@ def clips(root: ET.Element) -> list[dict]:
             b = float(A.val(clip, "Loop/LoopEnd") or 0)
             if start is None or b <= a:
                 continue
-            notes = []
-            for kt in clip.findall("Notes/KeyTracks/KeyTrack"):
-                key = A.val(kt, "MidiKey")
-                for ev in kt.findall("Notes/MidiNoteEvent"):
-                    s = float(ev.get("Time", "0"))
-                    if key is not None and ev.get("IsEnabled") != "false" and a <= s < b:
-                        notes.append((s - a, float(ev.get("Duration", "0")), int(key), int(float(ev.get("Velocity", "100")))))
+            notes = C.clip_notes(clip, a, b, A.val)
             out.append({"track": A.track_name(t), "start": float(start), "length": float(end) - float(start) if end else b - a,
-                        "loop": b - a, "notes": sorted(notes), "muted": A.val(clip, "Disabled") == "true",
+                        "loop": b - a, "notes": notes, "muted": A.val(clip, "Disabled") == "true",
                         "loop_on": A.val(clip, "Loop/LoopOn") != "false", "start_rel": float(A.val(clip, "Loop/StartRelative") or 0)})
     return out
 
