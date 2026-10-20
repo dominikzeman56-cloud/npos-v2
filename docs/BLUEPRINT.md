@@ -74,7 +74,9 @@ npos-v2/
 │   ├── sync_knowledge.py            ← vygeneruje knowledge/ z kánonu ve vaultu
 │   ├── vault-app/                   ← read-only prohlížeč a export vaultu (viz kap. 9)
 │   ├── analyze_preset.py            ← čtečka .SerumPreset (basis: preset_file)
-│   └── (plánováno: rebuild_track_index.py, query_tracks.py)
+│   ├── rebuild_track_index.py       ← data/tracks → data/corpus/tracks.jsonl
+│   ├── …                            ← další nástroje (presety, MIDI, .als, stemy): úplný seznam v tools/README.md
+│   └── (plánováno: query_tracks.py)
 ├── neuroman/                        ← legacy, neoživovat (kap. 9)
 └── pyproject.toml
 ```
@@ -183,10 +185,10 @@ Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XM
 
 ## 9. Nástroje a blocklist
 
-**Hotové:** `tools/analyze_track.py` · `tools/analyze_preset.py` · `tools/check_repo.py` · `tools/sync_knowledge.py` (generuje `knowledge/` z vaultu, vault z env `NPOS_VAULT`) · `tools/vault-app/` (read-only prohlížeč vaultu v prohlížeči a statický export do sdílené kopie; **nezapisuje** do vaultu ani do dat).
-**Plánované (pořadí v kap. 10):** `rebuild_track_index.py` → `data/corpus/tracks.jsonl` · `query_tracks.py`.
+**Hotové:** `tools/analyze_track.py` · `tools/analyze_preset.py` · `tools/check_repo.py` · `tools/sync_knowledge.py` (generuje `knowledge/` z vaultu, vault z env `NPOS_VAULT`) · `tools/rebuild_track_index.py` (→ `data/corpus/tracks.jsonl`) · `tools/vault-app/` (read-only prohlížeč vaultu v prohlížeči a statický export do sdílené kopie; **nezapisuje** do vaultu ani do dat). Presety (`index_presets`, `analyze_fxp`, `analyze_fxp_host`, `rebuild_preset_indexes`, `render_preset`, `preset_roles`, `preset_stats`, `preset_seed`, `serum_preset_io`, `check_presets`), Live sety a MIDI (`als_stats`, `midi_stats`, `midi_project`, `midi_batch`, `midi_common`), stemy (`stem_grid`) a správa zdrojů (`collect_local_sources`, `import_sessions`): úplný seznam se stavem v `tools/README.md`.
+**Plánované (pořadí v kap. 10):** `query_tracks.py`.
 
-**`tools/check_repo.py` kontroluje:** frontmatter každého souboru v `knowledge/` (kontrakt v `knowledge/README.md`) · že každý `source_ids` odkaz vede do `sources.jsonl` · platnost `sources.jsonl` proti `core/source.schema.json` · že `data/tracks/<id>` mají `meta.json`.
+**`tools/check_repo.py` kontroluje:** frontmatter každého souboru v `knowledge/` (kontrakt v `knowledge/README.md`) · že každý `source_ids` odkaz vede do `sources.jsonl` · platnost `sources.jsonl` proti `core/source.schema.json` (a `vault_note` proti vaultu, je-li dostupný) · `knowledge/guides/next-step.json` · že `data/tracks/<id>` mají `meta.json` se známým `source_id` a platný JSON v `analysis.json` / `build-sheet.json` · `data/presets/*.json` proti `core/preset-analysis.schema.json` a indexy presetů · že schémata v `core/` jsou platný JSON · lokální cesty (`D:\…`) v `data/tracks` a `data/local-sources.json` hlásí jen jako upozornění. Konzistenci dat presetů (id, typy, lokální cesty) hlídá `tools/check_presets.py`; obojí běží v CI.
 
 **Blocklist (absolutní nulová tolerance):**
 - UI pro produkční rozhodování, dashboard, druhý frontend (výjimka: `tools/vault-app`, jen čtení; od 2026-10-16 smí v místním serveru zapisovat výstup generátoru presetů do složky mimo repo, viz kap. 7.1, a nikdy ve statickém exportu).
@@ -208,7 +210,7 @@ Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XM
 **Další kroky (nepřeskakovat):**
 1. **Datová konverze:** převést už existující naměřené rozbory do `data/tracks/*/analysis.json` s poctivým `confidence` a `basis` (kandidáti: *Breach*, *Unleash The Beast*, *Restless*, *Hands Up*, *Been About This*, *Don't Play*, *Mechanism*, remix *Dirts*; každý musí mít záznam v `sources.jsonl`).
 2. **Presety:** čtečka je hotová (`analyze_preset.py`). Zbývá převést ~15 rozborů presetů z próz do `data/presets/*.json` a doplnit ruční interpretaci (archetyp, funkce) k přečteným hodnotám; modulační matici a jednotky ověřit proti Serum UI.
-3. **Korpus:** `rebuild_track_index.py` → `tracks.jsonl`, `query_tracks.py`.
+3. **Korpus:** `rebuild_track_index.py` → `tracks.jsonl` (hotovo), `query_tracks.py`.
 5. **Dogfooding:** session log a build sheet na *každé* skutečné práci. Znalost se rozšiřuje, jen když se v praxi zasekneš.
 
 ### 10.1 Definition of Done (v2)
@@ -237,6 +239,8 @@ Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XM
 - Změněno: principy 3, 7 a 4, slovníky (`layer function`, `texture`), blocklist (`vault-app` povolen jen ke čtení; druhý MCP most, cloudové uploady a oživení `neuroman/` zakázány).
 - Přidáno: pravidlo pravdivosti, registr zdrojů, `check_repo.py`, schémata `source`, `track-analysis`, `preset-analysis`, protokol měření basového pásma, `basis` a `modulation source`, princip 9.
 - Zastaralé v v1: „Current stage: Skateboard step 1" — kroky 2 a 3 byly dávno hotové.
+
+**v2.4 (2026-10-20)** — údržba dokumentace: kap. 3 a 9 odpovídají existujícím nástrojům (`rebuild_track_index.py` hotový, plánovaný zůstává jen `query_tracks.py`), popis kontrol `check_repo.py` doplněn; nový sdílený modul `tools/midi_common.py`; `check_repo.py` upozorní na lokální cesty v `data/tracks` a `data/local-sources.json`.
 
 **v2.3 (2026-10-16)** — vault-app (jen místní server) má stránku `/generator.html`, která spouští `preset_seed.py` nad malou sadou semínek (20 až 30 vlastních presetů) a ukládá výsledek na disk uživatele; Architekt to schválil v chatu; výstup se nenahrává a statický export stránku neobsahuje. kap. 7.1: povolený offline zápis `preset_seed.py` (reálný preset + pár zmutovaných parametrů, výstup jen lokálně). Kap. 9: výjimka z blocklistu pro výukový trenažér syntézy (schválil Architekt v chatu). Nové nástroje: `analyze_fxp_host.py`, `render_preset.py`, `preset_roles.py`, `preset_stats.py`, `check_presets.py`, `serum_preset_io.py`, `preset_seed.py`.
 
