@@ -1,0 +1,649 @@
+From 6dc2b5b50f735f70d2335bfbc66095ed532bc795 Mon Sep 17 00:00:00 2001
+From: Grok Bot <bot@local>
+Date: Tue, 20 Oct 2026 12:22:52 +0000
+Subject: [PATCH 1/4] tools: shared midi_common (quant, gap_signature,
+ clip_notes) without behavior change
+
+---
+ tools/als_stats.py        | 16 ++++++------
+ tools/midi_batch.py       | 12 +++------
+ tools/midi_common.py      | 51 +++++++++++++++++++++++++++++++++++++++
+ tools/midi_project.py     | 12 +++------
+ tools/midi_stats.py       | 27 ++++-----------------
+ tools/stem_grid.py        | 14 +++++------
+ tools/test_midi_common.py | 28 +++++++++++++++++++++
+ 7 files changed, 105 insertions(+), 55 deletions(-)
+ create mode 100644 tools/midi_common.py
+ create mode 100644 tools/test_midi_common.py
+
+diff --git a/tools/als_stats.py b/tools/als_stats.py
+index 105da42..57e3c20 100644
+--- a/tools/als_stats.py
++++ b/tools/als_stats.py
+@@ -27,6 +27,12 @@ import xml.etree.ElementTree as ET
+ from collections import Counter
+ from pathlib import Path
+ 
++try:
++    import midi_common as C
++except ImportError:  # spuštěno z kořene repa
++    sys.path.insert(0, str(Path(__file__).parent))
++    import midi_common as C
++
+ MIN_N = 10
+ KICK_RE = re.compile(r"(?<![a-z])(kick|kck|bd)(?![a-z])", re.I)
+ # Eq8 Mode: 0 = low cut 48 dB, 1 = low cut 12 dB
+@@ -151,15 +157,7 @@ def analyze(root: ET.Element) -> dict:
+ 
+ 
+ def quant(xs: list[float]) -> dict:
+-    s = sorted(xs)
+-    n = len(s)
+-
+-    def q(p: float) -> float:
+-        i = (n - 1) * p
+-        lo, hi = int(math.floor(i)), int(math.ceil(i))
+-        return round(s[lo] + (s[hi] - s[lo]) * (i - lo), 2)
+-
+-    return {"n": n, "min": s[0], "q1": q(0.25), "median": q(0.5), "q3": q(0.75), "max": s[-1]}
++    return C.quant(xs, digits=2, extremes=True)
+ 
+ 
+ def summarize(rows: list[dict]) -> dict:
+diff --git a/tools/midi_batch.py b/tools/midi_batch.py
+index 3eeb09d..ad87ddb 100644
+--- a/tools/midi_batch.py
++++ b/tools/midi_batch.py
+@@ -24,11 +24,13 @@ from pathlib import Path
+ 
+ try:
+     import als_stats as A
++    import midi_common as C
+     import midi_project as P
+     import midi_stats as M
+ except ImportError:
+     sys.path.insert(0, str(Path(__file__).parent))
+     import als_stats as A
++    import midi_common as C
+     import midi_project as P
+     import midi_stats as M
+ 
+@@ -46,15 +48,7 @@ def role_of_track(name: str) -> str | None:
+     return r if r in ("bass", "sub") else None
+ 
+ 
+-def gap_signature(cells: str) -> str:
+-    """Vzdálenosti mezi nástupy v jednom taktu (v šestnáctinách), s návratem na začátek taktu: 'x...x..x' -> '4-3-1'."""
+-    hits = [i for i, c in enumerate(cells) if c in "x+"]
+-    if not hits:
+-        return ""
+-    if len(hits) == 1:
+-        return "16"
+-    gaps = [b - a for a, b in zip(hits, hits[1:])] + [16 - hits[-1] + hits[0]]
+-    return "-".join(str(g) for g in gaps)
++gap_signature = C.gap_signature
+ 
+ 
+ def dominant_bar(tl: dict[int, dict]) -> tuple[str, int, int] | None:
+diff --git a/tools/midi_common.py b/tools/midi_common.py
+new file mode 100644
+index 0000000..3ae72ba
+--- /dev/null
++++ b/tools/midi_common.py
+@@ -0,0 +1,51 @@
++"""Společné pomocné funkce pro rozbory `.als` a MIDI (als_stats, midi_stats, midi_project, midi_batch, stem_grid).
++
++Jen přesunutý kód bez změny chování: kvartily, podpis mezer v taktu, noty jednoho MIDI klipu.
++"""
++from __future__ import annotations
++
++import math
++import xml.etree.ElementTree as ET
++
++
++def quant(xs: list[float], digits: int = 3, extremes: bool = False) -> dict:
++    """Počet, kvartily (lineární interpolace) a volitelně min a max."""
++    s = sorted(xs)
++    n = len(s)
++
++    def q(p: float) -> float:
++        i = (n - 1) * p
++        lo, hi = int(math.floor(i)), int(math.ceil(i))
++        return round(s[lo] + (s[hi] - s[lo]) * (i - lo), digits)
++
++    if extremes:
++        return {"n": n, "min": s[0], "q1": q(0.25), "median": q(0.5), "q3": q(0.75), "max": s[-1]}
++    return {"n": n, "q1": q(0.25), "median": q(0.5), "q3": q(0.75)}
++
++
++def gap_signature(cells: str, hit: str = "x+") -> str:
++    """Vzdálenosti mezi nástupy v jednom taktu (v šestnáctinách), s návratem na začátek taktu: 'x...x..x' -> '4-3-1'."""
++    hits = [i for i, c in enumerate(cells) if c in hit]
++    if not hits:
++        return ""
++    if len(hits) == 1:
++        return "16"
++    gaps = [b - a for a, b in zip(hits, hits[1:])] + [16 - hits[-1] + hits[0]]
++    return "-".join(str(g) for g in gaps)
++
++
++def clip_notes(clip: ET.Element, a: float, b: float, val) -> list[tuple[float, float, int, int]]:
++    """Zapnuté noty klipu v okně smyčky [a, b): (začátek od a, délka, výška, velocity), seřazené.
++    `val` = als_stats.val (předává se, aby modul nezávisel na als_stats)."""
++    notes = []
++    for kt in clip.findall("Notes/KeyTracks/KeyTrack"):
++        key = val(kt, "MidiKey")
++        if key is None:
++            continue
++        for ev in kt.findall("Notes/MidiNoteEvent"):
++            if ev.get("IsEnabled") == "false":
++                continue
++            s = float(ev.get("Time", "0"))
++            if a <= s < b:
++                notes.append((s - a, float(ev.get("Duration", "0")), int(key), int(float(ev.get("Velocity", "100")))))
++    return sorted(notes)
+diff --git a/tools/midi_project.py b/tools/midi_project.py
+index 8e1b2f5..e721da8 100644
+--- a/tools/midi_project.py
++++ b/tools/midi_project.py
+@@ -17,9 +17,11 @@ from pathlib import Path
+ 
+ try:
+     import als_stats as A
++    import midi_common as C
+ except ImportError:
+     sys.path.insert(0, str(Path(__file__).parent))
+     import als_stats as A
++    import midi_common as C
+ 
+ NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+ 
+@@ -54,15 +56,9 @@ def clips(root: ET.Element) -> list[dict]:
+             b = float(A.val(clip, "Loop/LoopEnd") or 0)
+             if start is None or b <= a:
+                 continue
+-            notes = []
+-            for kt in clip.findall("Notes/KeyTracks/KeyTrack"):
+-                key = A.val(kt, "MidiKey")
+-                for ev in kt.findall("Notes/MidiNoteEvent"):
+-                    s = float(ev.get("Time", "0"))
+-                    if key is not None and ev.get("IsEnabled") != "false" and a <= s < b:
+-                        notes.append((s - a, float(ev.get("Duration", "0")), int(key), int(float(ev.get("Velocity", "100")))))
++            notes = C.clip_notes(clip, a, b, A.val)
+             out.append({"track": A.track_name(t), "start": float(start), "length": float(end) - float(start) if end else b - a,
+-                        "loop": b - a, "notes": sorted(notes), "muted": A.val(clip, "Disabled") == "true",
++                        "loop": b - a, "notes": notes, "muted": A.val(clip, "Disabled") == "true",
+                         "loop_on": A.val(clip, "Loop/LoopOn") != "false", "start_rel": float(A.val(clip, "Loop/StartRelative") or 0)})
+     return out
+ 
+diff --git a/tools/midi_stats.py b/tools/midi_stats.py
+index 8a2b369..c1cf5d7 100644
+--- a/tools/midi_stats.py
++++ b/tools/midi_stats.py
+@@ -30,9 +30,11 @@ from pathlib import Path
+ 
+ try:
+     import als_stats as A
++    import midi_common as C
+ except ImportError:  # spuštěno z kořene repa
+     sys.path.insert(0, str(Path(__file__).parent))
+     import als_stats as A
++    import midi_common as C
+ 
+ MIN_PATTERNS = 10
+ MIN_SOURCES = 3
+@@ -132,18 +134,8 @@ def als_patterns(root: ET.Element) -> list[tuple[str, list[tuple[float, float, i
+             b = float(A.val(clip, "Loop/LoopEnd") or 0)
+             if b <= a:
+                 continue
+-            notes = []
+-            for kt in clip.findall("Notes/KeyTracks/KeyTrack"):
+-                key = A.val(kt, "MidiKey")
+-                if key is None:
+-                    continue
+-                for ev in kt.findall("Notes/MidiNoteEvent"):
+-                    if ev.get("IsEnabled") == "false":
+-                        continue
+-                    s = float(ev.get("Time", "0"))
+-                    if a <= s < b:
+-                        notes.append((s - a, float(ev.get("Duration", "0")), int(key), int(float(ev.get("Velocity", "100")))))
+-            out.append((name, sorted(notes), b - a))
++            notes = C.clip_notes(clip, a, b, A.val)
++            out.append((name, notes, b - a))
+     return out
+ 
+ 
+@@ -227,16 +219,7 @@ def fingerprint(notes: list[tuple[float, float, int, int]]) -> str:
+ 
+ # ---------- agregace ----------
+ 
+-def quant(xs: list[float]) -> dict:
+-    s = sorted(xs)
+-    n = len(s)
+-
+-    def q(p: float) -> float:
+-        i = (n - 1) * p
+-        lo, hi = int(math.floor(i)), int(math.ceil(i))
+-        return round(s[lo] + (s[hi] - s[lo]) * (i - lo), 3)
+-
+-    return {"n": n, "q1": q(0.25), "median": q(0.5), "q3": q(0.75)}
++quant = C.quant
+ 
+ 
+ def summarize(rows: list[dict]) -> dict:
+diff --git a/tools/stem_grid.py b/tools/stem_grid.py
+index f4dfcde..43880e7 100644
+--- a/tools/stem_grid.py
++++ b/tools/stem_grid.py
+@@ -20,6 +20,12 @@ import numpy as np
+ import soundfile as sf
+ from scipy.signal import butter, sosfiltfilt
+ 
++try:
++    import midi_common as C
++except ImportError:  # spuštěno z kořene repa
++    sys.path.insert(0, str(Path(__file__).parent))
++    import midi_common as C
++
+ ENV_HZ = 1000
+ BANDS = {"kick": (30.0, 150.0), "snare": (1500.0, 6000.0), "bass": (30.0, 300.0)}
+ 
+@@ -131,13 +137,7 @@ def runs(active: list[bool]) -> list[tuple[int, int]]:
+ 
+ 
+ def gap_signature(cells: str) -> str:
+-    hits = [i for i, c in enumerate(cells) if c == "x"]
+-    if not hits:
+-        return ""
+-    if len(hits) == 1:
+-        return "16"
+-    gaps = [b - a for a, b in zip(hits, hits[1:])] + [16 - hits[-1] + hits[0]]
+-    return "-".join(str(g) for g in gaps)
++    return C.gap_signature(cells, hit="x")
+ 
+ 
+ def analyze(directory: Path, bpm: float, files: dict[str, Path] | None = None) -> dict:
+diff --git a/tools/test_midi_common.py b/tools/test_midi_common.py
+new file mode 100644
+index 0000000..e3a18c0
+--- /dev/null
++++ b/tools/test_midi_common.py
+@@ -0,0 +1,28 @@
++import xml.etree.ElementTree as ET
++
++import als_stats as A
++import midi_batch as B
++import midi_common as C
++import midi_stats as M
++import stem_grid as S
++
++
++def test_quant_variants_match_old_callers():
++    xs = [1.0, 2.0, 3.0, 4.0]
++    assert C.quant(xs) == {"n": 4, "q1": 1.75, "median": 2.5, "q3": 3.25} == M.quant(xs)
++    assert A.quant([1.0, 2.0, 2.0 / 3]) == {"n": 3, "min": 2.0 / 3, "q1": 0.83, "median": 1.0, "q3": 1.5, "max": 2.0}
++
++
++def test_gap_signature_hit_chars():
++    assert C.gap_signature("x..+............") == B.gap_signature("x..+............") == "3-13"
++    assert S.gap_signature("x..+............") == "16"
++
++
++def test_clip_notes_window_disabled_and_missing_key():
++    clip = ET.fromstring('<MidiClip><Notes><KeyTracks>'
++                         '<KeyTrack><Notes><MidiNoteEvent Time="1.5" Duration="0.25" Velocity="90.5"/>'
++                         '<MidiNoteEvent Time="0.5" Duration="1" Velocity="100" IsEnabled="false"/>'
++                         '<MidiNoteEvent Time="5" Duration="1" Velocity="100"/></Notes><MidiKey Value="36"/></KeyTrack>'
++                         '<KeyTrack><Notes><MidiNoteEvent Time="1" Duration="1" Velocity="100"/></Notes></KeyTrack>'
++                         '</KeyTracks></Notes></MidiClip>')
++    assert C.clip_notes(clip, 1.0, 5.0, A.val) == [(0.5, 0.25, 36, 90)]
+-- 
+2.47.3
+
+
+From dd0f9a9358d3ba0f9b17d97a1fa90cbf9ff49a0c Mon Sep 17 00:00:00 2001
+From: Grok Bot <bot@local>
+Date: Tue, 20 Oct 2026 12:23:18 +0000
+Subject: [PATCH 2/4] check_repo: warn about local paths in data/tracks and
+ data/local-sources.json
+
+---
+ tools/check_repo.py      | 20 ++++++++++++++++++++
+ tools/test_check_repo.py | 10 ++++++++++
+ 2 files changed, 30 insertions(+)
+
+diff --git a/tools/check_repo.py b/tools/check_repo.py
+index d5e36c8..41c9604 100644
+--- a/tools/check_repo.py
++++ b/tools/check_repo.py
+@@ -32,6 +32,23 @@ RULE_LABELS = {"consensus", "conditional", "school", "dogma_unverified"}
+ REQUIRED = ("id", "type", "title", "status", "confidence", "source_type", "source_ids", "updated")
+ EMPTY_OK = {"personal_observation", "other"}
+ FUNCTIONS = {"sub", "body", "movement", "noise", "texture", "lead", "pad", "fx", "other"}
++LOCAL_PATH = re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:(?:\\\\|\\|/)[^\s\"']*")
++
++
++def local_paths(root: Path) -> list[str]:
++    """Lokální cesty (např. D:\\...) v commitovaných datech mimo presety: data/tracks/**/*.json a data/local-sources.json.
++    Zatím jen upozornění (existující soubory je obsahují); presety hlídá přísněji tools/check_presets.py."""
++    files = sorted((root / "data" / "tracks").rglob("*.json")) + [root / "data" / "local-sources.json"]
++    out = []
++    for f in files:
++        if not f.is_file() or "_local" in f.parts:
++            continue
++        hits = LOCAL_PATH.findall(f.read_text(encoding="utf-8"))
++        if hits:
++            out.append(f"{f.relative_to(root).as_posix()}: lokální cesta v commitovaném souboru ({len(hits)}×, např. {hits[0][:40]!r})")
++    return out
++
++
+ INDEX_KEYS = ("id", "source_id", "name", "file", "function", "archetype", "confidence", "cues_basis", "cues")
+ 
+ 
+@@ -298,6 +315,9 @@ def main() -> int:
+         except json.JSONDecodeError as e:
+             errors.append(f"{s.name}: neplatný JSON ({e})")
+ 
++    # --- lokální cesty v datech (zatím jen upozornění)
++    warnings.extend(local_paths(ROOT))
++
+     for w in warnings:
+         print(f"warning: {w}")
+     for e in errors:
+diff --git a/tools/test_check_repo.py b/tools/test_check_repo.py
+index 37c3ccd..8134d82 100644
+--- a/tools/test_check_repo.py
++++ b/tools/test_check_repo.py
+@@ -38,3 +38,13 @@ def test_frontmatter_parse():
+     meta = check_repo.parse_frontmatter('---\nid: a\nsource_ids: [x, y]\ntitle: "P1: a"\n---\n\nbody')
+     assert meta == {"id": "a", "source_ids": ["x", "y"], "title": "P1: a"}
+     assert check_repo.parse_frontmatter("bez frontmatteru") is None
++
++
++def test_local_paths_in_tracks_and_local_sources(tmp_path):
++    (tmp_path / "data" / "tracks" / "t").mkdir(parents=True)
++    (tmp_path / "data" / "tracks" / "t" / "meta.json").write_text('{"file": "D:\\\\Ableton\\\\x.wav"}', encoding="utf-8")
++    (tmp_path / "data" / "tracks" / "t" / "analysis.json").write_text('{"bpm": 174, "ratio": "1:2", "url": "https://example.com/a"}', encoding="utf-8")
++    (tmp_path / "data" / "local-sources.json").write_text('{"root": "C:/Users/x"}', encoding="utf-8")
++    w = check_repo.local_paths(tmp_path)
++    assert len(w) == 2 and w[0].startswith("data/tracks/t/meta.json") and w[1].startswith("data/local-sources.json")
++    assert check_repo.local_paths(tmp_path / "missing") == []
+-- 
+2.47.3
+
+
+From 43cfe92c8153938b52e3cd20110814357441db99 Mon Sep 17 00:00:00 2001
+From: Grok Bot <bot@local>
+Date: Tue, 20 Oct 2026 12:23:53 +0000
+Subject: [PATCH 3/4] tests: serum_preset_io, rebuild_track_index,
+ sync_knowledge
+
+---
+ tools/test_rebuild_track_index.py | 33 +++++++++++++++++++++
+ tools/test_serum_preset_io.py     | 48 +++++++++++++++++++++++++++++++
+ tools/test_sync_knowledge.py      | 34 ++++++++++++++++++++++
+ 3 files changed, 115 insertions(+)
+ create mode 100644 tools/test_rebuild_track_index.py
+ create mode 100644 tools/test_serum_preset_io.py
+ create mode 100644 tools/test_sync_knowledge.py
+
+diff --git a/tools/test_rebuild_track_index.py b/tools/test_rebuild_track_index.py
+new file mode 100644
+index 0000000..fe5e25d
+--- /dev/null
++++ b/tools/test_rebuild_track_index.py
+@@ -0,0 +1,33 @@
++import json
++
++import rebuild_track_index as R
++
++
++def test_row_flattens_analysis():
++    meta = {"id": "t1", "title": "T", "artist": "A", "bpm": 174, "key": "F minor", "source_id": "s1"}
++    an = {"analyzed": "2026-10-01", "method": {"basis": "full_mix", "stems": ["bass"]},
++          "structure": {"sections": [{"name": "intro"}, {"name": "drop"}]},
++          "dynamics": {"crest_factor_drop_db": 8.1},
++          "bass": {"type": "reese", "energy": {"profile": "mid", "sub_rel_db": -3.0},
++                   "modulation": {"primary_hz": 5.8, "grid_match": "1/8", "confidence": "hypothesis"}}}
++    r = R.row(meta, an)
++    assert r["sections"] == ["intro", "drop"] and r["stems"] is True and r["bass_type"] == "reese"
++    assert r["bass_mod_hz"] == 5.8 and r["sub_rel_db"] == -3.0 and r["centroid_hz"] is None and r["loudness_strategy"] == ""
++    assert R.row({"id": "x"}, {})["sections"] == []
++
++
++def test_main_skips_own_work_and_tracks_without_analysis(tmp_path, monkeypatch):
++    (tmp_path / "knowledge").mkdir()
++    (tmp_path / "knowledge" / "sources.jsonl").write_text(
++        json.dumps({"id": "pro", "access": "purchased"}) + "\n" + json.dumps({"id": "mine", "access": "own_work"}) + "\n", encoding="utf-8")
++    for tid, sid, with_an in (("a", "pro", True), ("b", "mine", True), ("c", "pro", False)):
++        d = tmp_path / "data" / "tracks" / tid
++        d.mkdir(parents=True)
++        (d / "meta.json").write_text(json.dumps({"id": tid, "source_id": sid}), encoding="utf-8")
++        if with_an:
++            (d / "analysis.json").write_text("{}", encoding="utf-8")
++    (tmp_path / "data" / "corpus").mkdir()
++    monkeypatch.setattr(R, "ROOT", tmp_path)
++    assert R.main() == 0
++    rows = [json.loads(x) for x in (tmp_path / "data" / "corpus" / "tracks.jsonl").read_text(encoding="utf-8").splitlines()]
++    assert [r["id"] for r in rows] == ["a"]
+diff --git a/tools/test_serum_preset_io.py b/tools/test_serum_preset_io.py
+new file mode 100644
+index 0000000..93b12d6
+--- /dev/null
++++ b/tools/test_serum_preset_io.py
+@@ -0,0 +1,48 @@
++import hashlib
++import struct
++
++import pytest
++
++import serum_preset_io as sio
++
++pytest.importorskip("zstandard")
++
++
++def body():
++    return {"Oscillator0": {"plainParams": {"kLevel": sio.F32(0.5), "kOn": True, "kMode": 3}, "name": "Osc A"},
++            "FX1": {"plainParams": "none"}, "List": [1, -2, 300, -70000, 1.25, None, "č"]}
++
++
++def test_roundtrip_keeps_types_and_recomputes_hash():
++    data = sio.write_preset({"product": "Serum2", "hash": "stale"}, body())
++    meta, cb = sio.read_preset(data)
++    assert meta["product"] == "Serum2" and cb == body()
++    assert type(cb["Oscillator0"]["plainParams"]["kLevel"]) is sio.F32 and type(cb["List"][4]) is float
++    n = struct.unpack("<Q", data[9:17])[0]
++    assert meta["hash"] == hashlib.md5(data[25 + n:]).hexdigest() != "stale"
++    assert sio.read_preset(sio.write_preset(meta, cb)) == (meta, cb)
++
++
++def test_read_rejects_bad_input():
++    with pytest.raises(ValueError):
++        sio.read_preset(b"NotXfer\0\0" + b"\0" * 20)
++    data = bytearray(sio.write_preset({}, {}))
++    n = struct.unpack("<Q", data[9:17])[0]
++    data[21 + n:25 + n] = struct.pack("<I", 9)
++    with pytest.raises(ValueError, match="verze"):
++        sio.read_preset(bytes(data))
++
++
++def test_cbor_rejects_unsupported():
++    with pytest.raises(ValueError):
++        sio._decode(bytes([0xF9, 0, 0]))  # float16
++    with pytest.raises(ValueError):
++        sio._decode(bytes([0x9F]))  # neurčitá délka
++    with pytest.raises(TypeError):
++        sio._encode(b"x", [])
++
++
++def test_helpers():
++    assert list(sio.plain_params(body())) == [("Oscillator0", "kLevel", 0.5), ("Oscillator0", "kOn", True), ("Oscillator0", "kMode", 3)]
++    assert sio.module_kind("Oscillator3") == "Oscillator" and sio.module_kind("ModSlot12") == "ModSlot"
++    assert sio.safe_file_stem("a/b:c?.SerumPreset") == "a_b_c_.SerumPreset" and sio.safe_file_stem("...") == "preset"
+diff --git a/tools/test_sync_knowledge.py b/tools/test_sync_knowledge.py
+new file mode 100644
+index 0000000..509621c
+--- /dev/null
++++ b/tools/test_sync_knowledge.py
+@@ -0,0 +1,34 @@
++"""sync_knowledge.py při importu hned čte vault a zapisuje knowledge/, proto se testují jen jeho čisté funkce,
++vytažené z kódu bez spuštění skriptu."""
++import ast
++import json
++import re
++from pathlib import Path
++
++SRC = Path(__file__).with_name("sync_knowledge.py").read_text(encoding="utf-8")
++
++
++def _funcs(*names):
++    tree = ast.parse(SRC)
++    mod = ast.Module([n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in names], type_ignores=[])
++    ns = {"re": re, "json": json}
++    exec(compile(mod, "sync_knowledge.py", "exec"), ns)
++    return ns
++
++
++F = _funcs("unlink", "fm", "sections")
++
++
++def test_unlink_wikilinks():
++    assert F["unlink"]("viz [[20 Basa|basa]] a [[40 Mix a master#2. Tři výstupy]]") == "viz basa a 40 Mix a master, kap. 2. Tři výstupy"
++    assert F["unlink"]("[[Producenti/Joe_Ford]]") == "Joe Ford"
++
++
++def test_frontmatter_quotes_and_lists():
++    out = F["fm"]({"id": "p1", "title": "P1 · Rozhodování: proč", "source_ids": ["a", "b"], "skip": None})
++    assert out == '---\nid: p1\ntitle: "P1 · Rozhodování: proč"\nsource_ids: [a, b]\n---\n'
++
++
++def test_sections_split_at_hr_and_higher_heading():
++    text = "### P1 · A\nprvní\n---\nmimo\n### P2 · B\ndruhá\n## Další\nmimo"
++    assert F["sections"](text, 3) == [("P1 · A", "první"), ("P2 · B", "druhá")]
+-- 
+2.47.3
+
+
+From 2e2000524f5624971e8112c3f48d066f1b941d6f Mon Sep 17 00:00:00 2001
+From: Grok Bot <bot@local>
+Date: Tue, 20 Oct 2026 12:24:46 +0000
+Subject: [PATCH 4/4] docs: tools/README and BLUEPRINT match existing tools and
+ check_repo checks; status date, Python version; soundfile in dev extra
+
+---
+ README.md         |  6 +++---
+ docs/BLUEPRINT.md | 14 +++++++++-----
+ pyproject.toml    |  2 +-
+ tools/README.md   | 11 +++++++++--
+ 4 files changed, 22 insertions(+), 11 deletions(-)
+
+diff --git a/README.md b/README.md
+index 19ea45b..c7cd4ea 100644
+--- a/README.md
++++ b/README.md
+@@ -19,8 +19,8 @@ Rozhodovací systém a datový stroj pro produkci neurofunku/DnB v Ableton Live.
+ | strojově čitelný kánon | `knowledge/` |
+ | schémata | `core/*.schema.json` |
+ | data | `data/` (tracky, presety, sessions, korpus) |
+-| nástroje | `tools/` (`analyze_track.py`, `check_repo.py`, `vault-app/`) |
++| nástroje | `tools/` (přehled se stavem v [`tools/README.md`](tools/README.md)) |
+ 
+-**Kontrola:** `python tools/check_repo.py`
++**Kontrola:** `python tools/check_repo.py` (Python 3.12 jako v CI, minimum 3.11; testy: `pip install pytest numpy scipy cbor2 zstandard soundfile` (= extra `dev` v `pyproject.toml`) a `python -m pytest tools -q`)
+ 
+-**Stav (2026-10-15):** kánon v češtině hotový, šablona Ableton mimo kánon, datová vrstva se teprve plní (BLUEPRINT kap. 10).
++**Stav (2026-10-17):** kánon v češtině hotový, šablona Ableton mimo kánon, datová vrstva se teprve plní (BLUEPRINT kap. 10).
+diff --git a/docs/BLUEPRINT.md b/docs/BLUEPRINT.md
+index f9023d6..bb6d5f5 100644
+--- a/docs/BLUEPRINT.md
++++ b/docs/BLUEPRINT.md
+@@ -74,7 +74,9 @@ npos-v2/
+ │   ├── sync_knowledge.py            ← vygeneruje knowledge/ z kánonu ve vaultu
+ │   ├── vault-app/                   ← read-only prohlížeč a export vaultu (viz kap. 9)
+ │   ├── analyze_preset.py            ← čtečka .SerumPreset (basis: preset_file)
+-│   └── (plánováno: rebuild_track_index.py, query_tracks.py)
++│   ├── rebuild_track_index.py       ← data/tracks → data/corpus/tracks.jsonl
++│   ├── …                            ← další nástroje (presety, MIDI, .als, stemy): úplný seznam v tools/README.md
++│   └── (plánováno: query_tracks.py)
+ ├── neuroman/                        ← legacy, neoživovat (kap. 9)
+ └── pyproject.toml
+ ```
+@@ -183,10 +185,10 @@ Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XM
+ 
+ ## 9. Nástroje a blocklist
+ 
+-**Hotové:** `tools/analyze_track.py` · `tools/analyze_preset.py` · `tools/check_repo.py` · `tools/sync_knowledge.py` (generuje `knowledge/` z vaultu, vault z env `NPOS_VAULT`) · `tools/vault-app/` (read-only prohlížeč vaultu v prohlížeči a statický export do sdílené kopie; **nezapisuje** do vaultu ani do dat).
+-**Plánované (pořadí v kap. 10):** `rebuild_track_index.py` → `data/corpus/tracks.jsonl` · `query_tracks.py`.
++**Hotové:** `tools/analyze_track.py` · `tools/analyze_preset.py` · `tools/check_repo.py` · `tools/sync_knowledge.py` (generuje `knowledge/` z vaultu, vault z env `NPOS_VAULT`) · `tools/rebuild_track_index.py` (→ `data/corpus/tracks.jsonl`) · `tools/vault-app/` (read-only prohlížeč vaultu v prohlížeči a statický export do sdílené kopie; **nezapisuje** do vaultu ani do dat). Presety (`index_presets`, `analyze_fxp`, `analyze_fxp_host`, `rebuild_preset_indexes`, `render_preset`, `preset_roles`, `preset_stats`, `preset_seed`, `serum_preset_io`, `check_presets`), Live sety a MIDI (`als_stats`, `midi_stats`, `midi_project`, `midi_batch`, `midi_common`), stemy (`stem_grid`) a správa zdrojů (`collect_local_sources`, `import_sessions`): úplný seznam se stavem v `tools/README.md`.
++**Plánované (pořadí v kap. 10):** `query_tracks.py`.
+ 
+-**`tools/check_repo.py` kontroluje:** frontmatter každého souboru v `knowledge/` (kontrakt v `knowledge/README.md`) · že každý `source_ids` odkaz vede do `sources.jsonl` · platnost `sources.jsonl` proti `core/source.schema.json` · že `data/tracks/<id>` mají `meta.json`.
++**`tools/check_repo.py` kontroluje:** frontmatter každého souboru v `knowledge/` (kontrakt v `knowledge/README.md`) · že každý `source_ids` odkaz vede do `sources.jsonl` · platnost `sources.jsonl` proti `core/source.schema.json` (a `vault_note` proti vaultu, je-li dostupný) · `knowledge/guides/next-step.json` · že `data/tracks/<id>` mají `meta.json` se známým `source_id` a platný JSON v `analysis.json` / `build-sheet.json` · `data/presets/*.json` proti `core/preset-analysis.schema.json` a indexy presetů · že schémata v `core/` jsou platný JSON · lokální cesty (`D:\…`) v `data/tracks` a `data/local-sources.json` hlásí jen jako upozornění. Konzistenci dat presetů (id, typy, lokální cesty) hlídá `tools/check_presets.py`; obojí běží v CI.
+ 
+ **Blocklist (absolutní nulová tolerance):**
+ - UI pro produkční rozhodování, dashboard, druhý frontend (výjimka: `tools/vault-app`, jen čtení; od 2026-10-16 smí v místním serveru zapisovat výstup generátoru presetů do složky mimo repo, viz kap. 7.1, a nikdy ve statickém exportu).
+@@ -208,7 +210,7 @@ Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XM
+ **Další kroky (nepřeskakovat):**
+ 1. **Datová konverze:** převést už existující naměřené rozbory do `data/tracks/*/analysis.json` s poctivým `confidence` a `basis` (kandidáti: *Breach*, *Unleash The Beast*, *Restless*, *Hands Up*, *Been About This*, *Don't Play*, *Mechanism*, remix *Dirts*; každý musí mít záznam v `sources.jsonl`).
+ 2. **Presety:** čtečka je hotová (`analyze_preset.py`). Zbývá převést ~15 rozborů presetů z próz do `data/presets/*.json` a doplnit ruční interpretaci (archetyp, funkce) k přečteným hodnotám; modulační matici a jednotky ověřit proti Serum UI.
+-3. **Korpus:** `rebuild_track_index.py` → `tracks.jsonl`, `query_tracks.py`.
++3. **Korpus:** `rebuild_track_index.py` → `tracks.jsonl` (hotovo), `query_tracks.py`.
+ 5. **Dogfooding:** session log a build sheet na *každé* skutečné práci. Znalost se rozšiřuje, jen když se v praxi zasekneš.
+ 
+ ### 10.1 Definition of Done (v2)
+@@ -238,6 +240,8 @@ Zbývá platit: `.als` generovat jen routing, klipy a prázdné sloty; plugin XM
+ - Přidáno: pravidlo pravdivosti, registr zdrojů, `check_repo.py`, schémata `source`, `track-analysis`, `preset-analysis`, protokol měření basového pásma, `basis` a `modulation source`, princip 9.
+ - Zastaralé v v1: „Current stage: Skateboard step 1" — kroky 2 a 3 byly dávno hotové.
+ 
++**v2.4 (2026-10-20)** — údržba dokumentace: kap. 3 a 9 odpovídají existujícím nástrojům (`rebuild_track_index.py` hotový, plánovaný zůstává jen `query_tracks.py`), popis kontrol `check_repo.py` doplněn; nový sdílený modul `tools/midi_common.py`; `check_repo.py` upozorní na lokální cesty v `data/tracks` a `data/local-sources.json`.
++
+ **v2.3 (2026-10-16)** — vault-app (jen místní server) má stránku `/generator.html`, která spouští `preset_seed.py` nad malou sadou semínek (20 až 30 vlastních presetů) a ukládá výsledek na disk uživatele; Architekt to schválil v chatu; výstup se nenahrává a statický export stránku neobsahuje. kap. 7.1: povolený offline zápis `preset_seed.py` (reálný preset + pár zmutovaných parametrů, výstup jen lokálně). Kap. 9: výjimka z blocklistu pro výukový trenažér syntézy (schválil Architekt v chatu). Nové nástroje: `analyze_fxp_host.py`, `render_preset.py`, `preset_roles.py`, `preset_stats.py`, `check_presets.py`, `serum_preset_io.py`, `preset_seed.py`.
+ 
+ **v2.2 (2026-10-15)** — `knowledge/guides/` (návod na aranž z rozborů), `tools/sync_knowledge.py`, typ `guide` ve frontmatteru. Šablona Ableton: uživatel smazal poznámky o šabloně a označil ji za nedobrou; kap. 8 čeká na rozhodnutí (viz vault `06 Návod na aranž` a `02 Šablona`).
+diff --git a/pyproject.toml b/pyproject.toml
+index 4d18c68..9330380 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -8,7 +8,7 @@ dependencies = []
+ [project.optional-dependencies]
+ serum = ["cbor2", "zstandard"]   # tools/analyze_preset.py
+ host = ["pedalboard"]   # tools/analyze_fxp_host.py, render_preset.py a preset_seed.py --check (hostují Serum VST3; pedalboard je GPL-3.0, jen lokální nástroj, nepatří do dev/CI; render_preset.py potřebuje i scipy z extra dev)
+-dev = ["pytest", "numpy", "scipy", "cbor2", "zstandard"]   # pytest tools (stejné jako CI)
++dev = ["pytest", "numpy", "scipy", "cbor2", "zstandard", "soundfile"]   # pytest tools (stejné jako CI; soundfile kvůli stem_grid.py)
+ 
+ [tool.pytest.ini_options]
+ testpaths = ["tools"]
+diff --git a/tools/README.md b/tools/README.md
+index 9cfb574..52bde41 100644
+--- a/tools/README.md
++++ b/tools/README.md
+@@ -7,7 +7,7 @@
+ | `index_presets.py` | hotovo | celý pack `.SerumPreset` → kompaktní index `data/presets/index/<source_id>.jsonl` (stopy + návrh funkce/archetypu, vždy `hypothesis`); plné analýzy do `data/presets/_local/` (gitignored) |
+ | `analyze_fxp.py` | hotovo | Serum 1 `.fxp`: jen kontejner (hlavička, zlib stav, maka, počet `.wav`) + role z názvu → `data/presets/fxp/<source_id>.jsonl` (`hypothesis`) |
+ | `analyze_fxp_host.py` | hotovo | Serum 1 `.fxp` přes hostované Serum 1 VST3 (`pip install pedalboard`, jen lokálně): oscilátory, filtr, FX, amounty modulací → `fxp/` + `features/`; zdroj/cíl modulace, pořadí FX, mono a křivky LFO se nečtou |
+-| `check_repo.py` | hotovo | kontrola kontraktu `knowledge/` (frontmatter), odkazů na zdroje, `sources.jsonl` proti schématu, `data/tracks/*/meta.json`, `data/presets/*.json` proti schématu |
++| `check_repo.py` | hotovo | kontrola kontraktu `knowledge/` (frontmatter), odkazů na zdroje, `sources.jsonl` proti schématu (a `vault_note` proti vaultu, je-li dostupný), `knowledge/guides/next-step.json`, `data/tracks/*/meta.json` (a platný JSON v `analysis.json` / `build-sheet.json`), `data/presets/*.json` proti schématu, indexy presetů, platnost JSON schémat v `core/`; lokální cesty v `data/tracks` a `data/local-sources.json` jen jako upozornění |
+ | `render_preset.py` | hotovo | render presetu jednou notou (Serum 1 `.fxp`, Serum 2 `.SerumPreset`; jen lokálně, `pedalboard`) a deskriptory zvuku → `data/presets/audio*/` (čísla; wav jen v `_local`) |
+ | `preset_roles.py` | hotovo | role ze zvuku (kNN nad deskriptory, leave-one-out): rodina bass/tonal/perc/fx ano, podtypy basů ne → `data/presets/roles/` (`estimated`) |
+ | `preset_stats.py` | hotovo | medián a kvartily parametrů a zvuku po rolích a packách, kontrast rolí (Cliffovo delta); skupina s n < 10 jen počet → `data/presets/stats/` |
+@@ -18,9 +18,16 @@
+ | `midi_project.py` | hotovo | rozbor MIDI jednoho `.als`: vzory po stopách v mřížce 1/16 a kde se v aranži použijí; `--bars 33-64` spojí klipy do aranžního času a vypíše mřížku po taktech, `--audio` přidá audio stopy (klip = úder na začátku), `--chops` vypíše audio stopy s mnoha krátkými klipy (nasekané samply a resamply) (jen čtení, výstup na obrazovku nebo JSON) |
+ | `midi_batch.py` | hotovo | dávka přes celou složku `.als`: nejčastější takt kicku, snaru a basy po projektech a jeho „podpis mezer“ → `data/midi/batch-*.json` (souhrn bez názvů), podrobnosti po projektech jen lokálně (`data/midi/_local`, gitignorováno); soubory nad `--max-mb` se přeskočí; role z názvů = hypotéza |
+ | `stem_grid.py` | hotovo | rytmus a stavba z odseparovaných stemů (Demucs, RipX, oficiální): kick, snare a basa po taktech na mřížce 1/16, energie stemů po taktech, přesné BPM a první doba z měření; jen čtení, výstup na obrazovku nebo lokální JSON (`data/stems/_local`, gitignorováno); hi-haty a klik kicku prosakují do pásem (`odhad`) |
++| `rebuild_preset_indexes.py` | hotovo | hromadné přeindexování packů z `_sources/presets/<source_id>/`: index a feature vektory, porovnání s commitovanými soubory; s `--write` je přepíše (plné dumpy do `data/presets/_local/`) |
++| `collect_local_sources.py` | hotovo | manifest `data/local-sources.json` (kde leží surové zdroje) a kopie malých zdrojů do `_sources/` (gitignorováno); cesty jsou v kódu (`D:\`) |
++| `sync_knowledge.py` | hotovo | vygeneruje `knowledge/` (kromě `sources.jsonl`) z kánonu ve vaultu; vault z env `NPOS_VAULT` |
++| `import_sessions.py` | hotovo | export sessions z Dashboardu (`sessions.json`) → `data/sessions/` podle `core/session.schema.json`, nic nepřepisuje |
++| `midi_common.py` | hotovo | sdílené pomocné funkce pro `als_stats`, `midi_stats`, `midi_project`, `midi_batch`, `stem_grid` (kvartily, podpis mezer, noty klipu) |
+ | `check_presets.py` | hotovo | konzistence dat presetů (unikátní id, typy, sha256, bez lokálních cest); běží v CI |
+ | `vault-app/` | hotovo | read-only prohlížeč vaultu a statický export pro sdílení (jen `Hudební produkce`, za heslem); viz README uvnitř |
+-| `rebuild_track_index.py` | plánováno | `data/tracks` + `data/presets` → `data/corpus/*.jsonl` |
++| `rebuild_track_index.py` | hotovo | `data/tracks/*/{meta,analysis}.json` → `data/corpus/tracks.jsonl` (ploché klíče pro dotazy; vlastní tvorba `own_work` se vynechá) |
+ | `query_tracks.py` | plánováno | dotazy nad korpusem |
+ 
++Python 3.12 (CI; minimum podle `pyproject.toml` je 3.11). Závislosti pro testy jako v CI: `pip install pytest numpy scipy cbor2 zstandard soundfile` (extra `dev` v `pyproject.toml`; `pip install -e .[dev]` zatím nejde, repo nemá nastavené balíčky pro setuptools).
++
+ Pravidla: BLUEPRINT kap. 9 (blocklist). `analyze_track.py` měří **plný mix** — basová modulace z něj je nejvýš `hypothesis`.
+-- 
+2.47.3
+

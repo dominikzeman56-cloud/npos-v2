@@ -1,0 +1,81 @@
+{
+ "basis": "neuralnote_mid",
+ "confidence": "naměřeno z automatického přepisu; počet skladeb malý, nejde o pravidla",
+ "files": 2,
+ "skipped": 0,
+ "per_file": [
+  {
+   "bpm": 174.0,
+   "bars": 142,
+   "active_bars": 91,
+   "grid_phase_beats": 0.04,
+   "tracks": {
+    "Distorted Guitar": 238,
+    "Bass": 611,
+    "Strings": 578,
+    "Synth Lead": 135,
+    "Drums": 1620
+   },
+   "bar_classes": {
+    "call": 33,
+    "long": 5,
+    "eighths": 49,
+    "mixed": 4
+   },
+   "note_length_share": {
+    "1": 0.03,
+    "2": 0.802,
+    "3": 0.06,
+    "4": 0.099,
+    "5+": 0.01
+   },
+   "roots_vs_tonic": {
+    "0": 53,
+    "5": 3,
+    "6": 12,
+    "11": 23
+   },
+   "semitone_root_steps": 6,
+   "call_to_eighths_octave_drops": 0,
+   "median_root_eighths_minus_call_semitones": 0
+  },
+  {
+   "bpm": 174.0,
+   "bars": 247,
+   "active_bars": 177,
+   "grid_phase_beats": 0.21,
+   "tracks": {
+    "Distorted Guitar": 2373,
+    "Bass": 897,
+    "Strings": 118,
+    "Drums": 2001
+   },
+   "bar_classes": {
+    "long": 60,
+    "call": 93,
+    "eighths": 18,
+    "sixteenths": 3,
+    "mixed": 3
+   },
+   "note_length_share": {
+    "1": 0.076,
+    "2": 0.281,
+    "3": 0.231,
+    "4": 0.303,
+    "5+": 0.109
+   },
+   "roots_vs_tonic": {
+    "0": 67,
+    "3": 15,
+    "5": 21,
+    "6": 1,
+    "7": 24,
+    "8": 44,
+    "11": 5
+   },
+   "semitone_root_steps": 13,
+   "call_to_eighths_octave_drops": 0,
+   "median_root_eighths_minus_call_semitones": 3
+  }
+ ]
+}
