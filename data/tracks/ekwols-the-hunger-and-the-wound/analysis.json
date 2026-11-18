@@ -1,0 +1,175 @@
+{
+  "id": "ekwols-the-hunger-and-the-wound",
+  "mode": "deep",
+  "analyzed": "2026-11-15",
+  "method": {
+    "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
+    "stems": true,
+    "basis": "full_mix",
+    "notes": "Crest, centroid, struktura a energie pásem z plného mixu (FLAC, basis full_mix). Basová modulace, side/mid a reese-vs-growl z 4 stemů iZotope Photon (Music 4 Stems Ultra: bass, drums, other, vocals; lokálně mimo repo). Stem „bass“ je sub i mids v jednom souboru, proto se nezapisuje bass.layering (sub vs. mids se nedá oddělit). Separace není dokonalá: v několika místech (cca 60, 90, 220, 240 a 279–285 s) nese část subu stem drums a basa na chvíli klesne na ticho; modulace je proto měřena v dropu 110,3–198,6 s, kde je basa souvislá."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [
+      {
+        "name": "build",
+        "start_sec": 0.0,
+        "end_sec": 22.63
+      },
+      {
+        "name": "drop_a",
+        "start_sec": 22.63,
+        "end_sec": 65.84
+      },
+      {
+        "name": "breakdown",
+        "start_sec": 65.84,
+        "end_sec": 88.73
+      },
+      {
+        "name": "drop_c",
+        "start_sec": 88.73,
+        "end_sec": 198.49
+      },
+      {
+        "name": "breakdown",
+        "start_sec": 198.49,
+        "end_sec": 221.17
+      },
+      {
+        "name": "drop_d",
+        "start_sec": 221.17,
+        "end_sec": 308.9
+      },
+      {
+        "name": "outro",
+        "start_sec": 308.9,
+        "end_sec": 317.22
+      }
+    ],
+    "notes": "Drop window set manually: 110.3-198.6 s (all drop metrics are measured there). The sections above are the automatic RMS detection and may merge a loud drum intro or build into drop_a.",
+    "confidence": "estimated"
+  },
+  "dynamics": {
+    "crest_factor_drop_db": 7.19,
+    "loudness_strategy": "open",
+    "notes": "",
+    "confidence": "measured"
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -3.55,
+      "fundament_rel_db": -5.74,
+      "profile": "sub_dominant",
+      "notes": "Čísla výše jsou z plného mixu. Na stemech (basa vůči součtu 4 stemů, bez bicích): sub +2,58 dB, fundament -2,07 dB. V sub pásmu 25–120 Hz nese celkově basa 86 % energie (v dropu 89 %), drums 11–14 % (z velké části kick), other prakticky nic."
+    },
+    "modulation": {
+      "primary_hz": 2.9,
+      "grid_match": "1/4",
+      "secondary_hz": [
+        5.8,
+        8.7,
+        1.45,
+        4.35
+      ],
+      "detection": "obálka 60–300 Hz na stemech basy -> Hilbert -> FFT, čáry od 1 Hz (pod tím je stavba frází). Basová sběrnice: 2.9 Hz (4.0/takt, 1.0), 5.8 Hz (8.0/takt, 0.81), 8.7 Hz (12.0/takt, 0.53), 1.45 Hz (2.0/takt, 0.52), 4.35 Hz (6.0/takt, 0.36); nejsilnější čára na celém/půleném počtu cyklů na takt (náhodná shoda ~20%). Jen mid basa: 2.9 Hz (4.0/takt, 1.0), 5.8 Hz (8.0/takt, 0.81), 8.7 Hz (12.0/takt, 0.53), 1.45 Hz (2.0/takt, 0.52), 4.35 Hz (6.0/takt, 0.36). Příčina (LFO, rytmus not, sidechain) není změřena.",
+      "source": "unknown",
+      "basis": "stems",
+      "confidence": "measured"
+    },
+    "timbre": {
+      "spectral_centroid_hz": 4862.0,
+      "notes": "Centroid z plného mixu; stemový součet nemá mastering řetězec."
+    },
+    "stereo": {
+      "sub_side_db": -51.35,
+      "fundament_side_db": -25.15,
+      "notes": "Side/mid na stemu basy (bez bicích). Plný mix: sub -45,68 dB, fundament -16,72 dB. Side/mid na basové sběrnici; mid basa nad 300 Hz–1 kHz: -10.14 dB."
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 2.00 Hz -> off_grid (off-grid (reese/detune path))",
+      "hi_res_fft_350_900": "3 peaks, median spacing 5.0 Hz",
+      "conclusion": "growl/modulated (few oscillators, clean harmonics) — izolovaná mid basa; heuristika, u vrstvené basy vychází „reese-like“ téměř vždy, neprůkazné",
+      "hold_start_sec": 164.05
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured"
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "measured",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "ekwols-the-hunger-and-the-wound"
+}

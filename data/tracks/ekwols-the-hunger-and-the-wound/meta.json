@@ -1,0 +1,11 @@
+{
+  "id": "ekwols-the-hunger-and-the-wound",
+  "title": "The Hunger & The Wound",
+  "artist": "Ekwols",
+  "label": "",
+  "year": 2026,
+  "bpm": 174,
+  "key": "",
+  "notes": "Měřeno tools/analyze_track.py z plného mixu (lokální FLAC, mimo repo). Tempo změřeno (174,00; autokorelace nástupů kicku a snare přes 64 dob). Název, interpret, rok a album „EC100 - Sampler III: Acid Chamber / The Hunger & The Wound“ jsou z tagů souboru. Tag tóniny v souboru: Dm (měřením neověřeno, proto se nezapisuje). Label neověřen. Basová modulace a side/mid doplněny z lokálních stemů iZotope Photon (Music 4 Stems Ultra), basis plného mixu zůstává pro crest a centroid.",
+  "source_id": "ekwols-the-hunger-and-the-wound"
+}

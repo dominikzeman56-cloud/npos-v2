@@ -1,0 +1,11 @@
+{
+  "id": "joe-ford-dropset-pav4n-monolith",
+  "title": "Monolith",
+  "artist": "Joe Ford, Dropset, PAV4N",
+  "label": "",
+  "year": 2026,
+  "bpm": 174,
+  "key": "",
+  "notes": "Měřeno tools/analyze_track.py z plného mixu (lokální FLAC, mimo repo). Tempo změřeno (174,00; autokorelace nástupů kicku a snare přes 64 dob). Název, interpret, rok a album „EC100 - Sampler V: Soulforge / Monolith“ jsou z tagů souboru. Tag tóniny v souboru: Abm (měřením neověřeno, proto se nezapisuje). Label neověřen.",
+  "source_id": "joe-ford-dropset-pav4n-monolith"
+}

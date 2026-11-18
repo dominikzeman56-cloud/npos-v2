@@ -2,7 +2,7 @@
 
 | Nástroj | Stav | Účel |
 |---|---|---|
-| `analyze_track.py` | hotovo | analýza plného mixu (ffmpeg → numpy/scipy) → návrh `analysis.json` podle `core/track-analysis.schema.json` |
+| `analyze_track.py` | hotovo | analýza plného mixu (ffmpeg → numpy/scipy) → návrh `analysis.json` podle `core/track-analysis.schema.json`; `--window t0,t1` zadá drop ručně, když detektor spojí hlasité intro s dropem |
 | `analyze_preset.py` | hotovo | čtečka Serum 2 `.SerumPreset` (oscilátory, filtry, FX, modulační matice) → návrh `data/presets/*.json` s `basis: preset_file`; vyžaduje `pip install cbor2 zstandard`; archetyp a funkci zadává člověk |
 | `index_presets.py` | hotovo | celý pack `.SerumPreset` → kompaktní index `data/presets/index/<source_id>.jsonl` (stopy + návrh funkce/archetypu, vždy `hypothesis`); plné analýzy do `data/presets/_local/` (gitignored) |
 | `analyze_fxp.py` | hotovo | Serum 1 `.fxp`: jen kontejner (hlavička, zlib stav, maka, počet `.wav`) + role z názvu → `data/presets/fxp/<source_id>.jsonl` (`hypothesis`) |
@@ -19,9 +19,13 @@
 | `midi_batch.py` | hotovo | dávka přes celou složku `.als`: nejčastější takt kicku, snaru a basy po projektech a jeho „podpis mezer“ → `data/midi/batch-*.json` (souhrn bez názvů), podrobnosti po projektech jen lokálně (`data/midi/_local`, gitignorováno); soubory nad `--max-mb` se přeskočí; role z názvů = hypotéza |
 | `stem_grid.py` | hotovo | rytmus a stavba z odseparovaných stemů (Demucs, RipX, oficiální): kick, snare a basa po taktech na mřížce 1/16, energie stemů po taktech, přesné BPM a první doba z měření; jen čtení, výstup na obrazovku nebo lokální JSON (`data/stems/_local`, gitignorováno); hi-haty a klik kicku prosakují do pásem (`odhad`) |
 | `nn_stats.py` | hotovo | statistika přepisů NeuralNote (audio na MIDI): třídy taktů basy (long, call, eighths, sixteenths), délky not, kořeny vůči tónice, posun mřížky; výstup `data/midi/nn-stats.json` jen čísla, podrobnosti po taktech lokálně (`data/midi/_local`); automatický přepis, oktávy a husté úseky mohou být nepřesné (`odhad`); zatím 2 skladby, nejde o pravidla |
+| `eq8_preset.py` | hotovo | vytvoří preset EQ Eight (`.adv`) ze zadaných pásem (typ, frekvence, zisk, Q) podle továrního presetu jako šablony; zápis jen do zadané složky (User Library), repo se nemění; hodnoty se ořezávají na rozsah Live; zatím neověřeno načtením v Live (`odhad`) |
+| `ref_check.py` | hotovo | vlastní bounce proti referenčním trackům z `data/tracks` (stejné měření jako `analyze_track.py`): crest v dropu, sub a fundament vůči celku, centroid, side/mid v subu a fundamentu; u každé veličiny rozpětí referencí, odchylka od mediánu a nejbližší track; jen čtení, výsledek na obrazovku nebo JSON mimo repo; modulaci basy neporovnává; rozpětí pár tracků není norma (`odhad`) |
+| `stem_bass.py` | hotovo | basové pásmo z izolovaných stemů jedné složky (oficiální nebo separované): sub a fundament vůči celku, horní hrana subu, spodní hrana mid basy, side/mid, čáry obálky 60–300 Hz s počtem cyklů na takt (zamčené na takt vs. volně běžící), reese vs. growl na mid basě; sub vs. mids (podíl energie subu na jedné notě, nástupy mids na takt a jejich shoda se subem, pole `bass.layering`); stemy vybírá člověk (`--list`, pak `--sub`/`--mids`), varianty „no sidechain“ se nesčítají dvakrát; crest a centroid neměří (součet stemů nemá mastering řetězec), příčinu modulace neříká; `--analysis-out` zapíše návrh `analysis.json` s `basis: stems` |
+| `stem_to_live.py` | hotovo | track (stemy, nebo plný mix) → MIDI kostra pro Ableton: tempo a fáze mřížky, úseky basy, kick a snare na 1/16, linka subu, rytmus mid basy; výstup `plan.json` a noty v zápisu Producer Pal (mimo repo), do Live je zapisuje skill `stems-to-ableton` přes `ppal-create-clip`; stemy = `measured`, plný mix = `estimated`; výšky mid basy neměří |
 | `check_presets.py` | hotovo | konzistence dat presetů (unikátní id, typy, sha256, bez lokálních cest); běží v CI |
 | `vault-app/` | hotovo | read-only prohlížeč vaultu a statický export pro sdílení (jen `Hudební produkce`, za heslem); viz README uvnitř |
-| `rebuild_track_index.py` | plánováno | `data/tracks` + `data/presets` → `data/corpus/*.jsonl` |
+| `rebuild_track_index.py` | hotovo | `data/tracks/*/{meta,analysis}.json` → `data/corpus/tracks.jsonl` (jen reference, vlastní tracky vynechá) |
 | `query_tracks.py` | plánováno | dotazy nad korpusem |
 
 Pravidla: BLUEPRINT kap. 9 (blocklist). `analyze_track.py` měří **plný mix** — basová modulace z něj je nejvýš `hypothesis`.

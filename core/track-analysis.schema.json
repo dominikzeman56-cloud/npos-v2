@@ -95,6 +95,27 @@
           "type": "object",
           "properties": { "spectral_centroid_hz": { "type": ["number", "null"] }, "notes": { "type": "string" } }
         },
+        "layering": {
+          "type": "object",
+          "description": "Vztah subu a mid basy, jen ze stemů (tools/stem_bass.py). Názvy not podle Live (C3 = MIDI 60).",
+          "properties": {
+            "sub_note": { "type": ["string", "null"] },
+            "sub_hz": { "type": ["number", "null"] },
+            "sub_static_share": { "type": ["number", "null"], "description": "Podíl energie subu do ±0,5 půltónu od dominantní noty (0–1)." },
+            "sub_note_changes_per_8bars": { "type": ["number", "null"] },
+            "mids_onsets_per_bar": { "type": ["number", "null"] },
+            "sub_onsets_per_bar": { "type": ["number", "null"] },
+            "onset_coincidence": { "type": ["number", "null"], "description": "Podíl nástupů mids, u kterých je do 1/32 noty nástup subu." },
+            "onset_coincidence_chance": { "type": ["number", "null"] },
+            "relation": {
+              "type": "string",
+              "enum": ["sub_static_mids_independent", "sub_static_mids_together", "sub_static", "sub_moves", "unknown"]
+            },
+            "basis": { "$ref": "#/definitions/basis" },
+            "confidence": { "$ref": "#/definitions/confidence" },
+            "notes": { "type": "string" }
+          }
+        },
         "stereo": {
           "type": "object",
           "properties": {

@@ -1,0 +1,11 @@
+{
+  "id": "l33-game-changer",
+  "title": "Game Changer",
+  "artist": "L33",
+  "label": "",
+  "year": null,
+  "bpm": 174,
+  "key": "",
+  "notes": "Basové pásmo změřeno tools/stem_bass.py na stemech (lokální složka D:/Ableton/30_Stems, mimo repo; audio se nekopíruje). Crest a centroid neměřeny (součet stemů není mastered mix); sekce neurčeny. Tempo změřeno: 174,00 (skupina Kick + Snare, nezávisle Break Fills + TOPS). Tónina neurčena.",
+  "source_id": "stems-l33-game-changer"
+}

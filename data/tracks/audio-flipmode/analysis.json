@@ -1,0 +1,153 @@
+{
+  "id": "audio-flipmode",
+  "mode": "deep",
+  "analyzed": "2026-11-14",
+  "method": {
+    "tooling": "tools/stem_bass.py (ffmpeg -> numpy/scipy; součet stemů basy, pásma, side/mid, obálka 60–300 Hz, hi-res FFT)",
+    "stems": true,
+    "basis": "stems",
+    "notes": "Basové pásmo změřeno na izolovaných stemech (sub: main bass sub, edit bass sub, edit 2 sub; mids: main bass reece mids, main bass harmonic mids, edit bass mids, edit 2 mids, bridge bass mids, build up filtered main mids). Okno dropu a celek: součet 34 stemů. Crest a centroid celku se neměří (součet stemů nemá mastering řetězec)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [],
+    "notes": "Sekce se ze stemů neurčují: RMS součtu stemů dává nespolehlivé hranice. Měřené okno basy je v bass.energy.notes.",
+    "confidence": ""
+  },
+  "dynamics": {
+    "crest_factor_drop_db": null,
+    "loudness_strategy": "",
+    "notes": "Neměřeno: stemy bez mastering řetězce (limiter, master EQ), crest by nebyl srovnatelný s vydaným mixem.",
+    "confidence": ""
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -2.86,
+      "fundament_rel_db": -7.27,
+      "profile": "sub_dominant",
+      "notes": "Basová sběrnice na stemech vůči součet 34 stemů (bas bez bicích, proto fundament vychází níž než z plného mixu). Sub stemy: 90 % energie pod 73.2 Hz, 99 % pod 76.2 Hz. Mid basa: nejnižší třetinooktávové pásmo do −10 dB od maxima začíná na 127.0 Hz. Měřené okno 44.5–86.5 s (manual)."
+    },
+    "modulation": {
+      "primary_hz": 2.14,
+      "grid_match": "off_grid",
+      "secondary_hz": [
+        1.17,
+        1.71,
+        5.02,
+        2.43
+      ],
+      "detection": "obálka 60–300 Hz na stemech basy -> Hilbert -> FFT, čáry od 1 Hz (pod tím je stavba frází). Basová sběrnice: 2.14 Hz (2.99/takt, 1.0), 1.17 Hz (1.63/takt, 0.76), 1.71 Hz (2.39/takt, 0.44), 5.02 Hz (7.01/takt, 0.4), 2.43 Hz (3.39/takt, 0.37); nejsilnější čára na celém/půleném počtu cyklů na takt (náhodná shoda ~20%). Jen mid basa: 1.43 Hz (1.99/takt, 1.0), 5.74 Hz (8.01/takt, 0.91), 5.38 Hz (7.51/takt, 0.79), 1.21 Hz (1.69/takt, 0.72), 2.5 Hz (3.49/takt, 0.69). Příčina (LFO, rytmus not, sidechain) není změřena.",
+      "source": "unknown",
+      "basis": "stems",
+      "confidence": "measured"
+    },
+    "timbre": {
+      "spectral_centroid_hz": null,
+      "notes": "Neměřeno (součet stemů není mastered mix)."
+    },
+    "stereo": {
+      "sub_side_db": -63.91,
+      "fundament_side_db": -15.59,
+      "notes": "Side/mid na basové sběrnici; mid basa nad 300 Hz–1 kHz: -1.06 dB."
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 0.67 Hz -> off_grid (off-grid (reese/detune path))",
+      "hi_res_fft_350_900": "130 peaks, median spacing 2.7 Hz",
+      "conclusion": "reese-like (dense peak forest, close spacing) — izolovaná mid basa; heuristika, u vrstvené basy vychází „reese-like“ téměř vždy, neprůkazné",
+      "hold_start_sec": 52.75
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured",
+    "layering": {
+      "sub_note": "G0",
+      "sub_hz": 49.7,
+      "sub_static_share": 0.28,
+      "sub_note_changes_per_8bars": 27.4,
+      "mids_onsets_per_bar": 1.2,
+      "sub_onsets_per_bar": 0.86,
+      "onset_coincidence": 0.58,
+      "onset_coincidence_chance": 0.05,
+      "relation": "sub_moves",
+      "basis": "stems",
+      "confidence": "measured",
+      "notes": "Sub (sub stemy): 28% energie na notě G0 (49.7 Hz, názvy podle Live); noty: G0 28%, G#0 21%, C#1 13%, D1 11%; změn noty na 8 taktů ~27.4. Mids: 1.2 nástupu na takt; se subem se kryje 58% nástupů mids (náhodná shoda 5%). Okno 200 ms: noty kratší než osmina se rozmažou; sidechain umí vyrobit nástupy subu i při stálé výšce."
+    }
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "stems-audio-flipmode"
+}

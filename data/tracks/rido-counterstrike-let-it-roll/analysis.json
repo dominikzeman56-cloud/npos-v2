@@ -1,0 +1,153 @@
+{
+  "id": "rido-counterstrike-let-it-roll",
+  "mode": "deep",
+  "analyzed": "2026-11-14",
+  "method": {
+    "tooling": "tools/stem_bass.py (ffmpeg -> numpy/scipy; součet stemů basy, pásma, side/mid, obálka 60–300 Hz, hi-res FFT)",
+    "stems": true,
+    "basis": "stems",
+    "notes": "Basové pásmo změřeno na izolovaných stemech (sub: —; mids: Rido & Couterstrike - Let it roll [BASS]). Okno dropu a celek: součet 4 stemů. Crest a centroid celku se neměří (součet stemů nemá mastering řetězec)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [],
+    "notes": "Sekce se ze stemů neurčují: RMS součtu stemů dává nespolehlivé hranice. Měřené okno basy je v bass.energy.notes.",
+    "confidence": ""
+  },
+  "dynamics": {
+    "crest_factor_drop_db": null,
+    "loudness_strategy": "",
+    "notes": "Neměřeno: stemy bez mastering řetězce (limiter, master EQ), crest by nebyl srovnatelný s vydaným mixem.",
+    "confidence": ""
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -4.06,
+      "fundament_rel_db": -7.93,
+      "profile": "sub_dominant",
+      "notes": "Basová sběrnice na stemech vůči součet 4 stemů (bas bez bicích, proto fundament vychází níž než z plného mixu). Sub stem zvlášť není. Spodní hrana mid basy neměřena (mids stemy nesou sub). Měřené okno 66.98–133.95 s (basa hraje)."
+    },
+    "modulation": {
+      "primary_hz": 1.45,
+      "grid_match": "off_grid",
+      "secondary_hz": [
+        2.17,
+        5.38,
+        3.94,
+        4.29
+      ],
+      "detection": "obálka 60–300 Hz na stemech basy -> Hilbert -> FFT, čáry od 1 Hz (pod tím je stavba frází). Basová sběrnice: 1.45 Hz (2.02/takt, 1.0), 2.17 Hz (3.02/takt, 0.72), 5.38 Hz (7.5/takt, 0.71), 3.94 Hz (5.5/takt, 0.67), 4.29 Hz (5.98/takt, 0.65); nejsilnější čára na celém/půleném počtu cyklů na takt (náhodná shoda ~20%). Jen mid basa: 1.45 Hz (2.02/takt, 1.0), 2.17 Hz (3.02/takt, 0.72), 5.38 Hz (7.5/takt, 0.71), 3.94 Hz (5.5/takt, 0.67), 4.29 Hz (5.98/takt, 0.65). Příčina (LFO, rytmus not, sidechain) není změřena.",
+      "source": "unknown",
+      "basis": "stems",
+      "confidence": "measured"
+    },
+    "timbre": {
+      "spectral_centroid_hz": null,
+      "notes": "Neměřeno (součet stemů není mastered mix)."
+    },
+    "stereo": {
+      "sub_side_db": -59.46,
+      "fundament_side_db": -34.72,
+      "notes": "Side/mid na basové sběrnici; mid basa nad 300 Hz–1 kHz: -6.49 dB."
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 0.67 Hz -> off_grid (off-grid (reese/detune path))",
+      "hi_res_fft_350_900": "157 peaks, median spacing 2.0 Hz",
+      "conclusion": "reese-like (dense peak forest, close spacing) — izolovaná mid basa; heuristika, u vrstvené basy vychází „reese-like“ téměř vždy, neprůkazné",
+      "hold_start_sec": 109.23
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured",
+    "layering": {
+      "sub_note": "F#0",
+      "sub_hz": 45.2,
+      "sub_static_share": 0.464,
+      "sub_note_changes_per_8bars": 5.3,
+      "mids_onsets_per_bar": 5.35,
+      "sub_onsets_per_bar": 3.65,
+      "onset_coincidence": 0.38,
+      "onset_coincidence_chance": 0.2,
+      "relation": "sub_moves",
+      "basis": "stems",
+      "confidence": "measured",
+      "notes": "Sub (pásmo 22–75 Hz stemu mids (sub stem zvlášť není)): 46% energie na notě F#0 (45.2 Hz, názvy podle Live); noty: F#0 49%, G0 11%, C#1 8%, C1 7%; změn noty na 8 taktů ~5.3. Mids: 5.35 nástupu na takt; se subem se kryje 38% nástupů mids (náhodná shoda 20%). Okno 200 ms: noty kratší než osmina se rozmažou; sidechain umí vyrobit nástupy subu i při stálé výšce."
+    }
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "stems-rido-counterstrike-let-it-roll"
+}

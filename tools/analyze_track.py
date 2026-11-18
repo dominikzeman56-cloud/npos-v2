@@ -340,9 +340,11 @@ def reese_vs_growl(x: np.ndarray, t0: float, t1: float, bpm: float) -> dict:
     return result
 
 
-def measure(x: np.ndarray, bpm: float, mode: str) -> dict:
+def measure(x: np.ndarray, bpm: float, mode: str, window: tuple[float, float] | None = None) -> dict:
     db, times = rms_curve(x)
     sections, main_drop = detect_sections(db, times)
+    if window:          # manual drop window: the RMS detector merges a loud drum intro into "drop_a"
+        main_drop = window
     drop = slice_range(x, main_drop[0], main_drop[1]) if main_drop[1] > main_drop[0] else x
 
     # Dynamics: crest factor in the loudest 10 s of the main drop. The detected drop window can span
@@ -490,7 +492,11 @@ def main() -> None:
     ap.add_argument("--title", default="", help="track title (optional)")
     ap.add_argument("--mode", default="quick", choices=["quick", "deep"], help="quick skips reese-vs-growl")
     ap.add_argument("--out", default=None, help="output path (default data/tracks/<id>/analysis.json)")
+    ap.add_argument("--window", default="", help="t0,t1 (s): measure this drop window instead of the detected one")
     args = ap.parse_args()
+    window = tuple(float(v) for v in args.window.split(",")) if args.window else None
+    if window and (len(window) != 2 or window[1] <= window[0]):
+        sys.exit("--window expects t0,t1 with t1 > t0")
 
     audio_path = Path(args.audio)
     if not audio_path.exists():
@@ -504,9 +510,13 @@ def main() -> None:
     print(f"      {dur:.1f}s, {x.shape[1]}ch @ {SR}Hz")
 
     print(f"[2/3] measuring ({args.mode})")
-    m = measure(x, args.bpm, args.mode)
+    m = measure(x, args.bpm, args.mode, window)
 
     analysis = build_analysis(args.id, args.bpm, args.key, args.title or args.id, args.mode, str(audio_path), m)
+    if window:
+        analysis["structure"]["notes"] = (
+            f"Drop window set manually: {window[0]:g}-{window[1]:g} s (all drop metrics are measured there). "
+            "The sections above are the automatic RMS detection and may merge a loud drum intro or build into drop_a.")
     with open(out, "w", encoding="utf-8") as f:
         json.dump(analysis, f, indent=2, ensure_ascii=False)
         f.write("\n")

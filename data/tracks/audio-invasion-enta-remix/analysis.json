@@ -1,0 +1,165 @@
+{
+  "id": "audio-invasion-enta-remix",
+  "mode": "deep",
+  "analyzed": "2026-11-15",
+  "method": {
+    "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
+    "stems": false,
+    "basis": "full_mix",
+    "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low. Bass modulation from a full mix is at most a hypothesis (hi-hats contaminate the envelope; see docs/BLUEPRINT.md section 7)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [
+      {
+        "name": "build",
+        "start_sec": 0.0,
+        "end_sec": 45.98
+      },
+      {
+        "name": "drop_a",
+        "start_sec": 45.98,
+        "end_sec": 153.84
+      },
+      {
+        "name": "breakdown",
+        "start_sec": 153.84,
+        "end_sec": 177.99
+      },
+      {
+        "name": "drop_c",
+        "start_sec": 177.99,
+        "end_sec": 286.36
+      },
+      {
+        "name": "outro",
+        "start_sec": 286.36,
+        "end_sec": 293.77
+      }
+    ],
+    "notes": "Drop window set manually: 66.2-154.5 s (all drop metrics are measured there). The sections above are the automatic RMS detection and may merge a loud drum intro or build into drop_a.",
+    "confidence": "estimated"
+  },
+  "dynamics": {
+    "crest_factor_drop_db": 6.77,
+    "loudness_strategy": "open",
+    "notes": "",
+    "confidence": "measured"
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -2.44,
+      "fundament_rel_db": -8.37,
+      "profile": "sub_dominant",
+      "notes": ""
+    },
+    "modulation": {
+      "primary_hz": 11.6,
+      "grid_match": "1/16",
+      "secondary_hz": [
+        1.45,
+        2.9,
+        3.62,
+        5.07,
+        6.52
+      ],
+      "detection": "bandpass 60-300 -> Hilbert envelope -> FFT",
+      "source": "unknown",
+      "basis": "full_mix",
+      "confidence": "hypothesis"
+    },
+    "timbre": {
+      "spectral_centroid_hz": 5398.9,
+      "notes": ""
+    },
+    "stereo": {
+      "sub_side_db": -41.45,
+      "fundament_side_db": -18.34,
+      "notes": ""
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 0.67 Hz -> off_grid (off-grid (reese/detune path))",
+      "hi_res_fft_350_900": "82 peaks, median spacing 2.0 Hz",
+      "conclusion": "reese-like (dense peak forest, close spacing) — full mix: not discriminative, confirm on stems"
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured"
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "measured",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "audio-invasion-enta-remix"
+}

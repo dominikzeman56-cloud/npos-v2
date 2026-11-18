@@ -35,22 +35,30 @@ def row(meta: dict, a: dict) -> dict:
     }
 
 
-def main() -> int:
-    # Korpus = reference od profesionálů; vlastní tracky (access own_work) do něj nepatří.
+def reference_tracks(root: Path = ROOT) -> list[tuple[dict, dict]]:
+    """(meta, analysis) všech referenčních tracků v data/tracks, seřazeno podle id.
+
+    Korpus = reference od profesionálů; vlastní tracky (access own_work) do něj nepatří.
+    """
     own = set()
-    for line in (ROOT / "knowledge" / "sources.jsonl").read_text(encoding="utf-8").splitlines():
+    for line in (root / "knowledge" / "sources.jsonl").read_text(encoding="utf-8").splitlines():
         if line.strip():
             s = json.loads(line)
             if s.get("access") == "own_work":
                 own.add(s["id"])
-    rows = []
-    for d in sorted(p for p in (ROOT / "data" / "tracks").iterdir() if p.is_dir()):
+    out = []
+    for d in sorted(p for p in (root / "data" / "tracks").iterdir() if p.is_dir()):
         m, an = d / "meta.json", d / "analysis.json"
         if m.exists() and an.exists():
             meta = json.loads(m.read_text(encoding="utf-8"))
             if meta.get("source_id") in own:
                 continue
-            rows.append(row(meta, json.loads(an.read_text(encoding="utf-8"))))
+            out.append((meta, json.loads(an.read_text(encoding="utf-8"))))
+    return out
+
+
+def main() -> int:
+    rows = [row(meta, a) for meta, a in reference_tracks()]
     out = ROOT / "data" / "corpus" / "tracks.jsonl"
     out.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8", newline="\n")
     print(f"{len(rows)} tracků → {out.relative_to(ROOT)}")

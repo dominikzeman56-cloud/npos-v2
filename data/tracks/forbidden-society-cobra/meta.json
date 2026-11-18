@@ -1,0 +1,11 @@
+{
+  "id": "forbidden-society-cobra",
+  "title": "Cobra",
+  "artist": "Forbidden Society",
+  "label": "",
+  "year": null,
+  "bpm": 175,
+  "key": "",
+  "notes": "Basové pásmo změřeno tools/stem_bass.py na stemech (lokální složka D:/Ableton/30_Stems, mimo repo; audio se nekopíruje). Crest a centroid neměřeny (součet stemů není mastered mix); sekce neurčeny. Tempo z názvu složky (175), potvrzeno měřením kicku (175,00). Tónina neurčena.",
+  "source_id": "stems-forbidden-society-cobra"
+}

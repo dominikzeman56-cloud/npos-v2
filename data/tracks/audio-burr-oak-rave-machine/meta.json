@@ -1,0 +1,11 @@
+{
+  "id": "audio-burr-oak-rave-machine",
+  "title": "Rave Machine",
+  "artist": "Audio, Burr Oak",
+  "label": "",
+  "year": null,
+  "bpm": 175,
+  "key": "",
+  "notes": "Basové pásmo změřeno tools/stem_bass.py na stemech (lokální složka D:/Ableton/30_Stems, mimo repo; audio se nekopíruje). Crest a centroid neměřeny (součet stemů není mastered mix); sekce neurčeny. Tempo z názvu složky (175), ověřeno kickem (stem_grid s odhadem 172 dává falešných 172,08, správný vrchol je 175,00). Štítek tóniny G měřením nepotvrzen (bass F#/G, chroma E moll), tónina se nezapisuje.",
+  "source_id": "stems-audio-burr-oak-rave-machine"
+}

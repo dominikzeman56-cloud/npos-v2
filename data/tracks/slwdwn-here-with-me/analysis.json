@@ -1,0 +1,153 @@
+{
+  "id": "slwdwn-here-with-me",
+  "mode": "deep",
+  "analyzed": "2026-11-14",
+  "method": {
+    "tooling": "tools/stem_bass.py (ffmpeg -> numpy/scipy; součet stemů basy, pásma, side/mid, obálka 60–300 Hz, hi-res FFT)",
+    "stems": true,
+    "basis": "stems",
+    "notes": "Basové pásmo změřeno na izolovaných stemech (sub: yaano slwdwnV2_here with me 29-Here with me-2_Insert 21, yaano slwdwnV2_here with me 23-Here with me-2_808; mids: yaano slwdwnV2_here with me 25-Here with me-2_basline, yaano slwdwnV2_here with me 30-Here with me-2_Insert 25, yaano slwdwnV2_bassline, yaano slwdwnV2_here with me 21-Here with me-2_Untitled project - 2020-Jul-23_2). Okno dropu a celek: master soubor „yaano slwdwnV2_Current“. Crest a centroid celku se neměří (součet stemů nemá mastering řetězec)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [],
+    "notes": "Sekce se ze stemů neurčují: RMS součtu stemů dává nespolehlivé hranice. Měřené okno basy je v bass.energy.notes.",
+    "confidence": ""
+  },
+  "dynamics": {
+    "crest_factor_drop_db": null,
+    "loudness_strategy": "",
+    "notes": "Neměřeno: stemy bez mastering řetězce (limiter, master EQ), crest by nebyl srovnatelný s vydaným mixem.",
+    "confidence": ""
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -1.72,
+      "fundament_rel_db": -6.29,
+      "profile": "sub_dominant",
+      "notes": "Basová sběrnice na stemech vůči master soubor „yaano slwdwnV2_Current“ (bas bez bicích, proto fundament vychází níž než z plného mixu). Sub stemy: 90 % energie pod 90.8 Hz, 99 % pod 131.8 Hz. Mid basa: nejnižší třetinooktávové pásmo do −10 dB od maxima začíná na 50.4 Hz. Měřené okno 66.99–89.47 s (basa hraje)."
+    },
+    "modulation": {
+      "primary_hz": 3.96,
+      "grid_match": "off_grid",
+      "secondary_hz": [
+        7.52,
+        11.48,
+        7.87,
+        3.6
+      ],
+      "detection": "obálka 60–300 Hz na stemech basy -> Hilbert -> FFT, čáry od 1 Hz (pod tím je stavba frází). Basová sběrnice: 3.96 Hz (5.52/takt, 1.0), 7.52 Hz (10.49/takt, 0.64), 11.48 Hz (16.01/takt, 0.57), 7.87 Hz (10.99/takt, 0.54), 3.6 Hz (5.03/takt, 0.34); nejsilnější čára na celém/půleném počtu cyklů na takt (náhodná shoda ~37%). Jen mid basa: 1.42 Hz (1.99/takt, 1.0), 3.6 Hz (5.03/takt, 0.9), 3.2 Hz (4.47/takt, 0.89), 2.49 Hz (3.48/takt, 0.82), 2.85 Hz (3.97/takt, 0.78). Příčina (LFO, rytmus not, sidechain) není změřena.",
+      "source": "unknown",
+      "basis": "stems",
+      "confidence": "measured"
+    },
+    "timbre": {
+      "spectral_centroid_hz": null,
+      "notes": "Neměřeno (součet stemů není mastered mix)."
+    },
+    "stereo": {
+      "sub_side_db": -37.71,
+      "fundament_side_db": -11.44,
+      "notes": "Side/mid na basové sběrnici; mid basa nad 300 Hz–1 kHz: -4.07 dB."
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 2.67 Hz -> 1/4 (on-grid: growl path, or drums leaking into 60-300 Hz)",
+      "hi_res_fft_350_900": "51 peaks, median spacing 3.3 Hz",
+      "conclusion": "reese-like (dense peak forest, close spacing) — izolovaná mid basa; heuristika, u vrstvené basy vychází „reese-like“ téměř vždy, neprůkazné",
+      "hold_start_sec": 71.24
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured",
+    "layering": {
+      "sub_note": "E0",
+      "sub_hz": 41.3,
+      "sub_static_share": 0.851,
+      "sub_note_changes_per_8bars": 1.0,
+      "mids_onsets_per_bar": 2.3,
+      "sub_onsets_per_bar": 5.96,
+      "onset_coincidence": 0.3,
+      "onset_coincidence_chance": 0.31,
+      "relation": "sub_static_mids_independent",
+      "basis": "stems",
+      "confidence": "measured",
+      "notes": "Sub (sub stemy): 85% energie na notě E0 (41.3 Hz, názvy podle Live); noty: E0 85%, F#0 9%, F0 6%; změn noty na 8 taktů ~1.0. Mids: 2.3 nástupu na takt; se subem se kryje 30% nástupů mids (náhodná shoda 31%). Okno 200 ms: noty kratší než osmina se rozmažou; sidechain umí vyrobit nástupy subu i při stálé výšce."
+    }
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "stems-slwdwn-here-with-me"
+}

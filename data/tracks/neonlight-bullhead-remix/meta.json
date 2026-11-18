@@ -1,0 +1,11 @@
+{
+  "id": "neonlight-bullhead-remix",
+  "title": "Bullhead (remix)",
+  "artist": "Neonlight",
+  "label": "",
+  "year": null,
+  "bpm": 174,
+  "key": "",
+  "notes": "Basové pásmo změřeno tools/stem_bass.py na stemech (lokální složka D:/Ableton/30_Stems, mimo repo; audio se nekopíruje). Crest a centroid neměřeny (součet stemů není mastered mix); sekce neurčeny. Tempo změřeno: 174,00 (kick a snare na čtyřech stemech). Štítky „_172“ jsou štítky zdrojových samplů. Tónina neurčena.",
+  "source_id": "stems-neonlight-bullhead-remix"
+}

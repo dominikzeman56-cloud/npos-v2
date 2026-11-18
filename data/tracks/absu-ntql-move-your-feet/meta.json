@@ -1,0 +1,11 @@
+{
+  "id": "absu-ntql-move-your-feet",
+  "title": "Move Your Feet",
+  "artist": "Absu_NTQL",
+  "label": "",
+  "year": null,
+  "bpm": 172,
+  "key": "",
+  "notes": "Basové pásmo změřeno tools/stem_bass.py na stemech (lokální složka D:/Ableton/30_Stems, mimo repo; audio se nekopíruje). Crest a centroid neměřeny (součet stemů není mastered mix); sekce neurčeny. Tempo z názvu složky (172), ověřeno měřením. Štítek tóniny D# měřením nepotvrzen (bass i master ukazují D), tónina se nezapisuje. Celek = Master.wav ve složce.",
+  "source_id": "stems-absu-ntql-move-your-feet"
+}

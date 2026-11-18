@@ -1,0 +1,153 @@
+{
+  "id": "neonlight-bullhead-remix",
+  "mode": "deep",
+  "analyzed": "2026-11-14",
+  "method": {
+    "tooling": "tools/stem_bass.py (ffmpeg -> numpy/scipy; součet stemů basy, pásma, side/mid, obálka 60–300 Hz, hi-res FFT)",
+    "stems": true,
+    "basis": "stems",
+    "notes": "Basové pásmo změřeno na izolovaných stemech (sub: 0045 - Instrument - Reso Wobble Groove 2, 0048 - Audio - MAIN BASS PART 2_FULL, 0044 - Audio - BAS - Reso Wobble Groove_build up, 0047 - Audio - Main Bass edit (R) 01 000-067, 0039 - Audio - Serum_x64 01 (D) (R) (R); mids: 0037 - Audio - odd bass layer (R), 0038 - Audio - odd bass layer -12semi (R), 0040 - Audio - more odd bass hits, 0041 - Audio - more odd bass hits 2, 0049 - Audio - Phase Plant Ending BASS, 0046 - Audio - BAS - top noise layer bass riff part 2). Okno dropu a celek: součet 39 stemů. Crest a centroid celku se neměří (součet stemů nemá mastering řetězec)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [],
+    "notes": "Sekce se ze stemů neurčují: RMS součtu stemů dává nespolehlivé hranice. Měřené okno basy je v bass.energy.notes.",
+    "confidence": ""
+  },
+  "dynamics": {
+    "crest_factor_drop_db": null,
+    "loudness_strategy": "",
+    "notes": "Neměřeno: stemy bez mastering řetězce (limiter, master EQ), crest by nebyl srovnatelný s vydaným mixem.",
+    "confidence": ""
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -2.02,
+      "fundament_rel_db": -12.29,
+      "profile": "sub_dominant",
+      "notes": "Basová sběrnice na stemech vůči součet 39 stemů (bas bez bicích, proto fundament vychází níž než z plného mixu). Sub stemy: 90 % energie pod 49.8 Hz, 99 % pod 131.8 Hz. Mid basa: nejnižší třetinooktávové pásmo do −10 dB od maxima začíná na 100.8 Hz. Měřené okno 110.6–174.6 s (manual)."
+    },
+    "modulation": {
+      "primary_hz": 2.17,
+      "grid_match": "off_grid",
+      "secondary_hz": [
+        1.09,
+        3.62,
+        1.45,
+        1.27
+      ],
+      "detection": "obálka 60–300 Hz na stemech basy -> Hilbert -> FFT, čáry od 1 Hz (pod tím je stavba frází). Basová sběrnice: 2.17 Hz (3.0/takt, 1.0), 1.09 Hz (1.51/takt, 0.83), 3.62 Hz (5.0/takt, 0.77), 1.45 Hz (2.0/takt, 0.57), 1.27 Hz (1.75/takt, 0.51); nejsilnější čára na celém/půleném počtu cyklů na takt (náhodná shoda ~20%). Jen mid basa: 5.8 Hz (8.0/takt, 1.0), 1.09 Hz (1.51/takt, 0.77), 5.25 Hz (7.24/takt, 0.59), 1.27 Hz (1.75/takt, 0.57), 4.53 Hz (6.25/takt, 0.49). Příčina (LFO, rytmus not, sidechain) není změřena.",
+      "source": "unknown",
+      "basis": "stems",
+      "confidence": "measured"
+    },
+    "timbre": {
+      "spectral_centroid_hz": null,
+      "notes": "Neměřeno (součet stemů není mastered mix)."
+    },
+    "stereo": {
+      "sub_side_db": -55.73,
+      "fundament_side_db": -26.36,
+      "notes": "Side/mid na basové sběrnici; mid basa nad 300 Hz–1 kHz: -8.4 dB."
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 6.00 Hz -> 1/8 (on-grid: growl path, or drums leaking into 60-300 Hz)",
+      "hi_res_fft_350_900": "19 peaks, median spacing 4.3 Hz",
+      "conclusion": "reese-like (dense peak forest, close spacing) — izolovaná mid basa; heuristika, u vrstvené basy vychází „reese-like“ téměř vždy, neprůkazné",
+      "hold_start_sec": 164.35
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured",
+    "layering": {
+      "sub_note": "F0",
+      "sub_hz": 43.8,
+      "sub_static_share": 0.874,
+      "sub_note_changes_per_8bars": 2.8,
+      "mids_onsets_per_bar": 3.88,
+      "sub_onsets_per_bar": 1.44,
+      "onset_coincidence": 0.02,
+      "onset_coincidence_chance": 0.09,
+      "relation": "sub_static_mids_independent",
+      "basis": "stems",
+      "confidence": "measured",
+      "notes": "Sub (sub stemy): 87% energie na notě F0 (43.8 Hz, názvy podle Live); noty: F0 92%; změn noty na 8 taktů ~2.8. Mids: 3.88 nástupu na takt; se subem se kryje 2% nástupů mids (náhodná shoda 9%). Okno 200 ms: noty kratší než osmina se rozmažou; sidechain umí vyrobit nástupy subu i při stálé výšce."
+    }
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "stems-neonlight-bullhead-remix"
+}

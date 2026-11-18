@@ -1,0 +1,11 @@
+{
+  "id": "slwdwn-here-with-me",
+  "title": "Here With Me",
+  "artist": "SLWDWN",
+  "label": "",
+  "year": null,
+  "bpm": 172,
+  "key": "",
+  "notes": "Basové pásmo změřeno tools/stem_bass.py na stemech (lokální složka D:/Ableton/30_Stems, mimo repo; audio se nekopíruje). Crest a centroid neměřeny (součet stemů není mastered mix); sekce neurčeny. Tempo změřeno: 172,00 (kick + snare, nezávisle clap + break). Celek = hotový master soubor ve složce. Tónina neurčena.",
+  "source_id": "stems-slwdwn-here-with-me"
+}

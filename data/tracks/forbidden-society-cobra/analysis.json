@@ -1,0 +1,153 @@
+{
+  "id": "forbidden-society-cobra",
+  "mode": "deep",
+  "analyzed": "2026-11-14",
+  "method": {
+    "tooling": "tools/stem_bass.py (ffmpeg -> numpy/scipy; součet stemů basy, pásma, side/mid, obálka 60–300 Hz, hi-res FFT)",
+    "stems": true,
+    "basis": "stems",
+    "notes": "Basové pásmo změřeno na izolovaných stemech (sub: Sound_2, Sound_4; mids: Sound_1). Okno dropu a celek: součet 9 stemů. Crest a centroid celku se neměří (součet stemů nemá mastering řetězec)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [],
+    "notes": "Sekce se ze stemů neurčují: RMS součtu stemů dává nespolehlivé hranice. Měřené okno basy je v bass.energy.notes.",
+    "confidence": ""
+  },
+  "dynamics": {
+    "crest_factor_drop_db": null,
+    "loudness_strategy": "",
+    "notes": "Neměřeno: stemy bez mastering řetězce (limiter, master EQ), crest by nebyl srovnatelný s vydaným mixem.",
+    "confidence": ""
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -2.75,
+      "fundament_rel_db": -11.92,
+      "profile": "sub_dominant",
+      "notes": "Basová sběrnice na stemech vůči součet 9 stemů (bas bez bicích, proto fundament vychází níž než z plného mixu). Sub stemy: 90 % energie pod 85.0 Hz, 99 % pod 293.0 Hz. Mid basa: nejnižší třetinooktávové pásmo do −10 dB od maxima začíná na 320.0 Hz. Měřené okno 215.0–329.0 s (manual)."
+    },
+    "modulation": {
+      "primary_hz": 1.46,
+      "grid_match": "off_grid",
+      "secondary_hz": [
+        7.29,
+        2.92,
+        8.75,
+        11.67
+      ],
+      "detection": "obálka 60–300 Hz na stemech basy -> Hilbert -> FFT, čáry od 1 Hz (pod tím je stavba frází). Basová sběrnice: 1.46 Hz (2.0/takt, 1.0), 7.29 Hz (10.0/takt, 0.86), 2.92 Hz (4.01/takt, 0.75), 8.75 Hz (11.99/takt, 0.75), 11.67 Hz (16.0/takt, 0.64); nejsilnější čára na celém/půleném počtu cyklů na takt (náhodná shoda ~20%). Jen mid basa: 2.92 Hz (4.01/takt, 1.0), 5.83 Hz (8.0/takt, 0.42), 8.75 Hz (11.99/takt, 0.36), 11.67 Hz (16.0/takt, 0.26), 17.5 Hz (24.0/takt, 0.24). Příčina (LFO, rytmus not, sidechain) není změřena.",
+      "source": "unknown",
+      "basis": "stems",
+      "confidence": "measured"
+    },
+    "timbre": {
+      "spectral_centroid_hz": null,
+      "notes": "Neměřeno (součet stemů není mastered mix)."
+    },
+    "stereo": {
+      "sub_side_db": -14.92,
+      "fundament_side_db": -10.55,
+      "notes": "Side/mid na basové sběrnici; mid basa nad 300 Hz–1 kHz: -5.0 dB."
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 4.67 Hz -> off_grid (off-grid (reese/detune path))",
+      "hi_res_fft_350_900": "47 peaks, median spacing 4.7 Hz",
+      "conclusion": "reese-like (dense peak forest, close spacing) — izolovaná mid basa; heuristika, u vrstvené basy vychází „reese-like“ téměř vždy, neprůkazné",
+      "hold_start_sec": 226.0
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured",
+    "layering": {
+      "sub_note": "F#0",
+      "sub_hz": 46.3,
+      "sub_static_share": 0.708,
+      "sub_note_changes_per_8bars": 1.0,
+      "mids_onsets_per_bar": 2.42,
+      "sub_onsets_per_bar": 5.61,
+      "onset_coincidence": 0.66,
+      "onset_coincidence_chance": 0.3,
+      "relation": "sub_moves",
+      "basis": "stems",
+      "confidence": "measured",
+      "notes": "Sub (sub stemy): 71% energie na notě F#0 (46.3 Hz, názvy podle Live); noty: F#0 75%, G#0 13%, G0 9%; změn noty na 8 taktů ~1.0. Mids: 2.42 nástupu na takt; se subem se kryje 66% nástupů mids (náhodná shoda 30%). Okno 200 ms: noty kratší než osmina se rozmažou; sidechain umí vyrobit nástupy subu i při stálé výšce."
+    }
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "stems-forbidden-society-cobra"
+}

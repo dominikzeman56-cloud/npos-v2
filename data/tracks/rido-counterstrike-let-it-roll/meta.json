@@ -1,0 +1,11 @@
+{
+  "id": "rido-counterstrike-let-it-roll",
+  "title": "Let It Roll",
+  "artist": "Rido & Counterstrike",
+  "label": "",
+  "year": null,
+  "bpm": 172,
+  "key": "",
+  "notes": "Basové pásmo změřeno tools/stem_bass.py na stemech (lokální složka D:/Ableton/30_Stems, mimo repo; audio se nekopíruje). Crest a centroid neměřeny (součet stemů není mastered mix); sekce neurčeny. Tempo změřeno: 172,00 (kick [DRUMS], basa 171,96). Tónina neurčena (F moll z poznámky ve vaultu měřením jednoznačně nepotvrzena).",
+  "source_id": "stems-rido-counterstrike-let-it-roll"
+}

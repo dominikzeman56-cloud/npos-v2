@@ -1,0 +1,11 @@
+{
+  "id": "audio-flipmode",
+  "title": "Flipmode",
+  "artist": "Audio",
+  "label": "",
+  "year": null,
+  "bpm": 172,
+  "key": "",
+  "notes": "Basové pásmo změřeno tools/stem_bass.py na stemech (lokální složka D:/Ableton/30_Stems, mimo repo; audio se nekopíruje). Crest a centroid neměřeny (součet stemů není mastered mix); sekce neurčeny. Tempo z názvu složky (172). Štítek tóniny G jen štítek (G a G# skoro vyrovnané), tónina se nezapisuje.",
+  "source_id": "stems-audio-flipmode"
+}

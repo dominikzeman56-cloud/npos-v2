@@ -1,0 +1,11 @@
+{
+  "id": "tr-tactics-mechanism",
+  "title": "Mechanism",
+  "artist": "TR Tactics",
+  "label": "",
+  "year": 2024,
+  "bpm": 174,
+  "key": "",
+  "notes": "Měřeno tools/analyze_track.py z plného mixu (lokální soubor, mimo repo). BPM z rozboru ve vaultu. Tónina celého tracku není určená (rozbor: chroma dominuje F, sekvence v breakdownu je A# moll). Zdrojový soubor: MP3 (ztrátový, výšky a centroid berte s rezervou). EP War Of Titans.",
+  "source_id": "tr-tactics-mechanism"
+}

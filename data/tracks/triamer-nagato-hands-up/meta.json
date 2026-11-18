@@ -1,0 +1,11 @@
+{
+  "id": "triamer-nagato-hands-up",
+  "title": "Hands Up",
+  "artist": "TriaMer & Nagato",
+  "label": "Black Hoe",
+  "year": 2016,
+  "bpm": 175,
+  "key": "Am",
+  "notes": "Měřeno tools/analyze_track.py z plného mixu (lokální soubor, mimo repo). BPM a tónina z rozboru ve vaultu. Zdrojový soubor: WAV, katalog BHR040. Crossbreed, ne neurofunk.",
+  "source_id": "triamer-nagato-hands-up"
+}

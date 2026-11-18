@@ -1,0 +1,164 @@
+{
+  "id": "audio-aenygma-blood-on-our-hands-pythius-remix",
+  "mode": "deep",
+  "analyzed": "2026-11-15",
+  "method": {
+    "tooling": "ffmpeg -> numpy/scipy (RMS, STFT, band energy, crest, mid/side, envelope FFT, YIN optional)",
+    "stems": false,
+    "basis": "full_mix",
+    "notes": "Full-mix only. Energy/spectral = high confidence. Pitch in dense polyphony = low. Bass modulation from a full mix is at most a hypothesis (hi-hats contaminate the envelope; see docs/BLUEPRINT.md section 7)."
+  },
+  "confidence_overall": "mixed",
+  "structure": {
+    "sections": [
+      {
+        "name": "build",
+        "start_sec": 0.0,
+        "end_sec": 24.5
+      },
+      {
+        "name": "drop_a",
+        "start_sec": 24.5,
+        "end_sec": 135.02
+      },
+      {
+        "name": "breakdown",
+        "start_sec": 135.02,
+        "end_sec": 167.97
+      },
+      {
+        "name": "drop_c",
+        "start_sec": 167.97,
+        "end_sec": 223.91
+      },
+      {
+        "name": "outro",
+        "start_sec": 223.91,
+        "end_sec": 232.3
+      }
+    ],
+    "notes": "Drop window set manually: 67-133.9 s (all drop metrics are measured there). The sections above are the automatic RMS detection and may merge a loud drum intro or build into drop_a.",
+    "confidence": "estimated"
+  },
+  "dynamics": {
+    "crest_factor_drop_db": 6.19,
+    "loudness_strategy": "controlled",
+    "notes": "",
+    "confidence": "measured"
+  },
+  "bass": {
+    "type": "",
+    "type_confidence": "hypothesis",
+    "archetype": "",
+    "layers": [],
+    "energy": {
+      "sub_rel_db": -4.74,
+      "fundament_rel_db": -5.56,
+      "profile": "balanced",
+      "notes": ""
+    },
+    "modulation": {
+      "primary_hz": 11.46,
+      "grid_match": "1/16",
+      "secondary_hz": [
+        0.72,
+        3.59,
+        5.72,
+        5.74
+      ],
+      "detection": "bandpass 60-300 -> Hilbert envelope -> FFT",
+      "source": "unknown",
+      "basis": "full_mix",
+      "confidence": "hypothesis"
+    },
+    "timbre": {
+      "spectral_centroid_hz": 5592.4,
+      "notes": ""
+    },
+    "stereo": {
+      "sub_side_db": -21.01,
+      "fundament_side_db": -14.42,
+      "notes": ""
+    },
+    "reese_vs_growl_test": {
+      "envelope_vs_grid": "peak 2.00 Hz -> off_grid (off-grid (reese/detune path))",
+      "hi_res_fft_350_900": "204 peaks, median spacing 2.0 Hz",
+      "conclusion": "reese-like (dense peak forest, close spacing) — full mix: not discriminative, confirm on stems"
+    },
+    "body_design": {
+      "primary": "",
+      "post": [],
+      "confidence": "estimated"
+    },
+    "confidence": "measured"
+  },
+  "lead": {
+    "present": null,
+    "roles": [],
+    "register": "",
+    "playing_style": "",
+    "density": "",
+    "melodic_motion": "",
+    "rhythm_vs_drums": "unknown",
+    "rhythm_vs_bass": "unknown",
+    "call_and_response": {
+      "active": null,
+      "call": "",
+      "response": "",
+      "period_bars": null,
+      "overlap": null,
+      "notes": ""
+    },
+    "timbre_family": "",
+    "confidence": "hypothesis"
+  },
+  "midi_intent": {
+    "bass": {
+      "playing_style": "unknown",
+      "rhythm": "unknown",
+      "note_area": "",
+      "grid_lock": "none",
+      "silence_on_kick": null
+    },
+    "lead": {
+      "playing_style": "",
+      "phrase_length_beats": null,
+      "enters_on": "",
+      "avoids": [],
+      "register": ""
+    },
+    "buildup": {
+      "type": ""
+    },
+    "breakdown": {
+      "type": "",
+      "bass_present": null
+    },
+    "confidence": "hypothesis"
+  },
+  "drums": {
+    "kick": "",
+    "snare": "",
+    "groove": "",
+    "notes": "",
+    "confidence": "hypothesis"
+  },
+  "stereo_global": {
+    "low_mono_below_hz": 250,
+    "rule": "mono low-end, open higher",
+    "confidence": "measured"
+  },
+  "production_decisions": [],
+  "recreate_workflow": [],
+  "lessons": [],
+  "related_archetypes": [],
+  "usable_for": [],
+  "fields_confidence": {
+    "structure": "estimated",
+    "dynamics": "measured",
+    "bass": "measured",
+    "lead": "hypothesis",
+    "drums": "hypothesis"
+  },
+  "source_id": "audio-aenygma-blood-on-our-hands-pythius-remix"
+}
